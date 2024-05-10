@@ -1,0 +1,21 @@
+#clinet
+ssh root@209.38.240.21
+F!#c3xLFvS^+sv8q
+
+cd ~/snap/lxd/current
+cd ~/snap/lxd/current/pulsopus
+
+docker stop pulsopus
+docker system prune
+docker system prune -a
+
+docker-compose up -d --build
+
+
+#api | droplet | 2cpu 8ram 25ssd 5TB trafic
+ssh root@167.99.248.5
+F!#c3xLFvS^+sv8q
+
+cd ~/snap/lxd/current
+cd ~/snap/lxd/current/pulsopus-server
+cd ~/snap/lxd/current/pulsopus-client

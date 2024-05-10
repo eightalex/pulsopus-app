@@ -1,0 +1,11 @@
+export const enum EAuthSignType {
+    MICROSOFT = 'Microsoft',
+    GOOGLE = 'Google',
+}
+
+export const enum EAuthStage {
+    SIGN_STAGE = 'SIGN_STAGE',
+    UNAUTHORIZED_STAGE = 'UNAUTHORIZED_STAGE',
+    UNAUTHORIZED_SENT_STAGE = 'UNAUTHORIZED_SENT_STAGE',
+    FORGOT_PASSWORD_STAGE = 'FORGOT_PASSWORD_STAGE',
+}

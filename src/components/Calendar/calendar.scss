@@ -1,0 +1,208 @@
+.calendar {
+  &.react-calendar {
+    position: relative;
+    width: auto;
+    max-width: 234px;
+    height: auto;
+    background-color: #1C1C1C;
+    border: none;
+    color: #D0D0D0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+  }
+
+  .react-calendar {
+    &__navigation {
+      width: 100%;
+      height: 24px;
+      font-family: 'IBM Plex Mono', serif;
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      & button {
+        min-width: unset;
+        max-width: unset;
+        width: auto;
+        height: auto;
+        color: #219653;
+        padding: 4px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 12px;
+        font-weight: 500;
+        font-family: 'IBM Plex Mono', serif;
+        background-color: transparent;
+        border-radius: 4px;
+        border: 1px solid transparent;
+
+        &:has(svg) {
+          padding: 6px;
+        }
+
+        &:has(span) {
+          padding: 3.5px 4px;
+          width: auto;
+          min-width: 110px;
+        }
+
+        & span {
+          width: auto;
+          align-self: center;
+          text-align: center;
+          text-transform: uppercase;
+          color: #D0D0D0;
+        }
+
+        &:hover {
+          background-color: #D9D9D933; // extendPalette.calendarSurfaceSecondary // #8ACCAB
+        }
+
+        &:focus {
+          background-color: transparent;
+        }
+
+        &:active {
+          background-color: #21965366;
+        }
+      }
+    }
+
+    &__month-view {
+      &__weekdays {
+        &__weekday {
+          height: 30px;
+          aspect-ratio: 1;
+          color: #219653;
+          pointer-events: none;
+          padding: 4px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          & abbr {
+            text-decoration: unset;
+          }
+        }
+      }
+
+      &__days {
+        &__day {
+          height: 30px;
+          aspect-ratio: 1;
+          font-size: 12px;
+          font-family: 'IBM Plex Mono', serif;
+          color: #D0D0D0;
+          padding: 0;
+          border-radius: 0;
+
+          &--weekend {
+            color: #D0D0D0E6;
+          }
+
+          &--neighboringMonth {
+            color: #D0D0D066;
+          }
+
+          &.react-calendar__tile--now {
+            &:before {
+              content: ' ';
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              width: 30px;
+              aspect-ratio: 1;
+              border-radius: 50%;
+              transform: translate(-50%, -50%);
+              border: 1px solid rgba(145, 145, 145, 0.40);
+              background: rgba(127, 127, 127, 0.40);
+            }
+          }
+        }
+      }
+    }
+
+    &__year-view {
+      &__months {
+        &__month {
+          font-family: 'IBM Plex Mono', serif;
+          font-size: 12px;
+          color: #D0D0D0;
+          padding: 8px 4px;
+          border-radius: 0;
+        }
+      }
+    }
+
+    &__decade-view {
+      &__years {
+        &__year {
+          font-family: 'IBM Plex Mono', serif;
+          font-size: 12px;
+          color: #D0D0D0;
+          padding: 8px 4px;
+          border-radius: 0;
+        }
+      }
+    }
+
+    &__tile {
+      &:focus {
+        background-color: transparent;
+      }
+
+      &--now {
+        position: relative;
+        font-weight: 600;
+        font-size: 14px;
+        background: transparent;
+        color: #D0D0D0;
+        box-sizing: border-box;
+      }
+
+      &--hasActive {
+        background-color: #219653;
+      }
+
+      &--active {
+        background-color: #219653;
+
+        &:hover {
+          background-color: #8ACCAB;
+          color: #1C1C1C;
+          border-radius: 2px;
+        }
+
+        &:focus {
+          background-color: #22AE67;
+        }
+
+        &:before {
+          background-color: transparent !important;
+        }
+      }
+
+      &:hover {
+        background-color: #8ACCAB;
+        color: #1C1C1C;
+
+        &:before {
+          color: #1C1C1C;
+          border-color: #219653;
+          background-color: transparent;
+        }
+      }
+
+      &--hover {
+        background-color: #8ACCAB;
+        color: #1C1C1C;
+      }
+    }
+  }
+}
