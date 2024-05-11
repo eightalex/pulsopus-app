@@ -1,25 +1,24 @@
-import { lazy } from 'react';
 import { createBrowserRouter, Navigate, Outlet, RouteObject } from 'react-router-dom';
 
-import { Layout } from '@/components/Layout';
-import LazyLoader from '@/components/LazyLoader';
+import api from '@/api';
+import sessionManager from "@/api/SessionManager.ts";
+import { Layout, LayoutSideBar } from '@/components/Layout';
+import { CLIENT_URL } from "@/config";
+import { EUserRole } from "@/constants/EUser.ts";
 import {
-	ABOUT_ROUTE,
 	ADMINISTRATION_ROUTE,
 	APP_ADMINISTRATION_ROUTE,
 	APP_COMPANY_PULSE_ROUTE,
 	APP_EVENTS_ROUTE,
-	APP_ROUTE,
-	APP_ROUTE_DEFAULT,
 	COMPANY_PULSE_ROUTE,
 	DIAGRAM_ROUTE,
-	EVENTS_ROUTE,
-	METHODOLOGY_ROUTE,
+	EVENTS_ROUTE, LOGOUT_ROUTE,
 	PEOPLE_DYNAMIC_ROUTE,
 	ROOT_ID,
 	ROOT_ROUTE,
-	USER_CASES_ROUTE,
+	ROUTE_DEFAULT,
 } from '@/constants/routes';
+import { RequireRoleRoute } from "@/routes/RequireRoleRoute.tsx";
 
 import { ProtectedRoute } from './ProtectedRoute.tsx';
 
@@ -30,18 +29,16 @@ export const routes: RouteObject[] = [
 		element: (
 			<ProtectedRoute>
 				<Layout>
-					{/*	<AuthModule/>*/}
-					<Outlet/>
+					<LayoutSideBar>
+						<Outlet/>
+					</LayoutSideBar>
 				</Layout>
 			</ProtectedRoute>
 		),
 		children: [
 			{
 				index: true,
-				element: <Navigate
-					to={APP_ROUTE_DEFAULT}
-					replace
-				/>,
+				element: <Navigate to={ROUTE_DEFAULT} replace />,
 			},
 			{
 				path: PEOPLE_DYNAMIC_ROUTE,
@@ -59,24 +56,39 @@ export const routes: RouteObject[] = [
 			},
 			{
 				path: ADMINISTRATION_ROUTE,
-				element: <>{APP_ADMINISTRATION_ROUTE}</>,
+				element:
+					<RequireRoleRoute allowedRoles={[EUserRole.ADMIN]}>
+						{APP_ADMINISTRATION_ROUTE}
+					</RequireRoleRoute>
 			},
 			{
 				path: EVENTS_ROUTE,
-				element: <>{APP_EVENTS_ROUTE}</>,
+				element:
+					<RequireRoleRoute allowedRoles={[EUserRole.ADMIN]}>
+						{APP_EVENTS_ROUTE}
+					</RequireRoleRoute>
+			},
+			{
+				path: LOGOUT_ROUTE,
+				element: <span>{LOGOUT_ROUTE}</span>,
+				async loader() {
+					sessionManager.removeTokens();
+					window.location.replace(CLIENT_URL);
+					return api.authService.onLogout();
+				},
+				async action({ request }) {
+					console.log('action => request', request);
+				}
 			},
 			{
 				path: '*',
-				element: <Navigate
-					to={APP_ROUTE_DEFAULT}
-					replace
-				/>,
+				element: <Navigate to={ROOT_ROUTE} replace />,
 			}
 		],
 	},
 	{
 		path: '*',
-		element: <Navigate to={APP_ROUTE} replace />,
+		element: <Navigate to={ROOT_ROUTE} replace />,
 	}
 ];
 

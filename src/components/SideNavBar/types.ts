@@ -15,10 +15,10 @@ export interface ISideNavBarListItemProps {
 }
 
 export interface ISideNavBarListProps {
-	options: ISideNavBarLink[];
+	options: string[]
 }
 
-export interface ISideNavBarProps extends Partial<ISideNavBarListProps> {
+export interface ISideNavBarProps {
 	hideLogo?: boolean;
 	hideExit?: boolean;
 }

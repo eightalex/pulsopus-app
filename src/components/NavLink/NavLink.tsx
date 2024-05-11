@@ -1,8 +1,10 @@
-import Typography from '@/components/Typography';
-import { TIcon } from '@/icons';
 import Stack from '@mui/material/Stack';
 import { FC, memo, ReactNode, useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
+
+import Typography from '@/components/Typography';
+import { TIcon } from '@/icons';
+
 import { NavLinkStyled } from './styled';
 
 interface IDefaultNavLinkProps {
@@ -29,7 +31,7 @@ export type TTextVariant =
 	'overline';
 
 export interface INavLinkProps extends IDefaultNavLinkProps {
-	onClick: () => void;
+	onClick?: () => void;
 	isActive?: boolean;
 	disabled?: boolean;
 	children?: (params: INavLinkParams) => ReactNode;

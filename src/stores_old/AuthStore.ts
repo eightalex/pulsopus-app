@@ -1,8 +1,8 @@
-import { APP_ROUTE, APP_ROUTE_DEFAULT, EMPTY_USER_ROUTE } from '@/constants/routes';
-import { IAuthStore, IRootStore, IUserAuth } from '@/interfaces';
-import { BaseStore } from '@/stores/BaseStore';
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import { EAuthSignType, EAuthStage } from "@/constants/EAuth.ts";
+import { APP_ROUTE, EMPTY_USER_ROUTE,ROUTE_DEFAULT } from '@/constants/routes';
+import { IAuthStore, IRootStore, IUserAuth } from '@/interfaces';
+import { BaseStore } from '@/stores/BaseStore';
 
 const DEFAULT_AUTH_STAGE = EAuthStage.SIGN_STAGE;
 
@@ -146,7 +146,7 @@ export class AuthStore extends BaseStore implements IAuthStore {
 
 	public handleOpenAuth() {
 		if(this.isAuthorized) {
-			this.rootStore.routeStore.navigate(APP_ROUTE_DEFAULT);
+			this.rootStore.routeStore.navigate(ROUTE_DEFAULT);
 			return;
 		}
 		this.rootStore.modalsStore.userAuth.onOpen();

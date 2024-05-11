@@ -1,43 +1,39 @@
-import { observer } from 'mobx-react';
-import { FC, ReactNode, useLayoutEffect } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { FC, ReactNode, useCallback, useLayoutEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
+import sessionManager from "@/api/SessionManager.ts";
 import { Loader } from '@/components/Loader';
-import { EMPTY_USER_ROUTE } from '@/constants/routes';
+import { useDispatch, useSelector } from '@/hooks';
+import { onAuthorize, selectAuthIsAuthorized, selectAuthIsLoading } from "@/stores/auth";
 // import { useStores } from '@/hooks';
 
 interface IAppRouteProps {
 	children: ReactNode;
 }
 
-const RootRedirectComponent = observer(() => {
-	// const location = useLocation();
-	// const {
-	// 	rootStore: {
-	// 		modalsStore: { userAuth: { onOpen } },
-	// 	},
-	// } = useStores();
-	//
-	// useLayoutEffect(() => {
-	// 	onOpen();
-	// }, [onOpen]);
+export const ProtectedRoute: FC<IAppRouteProps> = ({ children }) => {
+	const [searchParams, setSearchParams] = useSearchParams();
+	const dispatch = useDispatch();
+	const isAuthorized = useSelector(selectAuthIsAuthorized);
+	const isLoadingAuth = useSelector(selectAuthIsLoading);
 
-	return <Navigate to={EMPTY_USER_ROUTE} state={{ from: location }} replace/>;
-});
+	const onAuth = useCallback(() => {
+		const token = decodeURIComponent(searchParams.get('token') || sessionManager.token || '');
+		sessionManager.setToken(token);
+		setSearchParams({});
+		if(isAuthorized) return;
+		dispatch(onAuthorize());
+	}, [searchParams, setSearchParams, isAuthorized, dispatch]);
 
-export const ProtectedRoute: FC<IAppRouteProps> = observer(({ children }) => {
-	return <span>Protected route</span>;
-	const {
-		rootStore: {
-			authStore: { isAuthorized, isLoadingAuth },
-		},
-	} = useStores();
+	useLayoutEffect(() => {
+		onAuth();
+	}, [onAuth]);
 
 	if (!isAuthorized && !isLoadingAuth) {
-		return <RootRedirectComponent/>;
+		return <div>No auth data</div>;
 	}
 
 	return isLoadingAuth ? <Loader fullSize/> :  children;
-});
+};
 
 export default ProtectedRoute;

@@ -1,15 +1,22 @@
-import { SideNavBarLink } from '@/components/SideNavBar/SideNavBarLink';
-import { sideNavOptions } from '@/constants/navBar';
-import { useStores, useWindowSize } from '@/hooks';
-import { ExitOutlinedIcon, LogoIcon } from '@/icons';
 import Stack from '@mui/material/Stack';
-import { FC, memo, useMemo } from 'react';
+import { FC, useMemo } from 'react';
+
+import { SideNavBarLink } from '@/components/SideNavBar/SideNavBarLink';
+import { LOGOUT_ROUTE } from "@/constants/routes.ts";
+import { getSidebarNavLinksByRoles } from "@/helpers/getSidebarNavLinksByRoles.ts";
+import { useSelector, useWindowSize } from '@/hooks';
+import { ExitOutlinedIcon, LogoIcon } from '@/icons';
+import { onLogout, selectAuthRoles } from "@/stores/auth";
+
 import { SideNavBarList } from './SideNavBarList';
 import { SideNavBarStyled } from './styled';
 import { ISideNavBarProps } from './types';
 
-const SideNavBar: FC<ISideNavBarProps> = ({ options = sideNavOptions, hideLogo, hideExit }) => {
-	const { rootStore: { authStore: { onLogout } } } = useStores();
+export const SideNavBar: FC<ISideNavBarProps> = ({
+	hideLogo = false,
+	hideExit = false,
+}) => {
+	const userRoles = useSelector(selectAuthRoles);
 	const { size: { width }, breakpointSizes } = useWindowSize();
 
 	const isMinimize = useMemo(
@@ -20,6 +27,8 @@ const SideNavBar: FC<ISideNavBarProps> = ({ options = sideNavOptions, hideLogo, 
 		width: isMinimize ? 74 : 134,
 		height: isMinimize ? 10 : 18,
 	}), [isMinimize]);
+
+	const options = getSidebarNavLinksByRoles(userRoles || []);
 
 	return (
 		<SideNavBarStyled isMinimize={isMinimize}>
@@ -42,17 +51,24 @@ const SideNavBar: FC<ISideNavBarProps> = ({ options = sideNavOptions, hideLogo, 
 						width: '100%',
 					}}
 				>
-					{Boolean(options?.length) && (
-						<SideNavBarList options={options}/>
-					)}
-
+					<Stack
+						sx={{
+							justifyContent: 'space-between',
+							alignItems: 'center',
+							flexGrow: 1,
+							width: '100%',
+						}}
+					>
+						{Boolean(options?.length) && (
+							<SideNavBarList options={options}/>
+						)}
+					</Stack>
 					{!hideExit && (
 						<Stack pb={30} pl={isMinimize ? 0 : 10} width='100%'>
 							<SideNavBarLink
-								to="exit"
+								to={LOGOUT_ROUTE}
 								label={'Exit'}
 								icon={ExitOutlinedIcon}
-								onClick={onLogout}
 								defaultActive
 							/>
 						</Stack>
@@ -63,5 +79,3 @@ const SideNavBar: FC<ISideNavBarProps> = ({ options = sideNavOptions, hideLogo, 
 		</SideNavBarStyled>
 	);
 };
-
-export default memo(SideNavBar);

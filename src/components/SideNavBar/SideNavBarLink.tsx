@@ -1,8 +1,9 @@
+import { FC, memo, useMemo } from 'react';
+
 import NavLink, { INavLinkProps } from '@/components/NavLink/NavLink';
 import { SideNavBarLinkStyled } from '@/components/SideNavBar/styled';
 import Typography from '@/components/Typography';
 import { useWindowSize } from '@/hooks';
-import { FC, memo, useMemo } from 'react';
 
 interface ISideNavBarLinkProps extends Omit<INavLinkProps, 'children' | 'isActive'> {
 	isMinimize?: boolean;

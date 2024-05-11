@@ -27,9 +27,13 @@ export const APP_ADMINISTRATION_ROUTE: string = `/${APP_ROUTE}/${ADMINISTRATION_
 export const EVENTS_ROUTE: string = 'events';
 export const APP_EVENTS_ROUTE: string = `/${APP_ROUTE}/${EVENTS_ROUTE}`;
 
-export const APP_ROUTE_DEFAULT: string = PEOPLE_DYNAMIC_ROUTE;
+export const LOGOUT_ROUTE: string = 'logout';
+
+export const ROUTE_DEFAULT: string = PEOPLE_DYNAMIC_ROUTE;
 
 export const EMPTY_USER_ROUTE: string = ROOT_ROUTE;
+
+
 
 const DEFAULT_ROUTE_TITLE = 'Pulsopus';
 export const DOCUMENTS_TITLES = {
