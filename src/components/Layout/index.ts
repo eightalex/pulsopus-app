@@ -1,2 +1,1 @@
-export { default, default as MainLayout } from './MainLayout';
-export { default as AppLayout } from './AppLayout';
+export { Layout as default, Layout } from './Layout.tsx';

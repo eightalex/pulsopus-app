@@ -1,40 +1,26 @@
-import {useStores} from '@/hooks';
-import {NotificationContainer} from '@/modules/Root/NotificationContainer';
+import { memo, StrictMode } from 'react';
+import { Provider } from "react-redux";
+import { RouterProvider } from 'react-router-dom';
+
+import { NotificationContainer } from '@/modules/Root/NotificationContainer';
+import { RootWrapper } from "@/modules/Root/RootWrapper.tsx";
+import { router } from "@/routes";
+import { store } from "@/stores";
 import Theme from '@/theme';
-import {observer} from 'mobx-react';
-import {FC, memo, ReactElement, useEffect} from 'react';
-import {unstable_HistoryRouter as HistoryRouter} from 'react-router-dom';
-import type {History} from "@remix-run/router";
 
-interface IRoot {
-    children: ReactElement;
-}
-
-const BASELINE = '/';
-
-const Root: FC<IRoot> = observer(({children}) => {
-    const {
-        rootStore: {
-            routeStore: {history},
-            authStore: {onAuthorize},
-        },
-    } = useStores();
-
-    useEffect(() => {
-        onAuthorize();
-    }, [onAuthorize]);
-
+const Root = () => {
     return (
-        <HistoryRouter
-            basename={BASELINE}
-            history={history as unknown as History}
-        >
+        <StrictMode>
+            <Provider store={store}>
             <Theme>
-                <NotificationContainer/>
-                {children}
+                <RootWrapper>
+                    <RouterProvider router={router} />
+                    <NotificationContainer/>
+                </RootWrapper>
             </Theme>
-        </HistoryRouter>
+            </Provider>
+        </StrictMode>
     );
-});
+};
 
 export default memo(Root);

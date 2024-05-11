@@ -1,9 +1,9 @@
+import axios, { AxiosInstance, CreateAxiosDefaults } from 'axios';
 import { AuthService, DepartmentsService, UsersService } from '@/api/services';
-import { API_URL } from '@/config';
+import { API_URL } from '@/config/config.ts';
 import { EventBus } from '@/helpers/EventBus';
 import { IAPIRequester, IAuthAuthorize } from '@/interfaces';
 import { RequestError } from '@/models';
-import axios, { AxiosInstance, CreateAxiosDefaults } from 'axios';
 
 export default class APIRequester implements IAPIRequester {
 	readonly requestErrorBus = new EventBus<RequestError>();
@@ -64,7 +64,7 @@ export default class APIRequester implements IAPIRequester {
 						await this.authService.clearTokens();
 						//TODO: how to get router instance ?
 						// router.push({path: "/login"})
-						
+
 						// @ts-expect-error: _error typeof unknown
 						return Promise.reject(_error.response);
 					}

@@ -1,8 +1,8 @@
 version: '3.8'
 
 services:
-  pulsopus:
-    container_name: pulsopus
+  pulsopus-app:
+    container_name: pulsopus-app
     build: .
     ports:
       - '80:80'

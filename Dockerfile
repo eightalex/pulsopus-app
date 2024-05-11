@@ -3,9 +3,6 @@ WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 ADD package.json package.json
 ADD . .
-#RUN yarn --network-timeout 100000 --network-concurrency 1
-#RUN yarn config delete proxy
-#RUN yarn config delete https-proxy
 RUN yarn install
 RUN yarn run build:dev
 

@@ -1,7 +1,7 @@
-export { useStores } from './useStores';
-export { useEventListener } from './useEventListener';
-export { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
-export { useWindowSize } from './useWindowSize';
 export { useDimensions } from './useDimensions';
-export { useOnClickOutside } from './useOnClickOutside';
+export { useEventListener } from './useEventListener';
 export { useHexbinWidgetData } from './useHexbinWidgetData';
+export { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
+export { useOnClickOutside } from './useOnClickOutside';
+export { useDispatch,useSelector } from './useStores';
+export { useWindowSize } from './useWindowSize';

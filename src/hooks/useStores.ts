@@ -1,4 +1,6 @@
-import { useContext } from 'react';
-import { storesContext } from '@/contexts/stores-context';
+import { useDispatch as useReduxDispatch, useSelector as useReduxSelector } from "react-redux";
+import { IRootState, TAppDispatch } from "@/interfaces/IRootStore.ts";
 
-export const useStores = () => useContext(storesContext);
+export const useSelector = useReduxSelector.withTypes<IRootState>();
+
+export const useDispatch = useReduxDispatch.withTypes<TAppDispatch>();

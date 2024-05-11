@@ -1,5 +1,7 @@
-import { SideNavBar, ISideNavBarProps } from '@/components/SideNavBar';
 import { FC, memo, ReactNode } from 'react';
+
+import { ISideNavBarProps,SideNavBar } from '@/components/SideNavBar';
+
 import { SidePanelContentStyled, SidePanelWrapperStyled } from './styled';
 
 interface ISidePanelProps extends ISideNavBarProps {
