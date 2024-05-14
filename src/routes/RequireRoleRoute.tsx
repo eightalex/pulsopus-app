@@ -15,7 +15,6 @@ export const RequireRoleRoute:FC<IProtectedAdminRouteProps> = (
     { children, allowedRoles = [], fallbackPath = ROOT_ROUTE }
 ) => {
     const userRoles = useSelector(selectAuthRoles);
-    console.log('userRoles', userRoles);
     const location = useLocation();
 
     const isExistRole = useMemo(

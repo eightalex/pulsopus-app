@@ -1,0 +1,1 @@
+export { EventsModule as default, EventsModule } from './EventsModule.tsx';

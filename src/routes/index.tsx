@@ -1,8 +1,10 @@
+import { lazy } from "react";
 import { createBrowserRouter, Navigate, Outlet, RouteObject } from 'react-router-dom';
 
 import api from '@/api';
 import sessionManager from "@/api/SessionManager.ts";
 import { Layout, LayoutSideBar } from '@/components/Layout';
+import { LazyLoader } from "@/components/LazyLoader";
 import { CLIENT_URL } from "@/config";
 import { EUserRole } from "@/constants/EUser.ts";
 import {
@@ -18,6 +20,19 @@ import {
 import { RequireRoleRoute } from "@/routes/RequireRoleRoute.tsx";
 
 import { ProtectedRoute } from './ProtectedRoute.tsx';
+
+const PersonDiagram = LazyLoader(
+	lazy(() => import(/* webpackChunkName: 'person diagram module' */ '../modules/PersonDiagram'))
+);
+
+const AdministrationModule = LazyLoader(
+	lazy(() => import(/* webpackChunkName: 'administration module' */ '../modules/AdministrationModule'))
+);
+
+
+const EventsModule = LazyLoader(
+	lazy(() => import(/* webpackChunkName: 'events module' */ '../modules/EventsModule'))
+);
 
 export const routes: RouteObject[] = [
 	{
@@ -47,22 +62,23 @@ export const routes: RouteObject[] = [
 				element: <>{COMPANY_PULSE_ROUTE}</>,
 			},
 			{
+				id: DIAGRAM_ROUTE,
 				path: DIAGRAM_ROUTE,
 				// element: <UserDiagram/>,
-				element: <>{DIAGRAM_ROUTE}</>,
+				element: <PersonDiagram/>
 			},
 			{
 				path: ADMINISTRATION_ROUTE,
 				element:
 					<RequireRoleRoute allowedRoles={[EUserRole.ADMIN]}>
-						{ADMINISTRATION_ROUTE}
+						<AdministrationModule/>
 					</RequireRoleRoute>
 			},
 			{
 				path: EVENTS_ROUTE,
 				element:
 					<RequireRoleRoute allowedRoles={[EUserRole.ADMIN]}>
-						{EVENTS_ROUTE}
+						<EventsModule/>
 					</RequireRoleRoute>
 			},
 			{
