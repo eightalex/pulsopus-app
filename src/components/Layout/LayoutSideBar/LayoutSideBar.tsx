@@ -26,6 +26,7 @@ export const LayoutSideBar: FC<ILayoutSideBarProps> = ({ children }) => {
             <ContainerStyled>
                 <Header/>
                 <Stack
+                    pt={8}
                     flexGrow={1}
                     height="100%"
                 >

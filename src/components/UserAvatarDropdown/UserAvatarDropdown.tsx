@@ -18,9 +18,10 @@ export interface IUserAvatarDropdownProps extends Pick<IUserAvatarProps, 'user'>
 const UserAvatarDropdown: FC<IUserAvatarDropdownProps> = ({ user, onProfileClick, children }) => {
 	const [targetElement, setTargetElement] = useState<null | HTMLElement>(null);
 
-	const name = useMemo(() => `${user.firstName} ${user.lastName}`, [user]);
-
-	const userEmail = useMemo(() => 'username' in user ? user.username : user.email, [user]);
+	const name = useMemo(() => {
+		const fullName = [user.firstName, user.lastName].join(' ');
+		return fullName.trim() ? fullName : user.username;
+	}, [user]);
 
 	const handleOpen = useCallback((event: MouseEvent<HTMLButtonElement>) => {
 		setTargetElement(event.currentTarget);
@@ -37,10 +38,7 @@ const UserAvatarDropdown: FC<IUserAvatarDropdownProps> = ({ user, onProfileClick
 
 	return (
 		<>
-			<UserAvatar
-				user={user}
-				onClick={handleOpen}
-			/>
+			<UserAvatar user={user} onClick={handleOpen} />
 			<Menu
 				anchorEl={targetElement}
 				open={Boolean(targetElement)}
@@ -64,9 +62,7 @@ const UserAvatarDropdown: FC<IUserAvatarDropdownProps> = ({ user, onProfileClick
 						<UserAvatar user={user}/>
 						<Stack spacing={0}>
 							<Typography variant="text">{name}</Typography>
-							{userEmail&& (
-								<Typography variant="caption1">{userEmail}</Typography>
-							)}
+							<Typography variant="caption1">{user.username}</Typography>
 						</Stack>
 					</Stack>
 					{children && (

@@ -1,1 +1,1 @@
-export { AdministrationModule,AdministrationModule as default } from './AdministrationModule';
+export { AdministrationModule, AdministrationModule as default } from './AdministrationModule';

@@ -17,7 +17,7 @@ export const ProtectedRoute: FC<IAppRouteProps> = ({ children }) => {
 	const isLoadingAuth = useSelector(selectAuthIsLoading);
 
 	const onAuth = useCallback(() => {
-		const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMiIsInVzZXJuYW1lIjoiYWRtaW5AcHVsc29wdXMuZGV2Iiwicm9sZXMiOlt7Im5hbWUiOiJBRE1JTiJ9XSwiaWF0IjoxNzE1Njk5NTgxLCJleHAiOjE3MTU3MDMxMjF9.5WnqcWm7CvRP0ffMfFtuhGUoQRaI-Vwx2zPFkcBhcBw';
+		const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMiIsInVzZXJuYW1lIjoiYWRtaW5AcHVsc29wdXMuZGV2Iiwicm9sZXMiOlt7Im5hbWUiOiJBRE1JTiJ9XSwiaWF0IjoxNzE1NzAzNjI2LCJleHAiOjE3MTU3MDcxNjZ9.E8TkcxOKudpOT7c2HMwnB8bLYz0nLc40dLHhACtu1_Q';
 		// const token = decodeURIComponent(searchParams.get('token') || sessionManager.token || '');
 		sessionManager.setToken(token.trim());
 		setSearchParams({});

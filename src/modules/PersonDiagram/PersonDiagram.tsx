@@ -1,6 +1,5 @@
 import { Stack } from '@mui/material';
 // import { observer } from 'mobx-react';
-import { memo, useEffect } from 'react';
 import { Location,useLocation } from 'react-router-dom';
 
 import { Loader } from '@/components/Loader';

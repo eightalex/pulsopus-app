@@ -27,12 +27,12 @@ const getPageLabel = (path = '') => {
 };
 
 const Header = () => {
-	const dispatch = useDispatch();
 	const location: Location<ILocationState> = useLocation();
 	const navigate = useNavigate();
-	const userId = location?.state?.id;
-
+	const dispatch = useDispatch();
 	const user = useSelector(selectAuthUser);
+
+	const userId = useMemo(() => location?.state?.id, [location]);
 
 	const pageLabel = useMemo(() => getPageLabel(location?.pathname), [location]);
 
@@ -78,27 +78,29 @@ const Header = () => {
 					/>
 				)}
 
-				<Typography variant="head1">
+				<Typography variant="head1" lineHeight={1}>
 					{pageLabel?.toUpperCase()}
 				</Typography>
 			</Stack>
 
 			<Stack >
-				<UserAvatarDropdown
-					user={user}
-					onProfileClick={handleProfile}
-				>
-					<Stack spacing={3}>
-						<ThemeSwitch/>
-						<NavLink
-							to="exit"
-							label={'Exit'}
-							icon={ExitOutlinedIcon}
-							onClick={handleLogout}
-							isActive
-						/>
-					</Stack>
-				</UserAvatarDropdown>
+				{user && (
+					<UserAvatarDropdown
+						user={user}
+						onProfileClick={handleProfile}
+					>
+						<Stack spacing={3}>
+							<ThemeSwitch/>
+							<NavLink
+								to="exit"
+								label={'Exit'}
+								icon={ExitOutlinedIcon}
+								onClick={handleLogout}
+								isActive
+							/>
+						</Stack>
+					</UserAvatarDropdown>
+				)}
 			</Stack>
 		</Stack>
 	);
