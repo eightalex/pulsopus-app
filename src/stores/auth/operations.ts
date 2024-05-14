@@ -28,7 +28,6 @@ export const onAuthorize = createAsyncThunk<IAuthReturnData, void>(
 export const onLogout = createAsyncThunk(
     'auth/logout',
     async (_, thunkApi) => {
-        alert('onLogout');
         try {
             await api.authService.onLogout();
         } catch (error) {
