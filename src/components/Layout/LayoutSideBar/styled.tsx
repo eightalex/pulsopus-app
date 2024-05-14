@@ -1,20 +1,15 @@
-import Stack, { StackProps } from '@mui/material/Stack';
+import Stack from '@mui/material/Stack';
 import { styled } from '@mui/system';
 
-export const SidePanelWrapperStyled = styled((props: StackProps) =>
-	<Stack
-		direction="row"
-		spacing={0}
-		{...props}
-	/>
-)({
-	background: 'transparent',
-	display: 'flex',
-	width: '100%',
-	height: '100%',
-});
-
-export const SidePanelContentStyled = styled(Stack)({
+export const ContainerStyled = styled(Stack)(({ theme: { spacing, breakpoints } }) => ({
 	display: 'flex',
 	flexGrow: 1,
-});
+	padding: spacing(8, 10),
+	overflow: 'auto',
+	[breakpoints.down('xlg')]: {
+		padding: spacing(8, 5, 8, 10),
+	},
+	[breakpoints.down('xlg')]: {
+		padding: spacing(8, 4, 8, 8),
+	},
+}));

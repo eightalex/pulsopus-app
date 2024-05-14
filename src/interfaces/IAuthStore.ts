@@ -1,4 +1,3 @@
-import { EUserRole } from "@/constants/EUser.ts";
 import { IUser } from "@/interfaces/IUser.ts";
 
 export interface IAuthTokensData {
@@ -13,5 +12,4 @@ export interface IAuthStore {
     user: IUser | null;
     isAuthorized: boolean;
     isLoading: boolean;
-    roles: EUserRole[];
 }

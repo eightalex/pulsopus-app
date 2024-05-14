@@ -22,8 +22,8 @@ export const SideNavBar: FC<ISideNavBarProps> = ({
 	const isMinimize = useMemo(() => width <= breakpointSizes.xl, [width, breakpointSizes]);
 
 	const logoSxParams = useMemo(() => ({
-		width: isMinimize ? 74 : 134,
-		height: isMinimize ? 10 : 18,
+		width: isMinimize ? 134 : 134,
+		height: isMinimize ? 15 : 18,
 	}), [isMinimize]);
 
 	const options = getSidebarNavLinksByRoles(userRoles || []);
@@ -78,7 +78,6 @@ export const SideNavBar: FC<ISideNavBarProps> = ({
 						</Stack>
 					)}
 				</Stack>
-
 			</Stack>
 		</SideNavBarStyled>
 	);

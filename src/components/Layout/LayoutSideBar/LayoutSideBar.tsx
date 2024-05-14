@@ -1,6 +1,8 @@
 import Stack from "@mui/material/Stack";
 import { FC, ReactNode } from 'react';
 
+import Header from "@/components/Header";
+import { ContainerStyled } from "@/components/Layout/LayoutSideBar/styled.tsx";
 import { SideNavBar } from "@/components/SideNavBar";
 
 interface ILayoutSideBarProps {
@@ -18,18 +20,18 @@ export const LayoutSideBar: FC<ILayoutSideBarProps> = ({ children }) => {
                 height: '100%',
                 flex: 1,
                 overflow: 'hidden',
-                flexDirection: 'column',
             }}
         >
             <SideNavBar/>
-            <Stack
-                sx={{
-                    display: 'flex',
-                    flexGrow: 1,
-                }}
-            >
-                {children}
-            </Stack>
+            <ContainerStyled>
+                <Header/>
+                <Stack
+                    flexGrow={1}
+                    height="100%"
+                >
+                    {children}
+                </Stack>
+            </ContainerStyled>
         </Stack>
     );
 };

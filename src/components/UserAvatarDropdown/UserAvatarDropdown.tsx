@@ -1,7 +1,8 @@
+import { Divider, Fade, Menu, Stack } from '@mui/material';
+import { Children, FC, memo, MouseEvent, ReactNode, useCallback, useMemo, useState } from 'react';
+
 import Typography from '@/components/Typography';
 import { IUserAvatarProps, UserAvatar } from '@/components/UserAvatar';
-import { Divider, Fade, Menu, Stack } from '@mui/material';
-import { MouseEvent, Children, FC, memo, ReactNode, useCallback, useMemo, useState } from 'react';
 
 interface ICallbackChildParams {
 	onClose: () => void;
@@ -10,14 +11,14 @@ interface ICallbackChildParams {
 type TCallbackChild = (params: ICallbackChildParams) => ReactNode;
 
 export interface IUserAvatarDropdownProps extends Pick<IUserAvatarProps, 'user'> {
-	onProfileClick: () => void;
+	onProfileClick?: () => void;
 	children?: ReactNode | TCallbackChild;
 }
 
 const UserAvatarDropdown: FC<IUserAvatarDropdownProps> = ({ user, onProfileClick, children }) => {
 	const [targetElement, setTargetElement] = useState<null | HTMLElement>(null);
 
-	const name = useMemo(() => `${user.firstName} ${user.lastName}`, [user])
+	const name = useMemo(() => `${user.firstName} ${user.lastName}`, [user]);
 
 	const userEmail = useMemo(() => 'username' in user ? user.username : user.email, [user]);
 

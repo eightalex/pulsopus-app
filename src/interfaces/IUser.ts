@@ -4,5 +4,5 @@ export interface IUser {
     id: string;
     avatar: string;
     username: string;
-    role: EUserRole[];
+    roles: EUserRole[];
 }

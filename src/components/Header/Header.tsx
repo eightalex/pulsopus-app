@@ -1,65 +1,107 @@
-import {NavLink} from '@/components/NavLink';
-import {ABOUT_ROUTE, METHODOLOGY_ROUTE, ROOT_ROUTE, USER_CASES_ROUTE} from '@/constants/routes';
-import {LogoIcon} from '@/icons';
 import Stack from '@mui/material/Stack';
-import {observer} from 'mobx-react';
-import {FC} from 'react';
-import {Link as ReactRouterLink} from 'react-router-dom';
-import {Button} from "@mui/material";
-import {useStores} from "@/hooks";
+import { useCallback, useMemo } from "react";
+import { Location, useLocation, useNavigate } from 'react-router-dom';
 
-interface ILinkProps {
-	to: string;
-	label: string;
+import ButtonIcon from '@/components/ButtonIcon';
+import { NavLink } from "@/components/NavLink";
+import Typography from '@/components/Typography';
+import UserAvatarDropdown from "@/components/UserAvatarDropdown/UserAvatarDropdown.tsx";
+import { NAV_LABELS_BY_PATH } from "@/constants/navBar.ts";
+import { PROFILE_ROUTE } from "@/constants/routes.ts";
+import { useDispatch, useSelector } from "@/hooks";
+import { ArrowLeftIcon, ExitOutlinedIcon } from '@/icons';
+import { ThemeSwitch } from "@/modules/ThemeSwitch";
+import { onLogout, selectAuthUser } from "@/stores/auth";
+
+interface ILocationState {
+	id: string;
 }
 
-const Link: FC<ILinkProps> = ({ to, label }) => <NavLink
-	to={to}
-	label={label}
-	textVariant="head1"
-	textSize={16}
-/>;
+const getPageLabel = (path = '') => {
+	return Object
+		.entries(NAV_LABELS_BY_PATH)
+		.reduce((label, [k, v]) => {
+			if(!path.includes(k)) return label;
+			return v;
+		}, '');
+};
 
-const Header = observer(() => {
-	const { rootStore: { authStore: { isAuthorized, handleOpenAuth } } } = useStores();
+const Header = () => {
+	const dispatch = useDispatch();
+	const location: Location<ILocationState> = useLocation();
+	const navigate = useNavigate();
+	const userId = location?.state?.id;
+
+	const user = useSelector(selectAuthUser);
+
+	const pageLabel = useMemo(() => getPageLabel(location?.pathname), [location]);
+
+	const handleGoBack = useCallback(() => {
+		alert('goBack');
+	}, []);
+
+	const handleProfile = useCallback(() => {
+		navigate(PROFILE_ROUTE);
+	}, [navigate]);
+
+	const handleLogout = useCallback(() => {
+		dispatch(onLogout());
+	}, [dispatch]);
 
 	return (
 		<Stack
 			direction="row"
-			alignItems="center"
 			justifyContent="space-between"
-			sx={{padding: 9}}
+			alignItems='flex-end'
+			spacing={2}
+			component={'header'}
 		>
-			<ReactRouterLink to={ROOT_ROUTE}>
-				<LogoIcon sx={{width: 202, height: 28}}/>
-			</ReactRouterLink>
-			<Stack direction="row" spacing={24} alignItems="center">
-				<Stack direction="row" spacing={12} display='none'>
-					<Link
-						to={ABOUT_ROUTE}
-						label="About as"
+			<Stack
+				spacing={2}
+				direction="row"
+				alignItems='flex-end'
+			>
+				{Boolean(userId) && (
+					<ButtonIcon
+						onClick={handleGoBack}
+						title={'Back'}
+						tooltipProps={{
+							title: 'Back',
+							placement: 'bottom',
+						}}
+						icon={<ArrowLeftIcon/>}
+						sx={{
+							border: 'none',
+							outline: 'none',
+							backgroundColor: 'transparent',
+						}}
 					/>
-					<Link
-						to={METHODOLOGY_ROUTE}
-						label="Methodology"
-					/>
-					<Link
-						to={USER_CASES_ROUTE}
-						label="User cases"
-					/>
-				</Stack>
-				<Button
-					onClick={handleOpenAuth}
-					variant="text"
-					sx={{
-						textTransform: 'uppercase',
-					}}
+				)}
+
+				<Typography variant="head1">
+					{pageLabel?.toUpperCase()}
+				</Typography>
+			</Stack>
+
+			<Stack >
+				<UserAvatarDropdown
+					user={user}
+					onProfileClick={handleProfile}
 				>
-					{isAuthorized ? 'Get started' : 'Sign in'}
-				</Button>
+					<Stack spacing={3}>
+						<ThemeSwitch/>
+						<NavLink
+							to="exit"
+							label={'Exit'}
+							icon={ExitOutlinedIcon}
+							onClick={handleLogout}
+							isActive
+						/>
+					</Stack>
+				</UserAvatarDropdown>
 			</Stack>
 		</Stack>
 	);
-});
+};
 
 export default Header;

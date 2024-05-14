@@ -76,7 +76,7 @@ const NavLink: FC<INavLinkProps> = (props) => {
 				<Stack
 					spacing={3}
 					direction="row"
-					onClick={() => restProps.onClick?.()}
+					onClick={() => props.onClick?.()}
 				>
 					{Boolean(icon) && <Icon color="inherit"/>}
 					<Typography

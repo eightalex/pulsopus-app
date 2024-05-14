@@ -7,13 +7,10 @@ import { CLIENT_URL } from "@/config";
 import { EUserRole } from "@/constants/EUser.ts";
 import {
 	ADMINISTRATION_ROUTE,
-	APP_ADMINISTRATION_ROUTE,
-	APP_COMPANY_PULSE_ROUTE,
-	APP_EVENTS_ROUTE,
 	COMPANY_PULSE_ROUTE,
 	DIAGRAM_ROUTE,
 	EVENTS_ROUTE, LOGOUT_ROUTE,
-	PEOPLE_DYNAMIC_ROUTE,
+	PEOPLE_DYNAMIC_ROUTE, PROFILE_ROUTE,
 	ROOT_ID,
 	ROOT_ROUTE,
 	ROUTE_DEFAULT,
@@ -47,7 +44,7 @@ export const routes: RouteObject[] = [
 			},
 			{
 				path: COMPANY_PULSE_ROUTE,
-				element: <>{APP_COMPANY_PULSE_ROUTE}</>,
+				element: <>{COMPANY_PULSE_ROUTE}</>,
 			},
 			{
 				path: DIAGRAM_ROUTE,
@@ -58,14 +55,14 @@ export const routes: RouteObject[] = [
 				path: ADMINISTRATION_ROUTE,
 				element:
 					<RequireRoleRoute allowedRoles={[EUserRole.ADMIN]}>
-						{APP_ADMINISTRATION_ROUTE}
+						{ADMINISTRATION_ROUTE}
 					</RequireRoleRoute>
 			},
 			{
 				path: EVENTS_ROUTE,
 				element:
 					<RequireRoleRoute allowedRoles={[EUserRole.ADMIN]}>
-						{APP_EVENTS_ROUTE}
+						{EVENTS_ROUTE}
 					</RequireRoleRoute>
 			},
 			{
@@ -78,6 +75,10 @@ export const routes: RouteObject[] = [
 					sessionManager.removeTokens();
 					window.location.replace(CLIENT_URL);
 				}
+			},
+			{
+				path: PROFILE_ROUTE,
+				element: <>{PROFILE_ROUTE}</>,
 			},
 			{
 				path: '*',
