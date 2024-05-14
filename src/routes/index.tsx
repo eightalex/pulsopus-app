@@ -72,12 +72,11 @@ export const routes: RouteObject[] = [
 				path: LOGOUT_ROUTE,
 				element: <span>{LOGOUT_ROUTE}</span>,
 				async loader() {
-					sessionManager.removeTokens();
-					window.location.replace(CLIENT_URL);
 					return api.authService.onLogout();
 				},
-				async action({ request }) {
-					console.log('action => request', request);
+				async action() {
+					sessionManager.removeTokens();
+					window.location.replace(CLIENT_URL);
 				}
 			},
 			{

@@ -30,12 +30,13 @@ export const onLogout = createAsyncThunk(
     async (_, thunkApi) => {
         alert('onLogout');
         try {
-            sessionManager.removeTokens();
-            window.location.replace(CLIENT_URL);
             await api.authService.onLogout();
         } catch (error) {
             console.log(error);
             return thunkApi.rejectWithValue('message');
+        } finally {
+            sessionManager.removeTokens();
+            window.location.replace(CLIENT_URL);
         }
     }
 );

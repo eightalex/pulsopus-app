@@ -1,15 +1,25 @@
-import { NavLink } from '@/components/NavLink';
-import UserAvatarDropdown from '@/components/UserAvatarDropdown';
-import { useStores } from '@/hooks';
-import { ExitOutlinedIcon } from '@/icons';
-import { ThemeSwitch } from '@/modules/ThemeSwitch';
 import Stack from '@mui/material/Stack';
 import { memo, useCallback } from 'react';
 
+import { NavLink } from '@/components/NavLink';
+import UserAvatarDropdown from '@/components/UserAvatarDropdown';
+import { useDispatch, useSelector } from '@/hooks';
+import { ExitOutlinedIcon } from '@/icons';
+import { ThemeSwitch } from '@/modules/ThemeSwitch';
+import { onLogout, selectAuthUser } from "@/stores/auth";
+
 export const AppModuleAvatar = memo(() => {
-	const { rootStore: { authStore: { onLogout, user } } } = useStores();
+	const dispatch = useDispatch();
+	const user = useSelector(selectAuthUser);
+
 	const handleProfile = useCallback(() => {
+		alert('handleProfile');
 	}, []);
+
+	const handleLogout = useCallback(() => {
+		alert('handleLogout');
+		dispatch(onLogout());
+	}, [dispatch]);
 
 	return (
 		<Stack spacing={1}>
@@ -23,7 +33,7 @@ export const AppModuleAvatar = memo(() => {
 						to="exit"
 						label={'Exit'}
 						icon={ExitOutlinedIcon}
-						onClick={onLogout}
+						onClick={handleLogout}
 						isActive
 					/>
 				</Stack>

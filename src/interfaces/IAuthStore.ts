@@ -6,7 +6,7 @@ export interface IAuthTokensData {
     refreshToken: string;
 }
 export interface IAuthReturnData extends IAuthTokensData {
-    userId?: string;
+    user: IUser;
 }
 
 export interface IAuthStore {

@@ -1,5 +1,5 @@
 import Stack from '@mui/material/Stack';
-import { FC, memo, ReactNode, useCallback, useMemo } from 'react';
+import { FC, memo, ReactNode, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import Typography from '@/components/Typography';
@@ -39,7 +39,7 @@ export interface INavLinkProps extends IDefaultNavLinkProps {
 	textSize?: string | number;
 }
 
-const variantSizes = {
+export const variantSizes = {
 	head1: 18,
 	head2: 18,
 	title: 18,
@@ -54,30 +54,31 @@ const variantSizes = {
 };
 
 const NavLink: FC<INavLinkProps> = (props) => {
-	const { to, onClick, isActive, icon: Icon, icon, label, children, textVariant = 'body1', textSize } = props;
+	const {
+		to,
+		isActive,
+		icon: Icon,
+		icon,
+		label,
+		children,
+		textVariant = 'body1',
+		textSize
+	} = props;
 	const location = useLocation();
 	const active = useMemo(() => isActive || location.pathname.includes(to), [to, location, isActive]);
-
-	const handleClick = useCallback((e) => {
-		e && e.preventDefault();
-		e && e.stopPropagation();
-		onClick?.();
-	}, [onClick]);
 
 	return (
 		<NavLinkStyled
 			to={to}
-			onClick={Boolean(onClick) && handleClick}
 			isActive={active}
 		>
 			{children ? children({ isActive: active, to, label, icon: props.icon }) : (
 				<Stack
 					spacing={3}
 					direction="row"
+					onClick={() => restProps.onClick?.()}
 				>
-					{Boolean(icon) && (
-						<Icon color="inherit"/>
-					)}
+					{Boolean(icon) && <Icon color="inherit"/>}
 					<Typography
 						variant={textVariant}
 						fontSize={textSize || variantSizes[textVariant]}

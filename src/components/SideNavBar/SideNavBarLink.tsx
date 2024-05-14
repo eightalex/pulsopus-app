@@ -8,6 +8,7 @@ import { useWindowSize } from '@/hooks';
 interface ISideNavBarLinkProps extends Omit<INavLinkProps, 'children' | 'isActive'> {
 	isMinimize?: boolean;
 	defaultActive?: boolean;
+	onClick?: () => void;
 }
 
 export const SideNavBarLink: FC<ISideNavBarLinkProps> = memo((props) => {
@@ -31,6 +32,7 @@ export const SideNavBarLink: FC<ISideNavBarLinkProps> = memo((props) => {
 					direction="row"
 					isActive={isActive}
 					isMinimize={isMinimize}
+					onClick={() => restProps.onClick?.()}
 				>
 					{Boolean(Icon) && (
 						<Icon color="inherit" fontSize={iconFontSize}/>

@@ -5,7 +5,6 @@ import sessionManager from "@/api/SessionManager.ts";
 import { Loader } from '@/components/Loader';
 import { useDispatch, useSelector } from '@/hooks';
 import { onAuthorize, selectAuthIsAuthorized, selectAuthIsLoading } from "@/stores/auth";
-// import { useStores } from '@/hooks';
 
 interface IAppRouteProps {
 	children: ReactNode;
@@ -19,7 +18,7 @@ export const ProtectedRoute: FC<IAppRouteProps> = ({ children }) => {
 
 	const onAuth = useCallback(() => {
 		const token = decodeURIComponent(searchParams.get('token') || sessionManager.token || '');
-		sessionManager.setToken(token);
+		sessionManager.setToken(token.trim());
 		setSearchParams({});
 		if(isAuthorized) return;
 		dispatch(onAuthorize());
