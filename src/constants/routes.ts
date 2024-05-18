@@ -29,8 +29,6 @@ export const ROUTE_DEFAULT: string = PEOPLE_DYNAMIC_ROUTE;
 
 export const EMPTY_USER_ROUTE: string = ROOT_ROUTE;
 
-
-
 const DEFAULT_ROUTE_TITLE = 'Pulsopus';
 export const DOCUMENTS_TITLES = {
 	[ROOT_ROUTE]: DEFAULT_ROUTE_TITLE,
@@ -41,3 +39,6 @@ export const DOCUMENTS_TITLES = {
 	[ADMINISTRATION_ROUTE]: `${DEFAULT_ROUTE_TITLE} | ${ADMINISTRATION_ROUTE}`,
 	[EVENTS_ROUTE]: `${DEFAULT_ROUTE_TITLE} | ${EVENTS_ROUTE}`,
 };
+
+export const QUERY_TOKEN = 'token';
+export const QUERY_REDIRECT = 'redirect';

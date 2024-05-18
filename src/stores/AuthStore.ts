@@ -68,7 +68,7 @@ export class AuthStore extends BaseStore implements IAuthStore {
 			console.error('[onAuthorize]: ', err);
 			this.setError(key);
 			sessionManager.removeTokens();
-			api.authService.onRedirectClient();
+			await api.authService.onRedirectClient();
 		}
 	}
 
