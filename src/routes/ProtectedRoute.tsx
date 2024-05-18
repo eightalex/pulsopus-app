@@ -10,8 +10,6 @@ interface IAppRouteProps {
 	children: ReactNode;
 }
 
-const outsideToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmMmYwNDZkMy1mZGU0LTRhMWUtYWZlNi0xZmY5ZGVkNzJkM2MiLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZXMiOlt7ImlkIjoiNDdkYzcxNjktNDE3OS00MzIyLWIzZWMtNzc5ZmRmYmM0ODJiIiwibmFtZSI6IkFETUlOIn1dLCJpYXQiOjE3MTU4NTE0NjgsImV4cCI6MTcxNTg1NTAwOH0.gm6znM0sj7PMwQaw29zuors7jtoU3p0kp-mmDzLIP80';
-
 export const ProtectedRoute: FC<IAppRouteProps> = observer(({ children }) => {
 	const [searchParams, setSearchParams] = useSearchParams();
 
