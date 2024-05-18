@@ -6,11 +6,6 @@ ADD . .
 RUN yarn install
 RUN yarn run build:dev
 
-ARG REACT_APP_BASE_URL
-
-ENV REACT_APP_BASE_URL $REACT_APP_BASE_URL
-
-
 # production environment
 FROM nginx:stable-alpine
 WORKDIR /usr/share/nginx/html
