@@ -1,3 +1,8 @@
+import Box from '@mui/material/Box';
+import * as d3 from 'd3';
+import { isEqual, uniqWith } from 'lodash';
+import { FC, Fragment,MouseEvent, MutableRefObject, useCallback, useMemo, useRef, useState } from 'react';
+
 import { AxisBottom, AxisLeft, IChartBaseProps, IChartDataPoint, IInteractionData } from '@/components/Chart';
 import { ChartCursor } from '@/components/Chart/Base/ChartCursor';
 import { ChartSelectArea } from '@/components/Chart/Base/ChartSelectArea';
@@ -11,10 +16,6 @@ import {
 	MARGIN_TOP
 } from '@/constants/chart';
 import { useDimensions } from '@/hooks';
-import Box from '@mui/material/Box';
-import * as d3 from 'd3';
-import { isEqual, uniqWith } from 'lodash';
-import { FC, MouseEvent, MutableRefObject, useCallback, useMemo, useRef, useState, Fragment } from 'react';
 
 const boundsTransform = `translate(${[MARGIN_LEFT, MARGIN_TOP].join(',')})`;
 
@@ -56,7 +57,8 @@ export const ChartBase: FC<IChartBaseProps> = (props) => {
 	// Y axis
 	const [yMin, yMax] = d3.extent(data, (d) => d.y);
 	const yScale = useMemo(() => {
-		const dMax = Math.min(Math.floor((yMax || 100) * 1.2), 100);
+		// const dMax = Math.min(Math.floor((yMax || 100) * 1.2), 100);
+		const dMax = Math.floor((yMax || 100) * 1.1);
 		return d3
 			.scaleLinear()
 			.domain([0, dMax])
@@ -73,7 +75,7 @@ export const ChartBase: FC<IChartBaseProps> = (props) => {
 			.range([0, boundsWidth]);
 	}, [xMin, xMax, boundsWidth]);
 
-	const disableSelect = useMemo(() => xValues.length <= CHART_SELECT_MIN_LENGTH || initDisableSelect, [xValues, initDisableSelect])
+	const disableSelect = useMemo(() => xValues.length <= CHART_SELECT_MIN_LENGTH || initDisableSelect, [xValues, initDisableSelect]);
 
 	const getClosestPoint = (cursorPixelPosition: number) => {
 		const x = xScale.invert(cursorPixelPosition);
@@ -139,12 +141,12 @@ export const ChartBase: FC<IChartBaseProps> = (props) => {
 			<svg
 				viewBox={`0 0 ${width} ${height}`}
 				ref={svgRef}
-				style={{overflow: 'unset', touchAction: 'none', pointerEvents: 'none', userSelect: 'none'}}
+				style={{ overflow: 'unset', touchAction: 'none', pointerEvents: 'none', userSelect: 'none' }}
 			>
 				<g
 					width={width}
 					height={height}
-					style={{touchAction: 'none', pointerEvents: 'none', userSelect: 'none'}}
+					style={{ touchAction: 'none', pointerEvents: 'none', userSelect: 'none' }}
 				>
 					<g>
 						{!hideAxisY && (
@@ -205,7 +207,7 @@ export const ChartBase: FC<IChartBaseProps> = (props) => {
 					{!disableTooltip &&
 						Boolean(data.length) &&
 						Boolean(tooltipCursor.length) &&
-						tooltipCursor.map(({xPos, yPos}, index) => (
+						tooltipCursor.map(({ xPos, yPos }, index) => (
 							<Fragment key={`${xPos}-${yPos}-${index}`}>
 								<ChartCursor
 									x={xPos}

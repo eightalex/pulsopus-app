@@ -1,12 +1,13 @@
-import {IChartChildrenParams, IChartDataPoint, IInteractionData, ILineChartProps} from '@/components/Chart'
-import {ChartBase} from '@/components/Chart/Base/ChartBase'
-import {LineChartCircle} from '@/components/Chart/LineChart/LineChartCircle'
-import {LineChartItem} from '@/components/Chart/LineChart/LineChartItem'
-import {CHART_COLORS, MARGIN_LEFT, MARGIN_TOP} from '@/constants/chart'
-import {isMatrix} from '@/helpers/isMatrix'
-import Box from '@mui/material/Box'
-import * as d3 from 'd3'
-import {FC, memo, useMemo, useState} from 'react'
+import Box from '@mui/material/Box';
+import * as d3 from 'd3';
+import { FC, memo, useMemo, useState } from 'react';
+
+import { IChartChildrenParams, IChartDataPoint, IInteractionData, ILineChartProps } from '@/components/Chart';
+import { ChartBase } from '@/components/Chart/Base/ChartBase';
+import { LineChartCircle } from '@/components/Chart/LineChart/LineChartCircle';
+import { LineChartItem } from '@/components/Chart/LineChart/LineChartItem';
+import { CHART_COLORS, MARGIN_LEFT, MARGIN_TOP } from '@/constants/chart';
+import { isMatrix } from '@/helpers/isMatrix';
 
 interface ILineChartInnerProps extends IChartChildrenParams {
     data: ILineChartProps['data'];
@@ -14,27 +15,27 @@ interface ILineChartInnerProps extends IChartChildrenParams {
 }
 
 const LineChartInner: FC<ILineChartInnerProps> = memo((props) => {
-    const {xScale, yScale, data: initData = [], points, height, boundsWidth, boundsHeight} = props
-    const [hovered, setHovered] = useState<IInteractionData<unknown> | null>(null)
+    const { xScale, yScale, data: initData = [], points, height, boundsWidth, boundsHeight } = props;
+    const [hovered, setHovered] = useState<IInteractionData<unknown> | null>(null);
 
-    const data = useMemo(() => (isMatrix(initData) ? initData : [initData]) as IChartDataPoint[][], [initData])
+    const data = useMemo(() => (isMatrix(initData) ? initData : [initData]) as IChartDataPoint[][], [initData]);
 
     const lineBuilder = d3
         .line<IChartDataPoint>()
         .x((d) => xScale(d.x))
-        .y((d) => yScale(d.y))
+        .y((d) => yScale(d.y));
 
     const lines = useMemo(() => data.map((d, i) => {
-        const path = lineBuilder(d)
-        if (!path) return
+        const path = lineBuilder(d);
+        if (!path) return;
         return (
             <LineChartItem
                 key={i}
                 path={path}
                 color={CHART_COLORS[i]}
             />
-        )
-    }), [data, lineBuilder])
+        );
+    }), [data, lineBuilder]);
 
     const circles = useMemo(() => {
         return data
@@ -54,9 +55,9 @@ const LineChartInner: FC<ILineChartInnerProps> = memo((props) => {
                         }
                         onMouseLeave={() => setHovered(null)}
                     />
-                ))
-            }).flat()
-    }, [data, xScale, yScale])
+                ));
+            }).flat();
+    }, [data, xScale, yScale]);
 
     return (
         <g>
@@ -95,10 +96,10 @@ const LineChartInner: FC<ILineChartInnerProps> = memo((props) => {
             {lines}
             {circles}
         </g>
-    )
-})
+    );
+});
 
-const LineChart: FC<ILineChartProps> = ({data, width, height, ...restProps}) => {
+const LineChart: FC<ILineChartProps> = ({ data, width, height, ...restProps }) => {
     return (
         <ChartBase
             width={width}
@@ -114,7 +115,7 @@ const LineChart: FC<ILineChartProps> = ({data, width, height, ...restProps}) => 
                 />
             )}
         </ChartBase>
-    )
-}
+    );
+};
 
-export default memo(LineChart)
+export default memo(LineChart);

@@ -10,7 +10,7 @@ export interface IAutocompleteOption {
 
 export interface IAutocompleteProps {
 	options: IAutocompleteOption[];
-	onChange: (option: IAutocompleteOption) => void;
+	onChange: (option?: IAutocompleteOption) => void;
 	placeholder?: string;
 	renderGroupHeader?: (params: AutocompleteRenderGroupParams) => JSX.Element;
 }

@@ -1,15 +1,23 @@
-import { IUser } from "@/interfaces/IUser.ts";
+import { IUser } from '@/interfaces/IUser';
 
-export interface IAuthTokensData {
-    accessToken: string;
-    refreshToken: string;
-}
-export interface IAuthReturnData extends IAuthTokensData {
-    user: IUser;
+export interface IAuthAuthorize {
+	user: IUser;
+	accessToken: string;
+	refreshToken: string;
 }
 
 export interface IAuthStore {
-    user: IUser | null;
-    isAuthorized: boolean;
-    isLoading: boolean;
+	user?: IUser;
+	roles: IUser['roles']
+
+	isLoadingLogin: boolean;
+	isLoadingLogout: boolean;
+	isLoadingAuth: boolean;
+
+	isLoginError: boolean;
+
+	isAuthorized: boolean;
+
+	onAuthorize: () => Promise<void>;
+	onLogout: () => Promise<void>;
 }

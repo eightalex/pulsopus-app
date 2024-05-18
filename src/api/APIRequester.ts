@@ -1,16 +1,22 @@
 import axios, { AxiosInstance, CreateAxiosDefaults } from 'axios';
 import { AuthService } from '@/api/services/auth.service.ts';
+import { DepartmentsService } from "@/api/services/departments.service.ts";
+import { UsersService } from "@/api/services/users.service.ts";
 import { API_URL, IS_DEV } from '@/config';
 import sessionManager from './SessionManager.ts';
 
 export class APIRequester {
 	protected restInstance: AxiosInstance;
 	public readonly authService: AuthService;
+	public readonly usersService: UsersService;
+	public readonly departmentsService: DepartmentsService;
 
 	constructor() {
 		this.restInstance = this.createAxiosInstance();
 
 		this.authService = new AuthService(this.restInstance);
+		this.usersService = new UsersService(this.restInstance);
+		this.departmentsService = new DepartmentsService(this.restInstance);
 	}
 
 	private createAxiosInstance() {

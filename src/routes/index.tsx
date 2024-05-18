@@ -9,7 +9,6 @@ import { CLIENT_URL } from "@/config";
 import { EUserRole } from "@/constants/EUser.ts";
 import {
 	ADMINISTRATION_ROUTE,
-	COMPANY_PULSE_ROUTE,
 	DIAGRAM_ROUTE,
 	EVENTS_ROUTE, LOGOUT_ROUTE,
 	PEOPLE_DYNAMIC_ROUTE, PROFILE_ROUTE,
@@ -17,21 +16,25 @@ import {
 	ROOT_ROUTE,
 	ROUTE_DEFAULT,
 } from '@/constants/routes';
+import { AppInitRequests } from "@/modules/Root/AppInitRequests.tsx";
 import { RequireRoleRoute } from "@/routes/RequireRoleRoute.tsx";
 
 import { ProtectedRoute } from './ProtectedRoute.tsx';
-
-const PersonDiagram = LazyLoader(
-	lazy(() => import(/* webpackChunkName: 'person diagram module' */ '../modules/PersonDiagram'))
-);
 
 const AdministrationModule = LazyLoader(
 	lazy(() => import(/* webpackChunkName: 'administration module' */ '../modules/AdministrationModule'))
 );
 
-
 const EventsModule = LazyLoader(
 	lazy(() => import(/* webpackChunkName: 'events module' */ '../modules/EventsModule'))
+);
+
+const PeopleDynamic = LazyLoader(
+	lazy(() => import(/* webpackChunkName: 'people dynamic module' */ '../modules/PeopleDynamic'))
+);
+
+const UserDiagram = LazyLoader(
+	lazy(() => import(/* webpackChunkName: 'user diagram module' */ '../modules/UserDiagram'))
 );
 
 export const routes: RouteObject[] = [
@@ -42,7 +45,9 @@ export const routes: RouteObject[] = [
 			<ProtectedRoute>
 				<Layout>
 					<LayoutSideBar>
-						<Outlet/>
+						<AppInitRequests>
+							<Outlet/>
+						</AppInitRequests>
 					</LayoutSideBar>
 				</Layout>
 			</ProtectedRoute>
@@ -55,17 +60,12 @@ export const routes: RouteObject[] = [
 			{
 				path: PEOPLE_DYNAMIC_ROUTE,
 				// element: <PeopleDynamic/>,
-				element: <>{PEOPLE_DYNAMIC_ROUTE}</>,
+				element: <span>{PEOPLE_DYNAMIC_ROUTE}</span>,
 			},
 			{
-				path: COMPANY_PULSE_ROUTE,
-				element: <>{COMPANY_PULSE_ROUTE}</>,
-			},
-			{
-				id: DIAGRAM_ROUTE,
 				path: DIAGRAM_ROUTE,
 				// element: <UserDiagram/>,
-				element: <PersonDiagram/>
+				element: <span>{DIAGRAM_ROUTE}</span>,
 			},
 			{
 				path: ADMINISTRATION_ROUTE,

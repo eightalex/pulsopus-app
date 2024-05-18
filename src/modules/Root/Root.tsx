@@ -1,26 +1,48 @@
-import { memo, StrictMode } from 'react';
-import { Provider } from "react-redux";
-import { RouterProvider } from 'react-router-dom';
+import type { History } from "@remix-run/router";
+import { observer } from "mobx-react";
+import { memo } from 'react';
+import { unstable_HistoryRouter as HistoryRouter } from 'react-router-dom';
 
+import { useStores } from "@/hooks";
 import { NotificationContainer } from '@/modules/Root/NotificationContainer';
+import { RootRoutes } from "@/modules/Root/RootRoutes.tsx";
 import { RootWrapper } from "@/modules/Root/RootWrapper.tsx";
-import { router } from "@/routes";
-import { store } from "@/stores";
 import Theme from '@/theme';
 
-const Root = () => {
+const BASELINE = '/';
+
+const Root = observer(() => {
+    const {
+        rootStore: {
+            routeStore: { history },
+        },
+    } = useStores();
+
+    // return (
+    //     <Provider store={store}>
+    //         <Theme>
+    //             <RootWrapper>
+    //                 <RouterProvider router={router}/>
+    //                 <NotificationContainer/>
+    //             </RootWrapper>
+    //         </Theme>
+    //     </Provider>
+    // );
+
     return (
-        <StrictMode>
-            <Provider store={store}>
+        <HistoryRouter
+            basename={BASELINE}
+            history={history as unknown as History}
+        >
             <Theme>
                 <RootWrapper>
-                    <RouterProvider router={router} />
                     <NotificationContainer/>
+                    <RootRoutes/>
                 </RootWrapper>
             </Theme>
-            </Provider>
-        </StrictMode>
+        </HistoryRouter>
     );
-};
+});
+
 
 export default memo(Root);

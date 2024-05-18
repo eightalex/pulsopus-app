@@ -2,8 +2,9 @@ import Stack from "@mui/material/Stack";
 import { FC, ReactNode } from 'react';
 
 import Header from "@/components/Header";
-import { ContainerStyled } from "@/components/Layout/LayoutSideBar/styled.tsx";
 import { SideNavBar } from "@/components/SideNavBar";
+
+import { ContainerStyled } from "./styled.tsx";
 
 interface ILayoutSideBarProps {
     children: ReactNode;
@@ -26,9 +27,9 @@ export const LayoutSideBar: FC<ILayoutSideBarProps> = ({ children }) => {
             <ContainerStyled>
                 <Header/>
                 <Stack
-                    pt={8}
                     flexGrow={1}
                     height="100%"
+                    position='relative'
                 >
                     {children}
                 </Stack>

@@ -1,4 +1,5 @@
 import Stack from '@mui/material/Stack';
+import { observer } from "mobx-react";
 import { useCallback, useMemo } from "react";
 import { Location, useLocation, useNavigate } from 'react-router-dom';
 
@@ -8,10 +9,9 @@ import Typography from '@/components/Typography';
 import UserAvatarDropdown from "@/components/UserAvatarDropdown/UserAvatarDropdown.tsx";
 import { NAV_LABELS_BY_PATH } from "@/constants/navBar.ts";
 import { PROFILE_ROUTE } from "@/constants/routes.ts";
-import { useDispatch, useSelector } from "@/hooks";
+import { useStores } from "@/hooks";
 import { ArrowLeftIcon, ExitOutlinedIcon } from '@/icons';
 import { ThemeSwitch } from "@/modules/ThemeSwitch";
-import { onLogout, selectAuthUser } from "@/stores/auth";
 
 interface ILocationState {
 	id: string;
@@ -26,27 +26,26 @@ const getPageLabel = (path = '') => {
 		}, '');
 };
 
-const Header = () => {
+const Header = observer(() => {
 	const location: Location<ILocationState> = useLocation();
 	const navigate = useNavigate();
-	const dispatch = useDispatch();
-	const user = useSelector(selectAuthUser);
+	const { rootStore: { authStore: { user, onLogout }, routeStore: { goBack } } } = useStores();
 
 	const userId = useMemo(() => location?.state?.id, [location]);
 
 	const pageLabel = useMemo(() => getPageLabel(location?.pathname), [location]);
 
 	const handleGoBack = useCallback(() => {
-		alert('goBack');
-	}, []);
+		goBack();
+	}, [goBack]);
 
 	const handleProfile = useCallback(() => {
 		navigate(PROFILE_ROUTE);
 	}, [navigate]);
 
 	const handleLogout = useCallback(() => {
-		dispatch(onLogout());
-	}, [dispatch]);
+		onLogout();
+	}, [onLogout]);
 
 	return (
 		<Stack
@@ -84,7 +83,7 @@ const Header = () => {
 			</Stack>
 
 			<Stack >
-				{user && (
+				{Boolean(user) && (
 					<UserAvatarDropdown
 						user={user}
 						onProfileClick={handleProfile}
@@ -104,6 +103,6 @@ const Header = () => {
 			</Stack>
 		</Stack>
 	);
-};
+});
 
 export default Header;

@@ -1,7 +1,9 @@
-import { IAutocompleteProps } from '@/components/Autocomplete/types';
 import MuiAutocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
-import { FC, memo, useCallback } from 'react';
+import { FC, memo, useCallback, useEffect } from 'react';
+
+import { IAutocompleteProps } from '@/components/Autocomplete/types';
+
 import { GroupHeaderStyled, GroupItemsStyled } from './styled';
 
 const Autocomplete: FC<IAutocompleteProps> = ({ options, onChange, placeholder = '', renderGroupHeader, ...rest }) => {
@@ -9,9 +11,16 @@ const Autocomplete: FC<IAutocompleteProps> = ({ options, onChange, placeholder =
 		onChange?.(option);
 	}, [onChange]);
 
+	useEffect(() => {
+		return () => {
+			onChange?.(undefined);
+		};
+	}, [onChange]);
+
 	if (!options || !options.length) {
 		return;
 	}
+
 	return (
 		<MuiAutocomplete
 			sx={{

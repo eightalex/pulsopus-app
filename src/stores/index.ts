@@ -1,1 +1,1 @@
-export { default, default as store } from './store.ts';
+export { RootStore } from './RootStore';

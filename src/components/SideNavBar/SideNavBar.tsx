@@ -1,23 +1,24 @@
 import Stack from '@mui/material/Stack';
+import { observer } from "mobx-react";
 import { FC, useCallback, useMemo } from 'react';
 
 import { SideNavBarLink } from "@/components/SideNavBar/SideNavBarLink.tsx";
 import { getSidebarNavLinksByRoles } from "@/helpers/getSidebarNavLinksByRoles.ts";
-import { useDispatch, useSelector, useWindowSize } from '@/hooks';
+import { useStores,useWindowSize } from '@/hooks';
 import { ExitOutlinedIcon, LogoIcon } from '@/icons';
-import { onLogout, selectAuthRoles } from "@/stores/auth";
 
 import { SideNavBarList } from './SideNavBarList';
 import { SideNavBarStyled } from './styled';
 import { ISideNavBarProps } from './types';
 
-export const SideNavBar: FC<ISideNavBarProps> = ({
-	hideLogo = false,
-	hideExit = false,
-}) => {
-	const dispatch = useDispatch();
-	const userRoles = useSelector(selectAuthRoles);
+export const SideNavBar: FC<ISideNavBarProps> = observer((props) => {
+	const {
+		hideLogo = false,
+		hideExit = false,
+	} = props;
 	const { size: { width }, breakpointSizes } = useWindowSize();
+	const { rootStore: { authStore: { onLogout, user } } } = useStores();
+	const userRoles = user?.roles || [];
 
 	const isMinimize = useMemo(() => width <= breakpointSizes.xl, [width, breakpointSizes]);
 
@@ -29,8 +30,8 @@ export const SideNavBar: FC<ISideNavBarProps> = ({
 	const options = getSidebarNavLinksByRoles(userRoles || []);
 
 	const handleLogout = useCallback(() => {
-		dispatch(onLogout());
-	}, [dispatch]);
+		onLogout();
+	}, [onLogout]);
 
 	return (
 		<SideNavBarStyled isMinimize={isMinimize}>
@@ -81,4 +82,4 @@ export const SideNavBar: FC<ISideNavBarProps> = ({
 			</Stack>
 		</SideNavBarStyled>
 	);
-};
+});

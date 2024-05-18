@@ -1,29 +1,38 @@
+import { observer } from "mobx-react";
 import { FC, ReactNode, useCallback, useLayoutEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import sessionManager from "@/api/SessionManager.ts";
 import { Loader } from '@/components/Loader';
-import { useDispatch, useSelector } from '@/hooks';
-import { onAuthorize, selectAuthIsAuthorized, selectAuthIsLoading } from "@/stores/auth";
+import { useStores } from '@/hooks';
 
 interface IAppRouteProps {
 	children: ReactNode;
 }
 
-export const ProtectedRoute: FC<IAppRouteProps> = ({ children }) => {
+const outsideToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmMmYwNDZkMy1mZGU0LTRhMWUtYWZlNi0xZmY5ZGVkNzJkM2MiLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZXMiOlt7ImlkIjoiNDdkYzcxNjktNDE3OS00MzIyLWIzZWMtNzc5ZmRmYmM0ODJiIiwibmFtZSI6IkFETUlOIn1dLCJpYXQiOjE3MTU4NTE0NjgsImV4cCI6MTcxNTg1NTAwOH0.gm6znM0sj7PMwQaw29zuors7jtoU3p0kp-mmDzLIP80';
+
+export const ProtectedRoute: FC<IAppRouteProps> = observer(({ children }) => {
 	const [searchParams, setSearchParams] = useSearchParams();
-	const dispatch = useDispatch();
-	const isAuthorized = useSelector(selectAuthIsAuthorized);
-	const isLoadingAuth = useSelector(selectAuthIsLoading);
+
+	const {
+		rootStore: {
+			authStore: {
+				isAuthorized,
+				onAuthorize,
+				isLoadingAuth
+			}
+		}
+	} = useStores();
 
 	const onAuth = useCallback(() => {
-		const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMiIsInVzZXJuYW1lIjoiYWRtaW5AcHVsc29wdXMuZGV2Iiwicm9sZXMiOlt7Im5hbWUiOiJBRE1JTiJ9XSwiaWF0IjoxNzE1NzAzNjI2LCJleHAiOjE3MTU3MDcxNjZ9.E8TkcxOKudpOT7c2HMwnB8bLYz0nLc40dLHhACtu1_Q';
-		// const token = decodeURIComponent(searchParams.get('token') || sessionManager.token || '');
+		let token = decodeURIComponent(searchParams.get('token') || sessionManager.token || '');
+		token = outsideToken;
 		sessionManager.setToken(token.trim());
 		setSearchParams({});
 		if(isAuthorized) return;
-		dispatch(onAuthorize());
-	}, [searchParams, setSearchParams, isAuthorized, dispatch]);
+		onAuthorize();
+	}, [searchParams, setSearchParams, isAuthorized, onAuthorize]);
 
 	useLayoutEffect(() => {
 		onAuth();
@@ -34,6 +43,6 @@ export const ProtectedRoute: FC<IAppRouteProps> = ({ children }) => {
 	}
 
 	return isLoadingAuth ? <Loader fullSize/> :  children;
-};
+});
 
 export default ProtectedRoute;

@@ -1,1 +1,0 @@
-export { PersonDiagram as default, PersonDiagram } from './PersonDiagram.tsx';

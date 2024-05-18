@@ -1,4 +1,20 @@
-import store from "@/stores";
+import {
+	IAuthStore,
+	IDepartmentsStore,
+	INotifyStore,
+	IPeopleDynamicStore,
+	IUserDiagramStore,
+	IUsersStore
+} from '@/interfaces';
+import { RouteStore } from '@/stores/RouteStore';
 
-export interface IRootState extends ReturnType<typeof store.getState> {}
-export type TAppDispatch = typeof store.dispatch;
+export interface IRootStore {
+	routeStore: RouteStore;
+
+	authStore: IAuthStore;
+	notifyStore: INotifyStore;
+	usersStore: IUsersStore;
+	departmentsStore: IDepartmentsStore;
+	userDiagramStore: IUserDiagramStore;
+	peopleDynamicStore: IPeopleDynamicStore;
+}

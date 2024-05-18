@@ -1,8 +1,9 @@
+import { Stack } from '@mui/material';
+import { FC, memo, useMemo } from 'react';
+import { Triangle } from 'react-loader-spinner';
+
 import { ILoader } from '@/components/Loader/types';
 import { extendPalette } from '@/theme';
-import { Stack } from '@mui/material';
-import React, { FC, memo, useMemo } from 'react';
-import { Triangle } from 'react-loader-spinner';
 
 const Loader: FC<ILoader> = ({ fullSize = false, ...restProps }) => {
 

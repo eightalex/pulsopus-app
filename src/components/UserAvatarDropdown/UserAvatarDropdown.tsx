@@ -19,8 +19,7 @@ const UserAvatarDropdown: FC<IUserAvatarDropdownProps> = ({ user, onProfileClick
 	const [targetElement, setTargetElement] = useState<null | HTMLElement>(null);
 
 	const name = useMemo(() => {
-		const fullName = [user.firstName, user.lastName].join(' ');
-		return fullName.trim() ? fullName : user.username;
+		return user?.username || user?.email;
 	}, [user]);
 
 	const handleOpen = useCallback((event: MouseEvent<HTMLButtonElement>) => {
@@ -62,7 +61,7 @@ const UserAvatarDropdown: FC<IUserAvatarDropdownProps> = ({ user, onProfileClick
 						<UserAvatar user={user}/>
 						<Stack spacing={0}>
 							<Typography variant="text">{name}</Typography>
-							<Typography variant="caption1">{user.username}</Typography>
+							<Typography variant="caption1">{user?.username}</Typography>
 						</Stack>
 					</Stack>
 					{children && (
