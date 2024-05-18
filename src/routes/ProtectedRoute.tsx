@@ -25,13 +25,12 @@ export const ProtectedRoute: FC<IAppRouteProps> = observer(({ children }) => {
 		}
 	} = useStores();
 
-	const onAuth = useCallback(() => {
-		let token = decodeURIComponent(searchParams.get('token') || sessionManager.token || '');
-		token = outsideToken;
+	const onAuth = useCallback(async () => {
+		const token = decodeURIComponent(searchParams.get('token') || sessionManager.token || '');
 		sessionManager.setToken(token.trim());
 		setSearchParams({});
 		if(isAuthorized) return;
-		onAuthorize();
+		await onAuthorize();
 	}, [searchParams, setSearchParams, isAuthorized, onAuthorize]);
 
 	useLayoutEffect(() => {
