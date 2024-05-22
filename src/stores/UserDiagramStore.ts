@@ -42,6 +42,7 @@ export class UserDiagramStore extends BaseStore implements IUserDiagramStore {
 			mountStore: action.bound,
 			unmountStore: action.bound,
 			getRangeDifference: action.bound,
+			setCompareValue: action.bound,
 		});
 	}
 
@@ -73,15 +74,20 @@ export class UserDiagramStore extends BaseStore implements IUserDiagramStore {
 		if (this.isCompare) {
 			renderActivity.push(this.compareValue?.activity);
 		}
+
 		return renderActivity
 			.filter(d => !!d)
-			.map((activity = []) => {
-				return [...activity]
+			.map((activities = []) => {
+				return [...activities]
 					.sort((p, n) => p.date - n.date )
-					.reduce((acc, { date, rate }) => {
-					const isBetweenOrEq = moment(date).isBetween(dateStart, dateEnd, null, '[]');
-					if(!isBetweenOrEq) return acc;
-					return [...acc, { x: moment(date).endOf('day').valueOf(), y: rate }];
+					.reduce((acc, activity) => {
+						if(!activity) return acc;
+						const { date, value: rate } = activity;
+						const d = Number(date);
+						const isBetweenOrEq = moment(d).isBetween(dateStart, dateEnd, null, '[]');
+						if(!isBetweenOrEq) return acc;
+						if(!rate) return acc;
+						return [...acc, { x: moment(d).endOf('day').valueOf(), y: Number(rate) || 0 }];
 				}, [] as IChartDataPoint[]);
 			});
 	}
@@ -144,6 +150,11 @@ export class UserDiagramStore extends BaseStore implements IUserDiagramStore {
 	public setUser(user: IUser | null): void {
 		runInAction(() => {
 			this.user = user || null;
+		});
+	}
+	public setCompareValue(value: IUser | IDepartment | null): void {
+		runInAction(() => {
+			this.compareValue = value || null;
 		});
 	}
 

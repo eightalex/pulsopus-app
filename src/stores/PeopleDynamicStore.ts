@@ -1,9 +1,10 @@
+import { action, computed, makeObservable, observable, runInAction } from 'mobx';
+import moment from 'moment';
 import { ICalendarRange } from '@/components/CalendarRangePicker';
 import { EPeopleDynamicView } from '@/constants/EPeopleDynamic';
 import { generateActivityData } from '@/helpers/generateActivityData';
-import { IDepartment, IPeopleDynamicStore, IRootStore, IUser, } from '@/interfaces';
-import { action, computed, makeObservable, observable, runInAction } from 'mobx';
-import moment from 'moment';
+import { IDepartment, IPeopleDynamicStore, IRootStore, IUser } from '@/interfaces';
+import { IActivity } from "@/interfaces/IActivity.ts";
 import { BaseStore } from './BaseStore';
 
 export class PeopleDynamicStore extends BaseStore implements IPeopleDynamicStore {
@@ -47,34 +48,43 @@ export class PeopleDynamicStore extends BaseStore implements IPeopleDynamicStore
 	}
 
 	public get usersForRender(): IUser[] {
+		if(!this.department?.id) return this.rootStore.usersStore.users;
 		const { from, to } = this.calendarRange || { from: moment().startOf('day'), to: moment().endOf('day') };
 		const users = this.rootStore.usersStore.users;
 		if (!users) return [];
-		return this.rootStore.usersStore.getUsersByDepartmentId(this.department?.id || 0)
+		return this.department.users
 			.map((user) => {
-				const rate = user.activity.reduce((acc, { date, rate: r }) => {
-					const isBetweenOrEq = moment(date).isBetween(from, to, null, '[]');
+				const value = user.activity.reduce((acc, { date, value: strR }) => {
+					const d = Number(date);
+					const isBetweenOrEq = moment(d).isBetween(from, to, null, '[]');
 					if (!isBetweenOrEq) return acc;
+					if(!strR) return acc;
+					const r = Number(strR);
+					if(!r) return 1;
 					acc = (acc + r) / 2;
 					return acc;
 				}, 0);
 				return {
 					...user,
 					activity: [
-						{ date: moment(to).valueOf(), rate },
+						{ date: moment(to).valueOf(), value },
 					]
 				};
 			});
 	}
 
-	public get absoluteDtaActivities(): { date: number, rate: number }[] {
+	public get absoluteDtaActivities(): IActivity[] {
 		const { from, to } = this.calendarRange || { from: moment().startOf('day'), to: moment().endOf('day') };
-		return (this.rootStore.departmentsStore.departmentsMap.get(0)?.activity || [])
-			.reduce((acc, { date, rate }) => {
-				const isBetweenOrEq = moment(date).isBetween(from, to, null, '[]');
+		//TODO: refactor next find line
+		const department = this.rootStore.departmentsStore.departments.find(({ name }) => name === 'COMPANY');
+		const activities = department?.activity || [];
+		return activities
+			.reduce((acc, { date, value }) => {
+				const d = Number(date);
+				const isBetweenOrEq = moment(d).isBetween(from, to, null, '[]');
 				if (!isBetweenOrEq) return acc;
-				return [...acc, { date, rate }];
-			}, [] as { date: number, rate: number }[]);
+				return [...acc, { date, value: Number(value) }];
+			}, [] as IActivity[]);
 	}
 
 	public get departmentActivityData() {
@@ -86,6 +96,7 @@ export class PeopleDynamicStore extends BaseStore implements IPeopleDynamicStore
 	}
 
 	public get absoluteActivityData() {
+		return [];
 		// TODO: refactor stating/ 0 - ID for all company;
 		const data = this.rootStore.departmentsStore.departmentsMap.get(0);
 		if(!data?.activity) {
@@ -98,8 +109,8 @@ export class PeopleDynamicStore extends BaseStore implements IPeopleDynamicStore
 		[...activity]
 			.sort((a, b) => b.date - a.date)
 			.forEach(({ date, rate }) => {
-			const d = moment(date).format('DD.MM.YYYY')
-		})
+			const d = moment(date).format('DD.MM.YYYY');
+		});
 		return generateActivityData({
 			activities: this.absoluteDtaActivities,
 			calendarRange: this.calendarRange
@@ -143,6 +154,6 @@ export class PeopleDynamicStore extends BaseStore implements IPeopleDynamicStore
 		runInAction(() => {
 			this.view = EPeopleDynamicView.CHART;
 			this.showAbsoluteData = false;
-		})
+		});
 	}
 }

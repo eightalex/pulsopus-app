@@ -28,4 +28,5 @@ export interface IUserDiagramStore {
 	mountStore: (userId?: IUser['id']) => void;
 	unmountStore: () => void;
 	getRangeDifference: () => { type: DurationInputArg2, diff: number };
+	setCompareValue: (compareValue: IUser | IDepartment | null) => void;
 }

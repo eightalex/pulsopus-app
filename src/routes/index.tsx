@@ -59,13 +59,11 @@ export const routes: RouteObject[] = [
 			},
 			{
 				path: PEOPLE_DYNAMIC_ROUTE,
-				// element: <PeopleDynamic/>,
-				element: <span>{PEOPLE_DYNAMIC_ROUTE}</span>,
+				element: <PeopleDynamic/>,
 			},
 			{
 				path: DIAGRAM_ROUTE,
-				// element: <UserDiagram/>,
-				element: <span>{DIAGRAM_ROUTE}</span>,
+				element: <UserDiagram/>,
 			},
 			{
 				path: ADMINISTRATION_ROUTE,

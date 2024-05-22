@@ -1,14 +1,15 @@
-import {FC, useMemo} from 'react';
-import {IUser} from "@/interfaces";
-import Typography from "@/components/Typography";
 import Stack from "@mui/material/Stack";
+import { FC, useMemo } from 'react';
+
+import Typography from "@/components/Typography";
+import { IUser } from "@/interfaces";
 
 interface IHexbinWidgetUserTooltipProps {
     user: IUser;
 }
 
-export const HexbinWidgetUserTooltip: FC<IHexbinWidgetUserTooltipProps> = ({user}) => {
-    const userName = useMemo(() => `${user.firstName} ${user.lastName}`, [user])
+export const HexbinWidgetUserTooltip: FC<IHexbinWidgetUserTooltipProps> = ({ user }) => {
+    const userName = useMemo(() => user.username, [user]);
     return (
         <Stack spacing={1}>
             <Typography
@@ -25,7 +26,7 @@ export const HexbinWidgetUserTooltip: FC<IHexbinWidgetUserTooltipProps> = ({user
                     color='primaryLight'
                     lineHeight={1.25}
                 >
-                    Position?
+                    {user?.position?.label}
                 </Typography>
                 <Typography
                     variant="caption2"

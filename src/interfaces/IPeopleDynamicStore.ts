@@ -1,6 +1,7 @@
 import { ICalendarRange } from '@/components/CalendarRangePicker';
 import { EPeopleDynamicView } from '@/constants/EPeopleDynamic';
 import { IGenerateActivityData } from '@/helpers/generateActivityData';
+import { IActivity } from "@/interfaces/IActivity.ts";
 import { IDepartment } from '@/interfaces/IDepartment';
 import { IUser } from '@/interfaces/IUser';
 
@@ -11,7 +12,7 @@ export interface IPeopleDynamicStore {
 	department: IDepartment | null;
 	//
 	usersForRender: IUser[];
-	absoluteDtaActivities: { date: number, rate: number }[];
+	absoluteDtaActivities: IActivity[];
 	departmentActivityData: IGenerateActivityData;
 	absoluteActivityData: IGenerateActivityData;
 	//

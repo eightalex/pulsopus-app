@@ -1,13 +1,14 @@
+import Stack from '@mui/material/Stack';
+import { observer } from 'mobx-react';
+import moment from 'moment';
+import { useCallback, useMemo } from 'react';
+
 import { LineChart } from '@/components/Chart';
 import Typography from '@/components/Typography';
 import { CHART_COLORS } from '@/constants/chart';
 import { useStores } from '@/hooks';
 import { IDepartment, IUser } from '@/interfaces';
 import { AppActionContainerStyled } from '@/modules/AppModule';
-import Stack from '@mui/material/Stack';
-import { observer } from 'mobx-react';
-import moment from 'moment';
-import { useCallback, useMemo } from 'react';
 
 const UserDiagramChartTooltip = observer(({ point }) => {
 	const {
@@ -31,7 +32,7 @@ const UserDiagramChartTooltip = observer(({ point }) => {
 				{renderList.map((item: IUser | IDepartment, index) => {
 					if (!item) return;
 					const title = 'firstName' in item ? `${item?.firstName} ${item?.lastName}` : (item as IDepartment)?.label;
-					const subtitle = 'firstName' in item ? item?.department.label : '';
+					const subtitle = 'firstName' in item ? item?.department.name : '';
 					const value = chartData[index]?.find((p) => p?.x === point?.x)?.y || 0;
 					const color = CHART_COLORS[index] || CHART_COLORS[0];
 					return (

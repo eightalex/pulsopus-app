@@ -1,9 +1,11 @@
+import { observer } from 'mobx-react';
+import { memo, useEffect } from 'react';
+
+import { ContentContainer } from "@/components/ContentContainer";
 import { Loader } from '@/components/Loader';
 import { useStores } from '@/hooks';
 import { PeopleDynamicView } from '@/modules/PeopleDynamic/PeopleDynamicView/PeopleDynamicView';
-import Stack from '@mui/material/Stack';
-import { observer } from 'mobx-react';
-import { memo, useEffect } from 'react';
+
 import { PeopleDynamicActions } from './PeopleDynamicActions';
 
 const PeopleDynamic = observer(() => {
@@ -22,18 +24,14 @@ const PeopleDynamic = observer(() => {
 	}, [mountStore, unmountStore]);
 
 	return (
-		<Stack
-			spacing={8}
-			flexGrow={1}
+		<ContentContainer
+			actions={<PeopleDynamicActions/>}
 		>
-			{isLoading && <Loader fullSize/>}
-			{!isLoading && Boolean(usersMap.size) && (
-				<>
-					<PeopleDynamicActions/>
-					<PeopleDynamicView/>
-				</>
-			)}
-		</Stack>
+			<>
+				{isLoading && <Loader fullSize/>}
+				{!isLoading && Boolean(usersMap.size) && <PeopleDynamicView/>}
+			</>
+		</ContentContainer>
 	);
 });
 
