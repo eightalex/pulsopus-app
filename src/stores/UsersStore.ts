@@ -60,11 +60,11 @@ export class UsersStore extends BaseStore implements IUsersStore {
 		}
 	}
 
-	public async getUser(id: IUser['id']): Promise<IUser> {
+	public async getUser(userId: IUser['id']): Promise<IUser | undefined> {
 		const key = this.asyncStatuses.getUser;
 		this.setLoading(key);
 		try {
-			const user: IUser = this.usersMap.get(id) || await this.rootStore.requester.usersService.getUser(id);
+			const user = this.usersMap.get(userId) || await api.usersService.getById(userId);
 			runInAction(() => {
 				this.setUser(user);
 				this.setSuccess(key);

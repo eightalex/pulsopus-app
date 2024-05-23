@@ -9,7 +9,7 @@ import { PeopleDynamicViewContent, PeopleDynamicViewInfo } from '@/modules/Peopl
 import { UserDiagramActions } from '@/modules/UserDiagram/UserDiagramActions';
 import { UserDiagramChart } from '@/modules/UserDiagram/UserDiagramChart';
 
-const tooltipTitleDefault = 'Your contribution graph and Achievements show activity from public repositories. You can choose to show activity from both public and private, with specific details of your activity in private repositories anonymized.  A viewer can only see information in the activity overview about repositories they have read access to. Get more information."';
+const tooltipTitleDefault = 'Your contribution graph and Achievements show activity from public repositories. You can choose to show activity from both public and private, with specific details of your activity in private repositories anonymized.  A viewer can only see information in the activity overview about repositories they have read access to. Get more information.';
 
 const getEmployeeTitle = (user?: IUser | null) => user && `${user?.lastName} ${user?.firstName}`;
 

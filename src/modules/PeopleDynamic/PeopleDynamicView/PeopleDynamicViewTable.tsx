@@ -13,7 +13,6 @@ export const PeopleDynamicViewTable = observer(() => {
 			<Table/>
 			<Stack spacing={1}>
 				{usersForRender && Boolean(usersForRender.length) && usersForRender.map((user) => {
-					console.log('user', user);
 					const { id, username, department, position, activity } = user;
 					const a = Math.round(activity[0]?.value || 0);
 					const t = Number(activity[0].date) ? moment(Number(activity[0].date)).format('lll') : 'Invalid date';

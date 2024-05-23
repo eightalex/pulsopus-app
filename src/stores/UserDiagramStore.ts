@@ -166,10 +166,9 @@ export class UserDiagramStore extends BaseStore implements IUserDiagramStore {
 		});
 	}
 
-	public async mountStore(userId: IUser['id'] | null = null) {
-		if (userId === null || this.isLoadingMount) {
-			return;
-		}
+	public async mountStore(userId?: IUser['id']) {
+		if(!userId || this.isLoadingMount) return;
+
 		const key = this.asyncStatuses.mounting;
 		this.setLoading(key);
 		try {

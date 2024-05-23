@@ -62,6 +62,7 @@ export const routes: RouteObject[] = [
 				element: <PeopleDynamic/>,
 			},
 			{
+				id: DIAGRAM_ROUTE,
 				path: DIAGRAM_ROUTE,
 				element: <UserDiagram/>,
 			},

@@ -37,10 +37,9 @@ const HexbinWidget: FC<IHexbinWidgetProps> = ({ data }) => {
 		svgInstance.transition().call(zoomInstance.scaleTo, scale);
 	}, [zoomParamsRef]);
 
-	const handleUserClick = useCallback(async (point) => {
-		const id = point.id;
-		if (!id) return;
-		navigate(DIAGRAM_ROUTE, { state: { id }, relative: 'route' });
+	const handleUserClick = useCallback(async (user: IUser) => {
+		if(!user?.id) return;
+		navigate(`/${DIAGRAM_ROUTE}`, { state: { id: user.id }, relative: 'route' });
 	}, [navigate]);
 
 	return (

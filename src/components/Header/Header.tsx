@@ -56,30 +56,34 @@ const Header = observer(() => {
 			component={'header'}
 		>
 			<Stack
-				spacing={2}
-				direction="row"
-				alignItems='flex-end'
+				justifyContent='flex-end'
 			>
-				{Boolean(userId) && (
-					<ButtonIcon
-						onClick={handleGoBack}
-						title={'Back'}
-						tooltipProps={{
-							title: 'Back',
-							placement: 'bottom',
-						}}
-						icon={<ArrowLeftIcon/>}
-						sx={{
-							border: 'none',
-							outline: 'none',
-							backgroundColor: 'transparent',
-						}}
-					/>
-				)}
+				<Stack
+					direction="row"
+					alignItems='center'
+					spacing={2}
+				>
+					{Boolean(userId) && (
+						<ButtonIcon
+							onClick={handleGoBack}
+							title={'Back'}
+							tooltipProps={{
+								title: 'Back',
+								placement: 'bottom',
+							}}
+							icon={<ArrowLeftIcon/>}
+							sx={{
+								border: 'none',
+								outline: 'none',
+								backgroundColor: 'transparent',
+							}}
+						/>
+					)}
 
-				<Typography variant="head1" lineHeight={1}>
-					{pageLabel?.toUpperCase()}
-				</Typography>
+					<Typography variant="head1" lineHeight={1}>
+						{pageLabel?.toUpperCase()}
+					</Typography>
+				</Stack>
 			</Stack>
 
 			<Stack >

@@ -50,9 +50,12 @@ export class PeopleDynamicStore extends BaseStore implements IPeopleDynamicStore
 	public get usersForRender(): IUser[] {
 		if(!this.department?.id) return this.rootStore.usersStore.users;
 		const { from, to } = this.calendarRange || { from: moment().startOf('day'), to: moment().endOf('day') };
-		const users = this.rootStore.usersStore.users;
-		if (!users) return [];
-		return this.department.users
+		const users = this.rootStore.usersStore.users || [];
+		const us = [...users].filter((u) => {
+			if(!this.department || this.department.name === 'COMPANY') return true;
+			return u.department.value === this.department.name;
+		});
+		return us
 			.map((user) => {
 				const value = user.activity.reduce((acc, { date, value: strR }) => {
 					const d = Number(date);

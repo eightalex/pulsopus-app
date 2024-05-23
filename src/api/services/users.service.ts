@@ -9,4 +9,10 @@ export class UsersService {
 			.get('/users')
 			.then(({ data }) => data.users);
 	}
+
+	public async getById(id: IUser["id"]): Promise<IUser> {
+		return this.restInstance
+			.get(`/users/${id}`)
+			.then(({ data }) => data.users);
+	}
 }
