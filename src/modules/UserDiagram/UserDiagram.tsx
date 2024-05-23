@@ -19,7 +19,6 @@ export const UserDiagram = observer(() => {
 		}
 	} = useStores();
 	const userId = location?.state?.id;
-	console.log('userId', userId);
 
 	useEffect(() => {
 		mountStore(userId);
@@ -31,7 +30,7 @@ export const UserDiagram = observer(() => {
 	return (
 		<Stack flexGrow={1}>
 			{isLoading && <Loader fullSize/>}
-			{/*<UserDiagramComponent/>*/}
+			<UserDiagramComponent/>
 		</Stack>
 	);
 });
