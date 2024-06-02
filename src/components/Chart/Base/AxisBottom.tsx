@@ -1,3 +1,6 @@
+import moment from 'moment';
+import { FC, useMemo } from 'react';
+
 import { IAxisBottomProps } from '@/components/Chart';
 import {
 	AXIS_BOTTOM_PIX_PER_TICK,
@@ -5,9 +8,7 @@ import {
 	AXIS_TEXT_FONT_SIZE,
 	AXIS_TEXT_OPACITY
 } from '@/constants/chart';
-import { renderDateTimeLine } from '@/helpers/renderChartDateTimeLine';
-import moment from 'moment';
-import { FC, useMemo } from 'react';
+import { dayMomentFormatter, renderDateTimeLine } from '@/helpers/renderChartDateTimeLine';
 
 export const AxisBottom: FC<IAxisBottomProps> = (props) => {
 	const {
@@ -37,24 +38,35 @@ export const AxisBottom: FC<IAxisBottomProps> = (props) => {
 			});
 		}
 
-		if (isDateValues) {
-			return renderDateTimeLine(values)
-				.map(({ value, title }) => ({ value, title, xOffset: xScale(value), }));
-		}
+		// if (isDateValues) {
+		// 	return renderDateTimeLine(values)
+		// 		.map(({ value, title }) => ({ value, title, xOffset: xScale(value) }));
+		// }
 
 		return xScale
 			.ticks(numberOfTicksTarget)
-			.reduce((acc, value) => {
-				const title = moment(value).format('DD.MM');
-				if (acc.find((v) => v.title === title)) {
-					return acc;
-				}
+			.reduce((acc, value, index, values) => {
 				return [...acc, {
 					value,
-					title,
+					title: dayMomentFormatter(values, value),
 					xOffset: xScale(value),
+					index,
 				}];
 			}, []);
+
+		// return xScale
+		// 	.ticks(numberOfTicksTarget)
+		// 	.reduce((acc, value) => {
+		// 		const title = moment(value).format('DD.MM');
+		// 		if (acc.find((v) => v.title === title)) {
+		// 			return acc;
+		// 		}
+		// 		return [...acc, {
+		// 			value,
+		// 			title,
+		// 			xOffset: xScale(value),
+		// 		}];
+		// 	}, []);
 	}, [renderLabel, isDateValues, range, pixelsPerTick, xScale, values]);
 
 	return (
@@ -85,7 +97,7 @@ export const AxisBottom: FC<IAxisBottomProps> = (props) => {
 							{title.toString()}
 						</text>
 					</g>
-				)
+				);
 			})}
 		</>
 	);

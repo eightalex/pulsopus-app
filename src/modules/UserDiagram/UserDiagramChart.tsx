@@ -107,7 +107,6 @@ export const UserDiagramChart = observer(() => {
 		<AppActionContainerStyled>
 			<LineChart
 				data={chartData}
-				axisBottomProps={{ pixelsPerTick: 30 }}
 				onSelect={handleSelectRange}
 				renderTooltip={point => <UserDiagramChartTooltip point={point}/>}
 			/>

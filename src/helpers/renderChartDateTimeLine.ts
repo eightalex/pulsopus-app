@@ -1,10 +1,11 @@
+import * as d3 from 'd3';
+import moment from 'moment';
 import {
 	AXIS_BOTTOM_RENDER_LIMIT,
 	AXIS_BOTTOM_RENDER_LIMIT_MAX,
 	AXIS_BOTTOM_RENDER_LIMIT_MIN
 } from '@/constants/chart';
-import * as d3 from 'd3';
-import moment from 'moment';
+import { ERenderFormatType } from "@/constants/EHexDatetimeForma.ts";
 
 const getDiffByType = (from, to, type): number => Math.abs(moment(to).endOf('day').diff(moment(from).startOf('day'), type, true));
 
@@ -83,7 +84,7 @@ const DIFF_MONTH_RENDER_LIMIT = 6;
 const DIFF_QUATER_YEAR_RENDER_LIMIT = 2;
 const DIFF_YEAR_RENDER_LIMIT = 4;
 
-export const renderDateTimeLine = (values: number[]): { value: number, title: string }[] => {
+const dateTimeDiffFormatType = (values: number[]): ERenderFormatType => {
 	const [from, to] = d3.extent(values, (d) => d);
 	const diffDay = getDiffByType(from, to, 'day');
 	const diffMonth = getDiffByType(from, to, 'month');
@@ -92,19 +93,64 @@ export const renderDateTimeLine = (values: number[]): { value: number, title: st
 
 	const isDaysMinRender = diffDay <= AXIS_BOTTOM_RENDER_LIMIT_MAX;
 	const isDaysMaxRender = diffMonth < DIFF_MONTH_RENDER_LIMIT;
-	const isMonthRender = diffMonth >= DIFF_MONTH_RENDER_LIMIT && diffYear < DIFF_QUATER_YEAR_RENDER_LIMIT
+	const isMonthRender = diffMonth >= DIFF_MONTH_RENDER_LIMIT && diffYear < DIFF_QUATER_YEAR_RENDER_LIMIT;
 	const isQuarterRender = diffYear >= DIFF_QUATER_YEAR_RENDER_LIMIT && diffYear <= DIFF_YEAR_RENDER_LIMIT;
 	const isYearRender =diffYear > DIFF_YEAR_RENDER_LIMIT;
 
-	if (isDaysMinRender) {
+	switch (true) {
+		case isDaysMinRender:
+			return ERenderFormatType.DAY_MIN;
+		case isDaysMaxRender:
+			return ERenderFormatType.DAY_MAX;
+		case isMonthRender:
+			return ERenderFormatType.MONTH;
+		case isQuarterRender:
+			return ERenderFormatType.QUOTER;
+		case isYearRender:
+			return ERenderFormatType.YEAR;
+		default:
+			return ERenderFormatType.DAY_MIN;
+	}
+};
+
+export const dayMomentFormatter = (values: number[], value: number) => {
+	const formatType = dateTimeDiffFormatType(values);
+	switch (formatType) {
+		case ERenderFormatType.DAY_MIN:
+			return moment(value).format('DD MMM');
+		case ERenderFormatType.DAY_MAX:
+			return moment(value).format('ddd DD MMM');
+		case ERenderFormatType.MONTH:
+			return moment(value).format('MMM YY');
+		case ERenderFormatType.QUOTER: {
+			const yearForm = values.length <= 9 ? 'YYYY' : 'YY';
+			return { value, title: `Q${moment(value).quarter()}-${moment(value).format(yearForm)}` };
+		}
+		case ERenderFormatType.YEAR: {
+			const yearForm = values.length <= 15 ? 'YYYY' : 'YY';
+			return moment(value).format(yearForm);
+		}
+		default:
+			return moment(value).format('DD MMM');
+	}
+};
+
+export const renderDateTimeLine = (values: number[]): { value: number, title: string }[] => {
+	const formatType = dateTimeDiffFormatType(values);
+	const [from, to] = d3.extent(values, (d) => d);
+	const diffDay = getDiffByType(from, to, 'day');
+	const diffMonth = getDiffByType(from, to, 'month');
+
+
+	if (formatType === ERenderFormatType.DAY_MIN) {
 		return values.map((value) => renderDayLabels(value, diffDay));
 	}
 
-	if (isDaysMaxRender) {
+	if (formatType === ERenderFormatType.DAY_MAX) {
 		return distributeValues(values).map((value) => renderDayLabels(value, diffDay));
 	}
 
-	if (isMonthRender) {
+	if (formatType === ERenderFormatType.MONTH) {
 		// TODO: create maper func with comparator
 		const monthMap = values.reduce((acc, v) => {
 			const t = moment(v).startOf('month').format('MMM YY');
@@ -125,10 +171,10 @@ export const renderDateTimeLine = (values: number[]): { value: number, title: st
 		return distributeValues(vs).map((value) => renderMonthLabels(value, diffMonth));
 	}
 
-	if(isQuarterRender) {
+	if (formatType === ERenderFormatType.QUOTER) {
 		// TODO: create maper func with comparator
 		const quoterMap = values.reduce((acc, v) => {
-			const t = `Q${moment(v).quarter()}-${moment(v).format('YYYY')}`
+			const t = `Q${moment(v).quarter()}-${moment(v).format('YYYY')}`;
 			const vs = acc.get(t) || [];
 			vs.push(v);
 			if (!vs.length) return acc;
@@ -145,7 +191,7 @@ export const renderDateTimeLine = (values: number[]): { value: number, title: st
 		return distributeValues(vs).map((value, _, arr) => renderQuarterLabels(value, arr.length));
 	}
 
-	if(isYearRender) {
+	if (formatType === ERenderFormatType.YEAR) {
 		// TODO: create maper func with comparator
 		const yearMap = values.reduce((acc, v) => {
 			const t = moment(v).startOf('year').format('YYYY');
@@ -164,4 +210,6 @@ export const renderDateTimeLine = (values: number[]): { value: number, title: st
 			.filter(item => Boolean(item));
 		return distributeValues(vs).map((value, _, arr) => renderYearLabels(value, arr.length));
 	}
+
+	return [];
 };
