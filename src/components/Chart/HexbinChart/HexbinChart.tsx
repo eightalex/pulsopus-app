@@ -1,15 +1,18 @@
+import Box from '@mui/material/Box';
+import * as d3 from 'd3';
+import { hexbin } from 'd3-hexbin';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+
 import { IInteractionData } from '@/components/Chart';
 import { TooltipChartHex } from '@/components/Chart/Base/TooltipChartHex';
 import { fillMatrixHexbinChart } from '@/components/Chart/HexbinChart/fillMatrixHexbinChart';
 import { HexbinChartItem } from '@/components/Chart/HexbinChart/HexbinChartItem';
+import { HEX_CHART_RADIUS_DEFAULT } from "@/constants/chart.ts";
+import { createRoundedPathByString } from "@/helpers/createRoundedPathByCoords.ts";
 import { useDimensions } from '@/hooks';
-import Box from '@mui/material/Box';
-import * as d3 from 'd3';
-import { hexbin } from 'd3-hexbin';
-import {memo, useEffect, useMemo, useRef, useState} from 'react';
+
 import { IHexbinChartProps, TZoomBehavior } from './types';
-import {HEX_CHART_RADIUS_DEFAULT} from "@/constants/chart.ts";
-import {createRoundedPathByString} from "@/helpers/createRoundedPathByCoords.ts";
 
 const r = HEX_CHART_RADIUS_DEFAULT;
 
@@ -62,7 +65,7 @@ function HexbinChart<T>(props: IHexbinChartProps<T>) {
 	);
 
 	const shapes = useMemo(() => data.reduce((acc, item) => {
-		const arr = acc[item.fill] || [];
+		const arr = acc[item?.fill] || [];
 		acc[item.fill] = [...arr, item];
 		return acc;
 	}, {} as Record<string, unknown>), [data]);
@@ -73,7 +76,8 @@ function HexbinChart<T>(props: IHexbinChartProps<T>) {
 		);
 
 		return (
-			<g id={k} key={k}>
+			<g id={k} key={`${k}-${uuidv4()}`}>
+			{/*<g id={k} key={k}>*/}
 				{hexbinGroupData.map((d, i) => {
 					const point = s[i];
 					const offset = { x: d.x, y: d.y };
@@ -90,11 +94,11 @@ function HexbinChart<T>(props: IHexbinChartProps<T>) {
 							groupId={k}
 							hovering={!!point.data}
 							onMouseOver={(e) => {
-								const { currentTarget } = e
+								const { currentTarget } = e;
 								const offset = currentTarget.getBoundingClientRect();
 								const parentOffset = svgRef?.current?.getBoundingClientRect();
-								const xPos = offset.width + offset.left - parentOffset.left // d.x;
-								const yPos = offset.height / 2 - r + offset.top - parentOffset.top  // d.y;
+								const xPos = offset.width + offset.left - parentOffset.left; // d.x;
+								const yPos = offset.height / 2 - r + offset.top - parentOffset.top;  // d.y;
 								const hd: IInteractionData<T> = {
 									xPos, yPos, data: point.data
 								};
@@ -107,7 +111,7 @@ function HexbinChart<T>(props: IHexbinChartProps<T>) {
 				})}
 			</g>
 		);
-	}), [hexagonPath, hexbinGenerator, onClick, shapes])
+	}), [hexagonPath, hexbinGenerator, onClick, shapes]);
 
 	const onZoomed = ({ transform, sourceEvent }) => {
 		setHovered(null);
@@ -126,11 +130,11 @@ function HexbinChart<T>(props: IHexbinChartProps<T>) {
 			const extend: Record<'s' | 'e', [number, number]> = {
 				s: [0, 0],
 				e: [width, height],
-			}
+			};
 			const translateExtent: Record<'s' | 'e', [number, number]> = {
 				s: [-8.3, -9.6],
 				e: [width -8.3, height -9.6]
-			}
+			};
 			const zoom = d3.zoom()
 				// .wheelDelta(1)
 				// .extent([[r, r], [width, height]])
@@ -177,8 +181,8 @@ function HexbinChart<T>(props: IHexbinChartProps<T>) {
 			>
 				<defs>
 					{data
-						.filter(({data}) => !!data)
-						.map(({data: {id, avatar}}, i) => (
+						.filter(({ data }) => !!data)
+						.map(({ data: { id, avatar } }, i) => (
 							<pattern
 								key={`${i}-${id}-${avatar}`}
 								id={`pattern-${id}`}
@@ -215,6 +219,6 @@ function HexbinChart<T>(props: IHexbinChartProps<T>) {
 			</TooltipChartHex>
 		</Box>
 	);
-};
+}
 
 export default memo(HexbinChart);

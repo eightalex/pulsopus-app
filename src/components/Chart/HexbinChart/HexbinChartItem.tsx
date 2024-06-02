@@ -1,7 +1,8 @@
-import { FC, RefObject, useCallback, useMemo, MouseEvent } from 'react';
 import * as d3 from 'd3';
-import {HEX_CHART_STROKE_WIDTH_DEFAULT} from "@/constants/chart.ts";
-import {createRoundedPathByString} from "@/helpers/createRoundedPathByCoords.ts";
+import { FC, MouseEvent,RefObject, useCallback, useMemo } from 'react';
+
+import { HEX_CHART_STROKE_WIDTH_DEFAULT } from "@/constants/chart.ts";
+import { createRoundedPathByString } from "@/helpers/createRoundedPathByCoords.ts";
 
 interface ICord {
 	x: number;
@@ -44,8 +45,10 @@ export const HexbinChartItem: FC<IHexbinChartItemProps> = (props) => {
 
 	const handleClick = useCallback((e) => {
 		e && e.preventDefault();
-		onClick?.()
-	}, [onClick])
+		e && e.stopPropagation();
+		e && e.nativeEvent.stopImmediatePropagation();
+		onClick?.();
+	}, [onClick]);
 
 	const handleMouseOver = useCallback((event: MouseEvent<SVGPathElement>) => {
 		const { currentTarget } = event;
@@ -53,21 +56,21 @@ export const HexbinChartItem: FC<IHexbinChartItemProps> = (props) => {
 		onMouseOver?.(event);
 		svg?.current?.querySelectorAll('path').forEach(p => {
 			const c = d3.hsl(p.getAttribute('data-fill-default'));
-			c.s += -0.3
+			c.s += -0.3;
 			p.setAttribute('fill', c.toString());
 		});
 		const groupPaths = document.getElementById(groupId)?.querySelectorAll('path');
 		groupPaths?.forEach(p => {
 			const fillDefault: string = p.getAttribute('data-fill-default') || fill;
 			const c = d3.hsl(fillDefault);
-			c.s += -0.1
+			c.s += -0.1;
 			p.setAttribute('fill', c.toString());
 		});
 		const f = d3.hsl(fill);
-		f.s += 0.3
+		f.s += 0.3;
 		currentTarget.setAttribute('fill', f.toString());
 		currentTarget.setAttribute('opacity', '1');
-	}, [hovering, onMouseOver, svg, groupId, fill])
+	}, [hovering, onMouseOver, svg, groupId, fill]);
 
 	const handleMouseOut = useCallback(() => {
 		onMouseOut?.();
@@ -78,7 +81,7 @@ export const HexbinChartItem: FC<IHexbinChartItemProps> = (props) => {
 			p.setAttribute('fill', fd);
 			p.style.transform = transformDefault;
 		});
-	}, [hovering, onMouseOut, svg, transformDefault, fill])
+	}, [hovering, onMouseOut, svg, transformDefault, fill]);
 
 	return (
 		<path
