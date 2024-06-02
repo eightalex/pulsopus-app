@@ -29,8 +29,7 @@ export const ProtectedRoute: FC<IAppRouteProps> = observer(({ children }) => {
 	} = useStores();
 
 	const onAuth = useCallback(async () => {
-		// const token = decodeURIComponent(searchParams.get(QUERY_TOKEN) || sessionManager.token || '');
-		const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0ZDRiNzhjNi04NGVhLTRiN2YtOWVkYy05M2Y3MDEwMWQ4ZjgiLCJ1c2VybmFtZSI6ImFkbWluIGFkbWluIiwicm9sZXMiOlt7ImlkIjoiNTc5NTVlYmEtZjVjOS00MmZiLTlkNTEtNWM3ZjAzZjViNWZmIiwibmFtZSI6IkFETUlOIn1dLCJpYXQiOjE3MTczNjY1NTcsImV4cCI6MTcxNzM3MDA5N30.KzUQ8hFv4WauhRN1OTpQtT494As2W23Y8A3uWUHjUoI';
+		const token = decodeURIComponent(searchParams.get(QUERY_TOKEN) || sessionManager.token || '');
 		sessionManager.setToken(token.trim());
 
 		setSearchParams({});
