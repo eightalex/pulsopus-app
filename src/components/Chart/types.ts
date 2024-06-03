@@ -9,6 +9,8 @@ export interface IAxisBottomProps {
 		value: number;
 		title: string;
 	};
+	boundsWidth?: number;
+	boundsHeight?: number;
 }
 
 export interface IAxisLeftProps {

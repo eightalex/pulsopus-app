@@ -1,14 +1,14 @@
 import Box from '@mui/material/Box';
 import * as d3 from 'd3';
 import { isEqual, uniqWith } from 'lodash';
-import { FC, Fragment,MouseEvent, MutableRefObject, useCallback, useMemo, useRef, useState } from 'react';
+import { FC, Fragment, MouseEvent, MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { AxisBottom, AxisLeft, IChartBaseProps, IChartDataPoint, IInteractionData } from '@/components/Chart';
 import { ChartCursor } from '@/components/Chart/Base/ChartCursor';
 import { ChartSelectArea } from '@/components/Chart/Base/ChartSelectArea';
 import { TooltipChartLine } from '@/components/Chart/Base/TooltipChartLine';
 import {
-	AXIS_LEFT_OFFSET,
+	AXIS_LEFT_OFFSET, AXIS_TEXT_FILL, AXIS_TEXT_FONT_SIZE, AXIS_TEXT_OPACITY,
 	CHART_SELECT_MIN_LENGTH,
 	MARGIN_BOTTOM,
 	MARGIN_LEFT,
@@ -36,6 +36,7 @@ export const ChartBase: FC<IChartBaseProps> = (props) => {
 	} = props;
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
 	const svgRef = useRef<SVGSVGElement>();
+	const xAxisRef = useRef<SVGSVGElement>(null);
 
 	const [pressed, setPressed] = useState(false);
 	const [pressedPositions, setPressedPositions] = useState<IInteractionData<IChartDataPoint>[]>([]);
@@ -69,8 +70,10 @@ export const ChartBase: FC<IChartBaseProps> = (props) => {
 	const xValues = useMemo(() => data.map(d => d.x), [data]);
 	const [xMin, xMax] = d3.extent(data, (d) => d.x);
 	const xScale = useMemo(() => {
+		// .scaleLinear()
+		// .scaleTime()
 		return d3
-			.scaleLinear()
+			.scaleTime()
 			.domain([Number(xMin), Number(xMax)])
 			.range([0, boundsWidth]);
 	}, [xMin, xMax, boundsWidth]);
@@ -128,6 +131,25 @@ export const ChartBase: FC<IChartBaseProps> = (props) => {
 		setPressedPositions([]);
 	}, []);
 
+	useEffect(() => {
+		const xAxis = d3.select(xAxisRef.current);
+		xAxis.selectAll("*").remove();
+		const xAxisGenerator = d3.axisBottom(xScale);
+		const xAxesCall = xAxisGenerator.tickSize(0);
+		xAxis
+			.append("g")
+			.attr("transform", "translate(0," + boundsHeight + ")")
+			.call(xAxesCall.ticks(8));
+
+		xAxis.select(".domain")
+			.attr("stroke-width","0")
+			.attr("opacity","0");
+		xAxis.selectAll(".tick text")
+			.attr("font-size",AXIS_TEXT_FONT_SIZE)
+			.attr("fill",AXIS_TEXT_FILL)
+			.attr("fill-opacity",AXIS_TEXT_OPACITY);
+	}, [xScale, yScale, boundsHeight]);
+
 	return (
 		<Box
 			component="div"
@@ -158,14 +180,25 @@ export const ChartBase: FC<IChartBaseProps> = (props) => {
 					</g>
 
 					{!hideAxisX && (
-						<g transform={`translate(${AXIS_LEFT_OFFSET}, ${boundsHeight})`}>
-							<AxisBottom
-								xScale={xScale}
-								values={xValues}
-								{...axisBottomProps}
-							/>
-						</g>
+						<g
+							ref={xAxisRef}
+							width={width}
+							height={height}
+							transform={`translate(${AXIS_LEFT_OFFSET}, ${10})`}
+						/>
 					)}
+
+					{/*{!hideAxisX && (*/}
+					{/*	<g transform={`translate(${AXIS_LEFT_OFFSET}, ${boundsHeight})`}>*/}
+					{/*		<AxisBottom*/}
+					{/*			xScale={xScale}*/}
+					{/*			values={xValues}*/}
+					{/*			boundsWidth={boundsWidth}*/}
+					{/*			boundsHeight={boundsHeight}*/}
+					{/*			{...axisBottomProps}*/}
+					{/*		/>*/}
+					{/*	</g>*/}
+					{/*)}*/}
 				</g>
 
 				<g

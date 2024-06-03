@@ -1,9 +1,10 @@
+import * as d3 from 'd3';
 import moment from 'moment';
-import { FC, useMemo } from 'react';
+import { FC, useEffect, useMemo, useRef } from 'react';
 
 import { IAxisBottomProps } from '@/components/Chart';
 import {
-	AXIS_BOTTOM_PIX_PER_TICK,
+	AXIS_BOTTOM_PIX_PER_TICK, AXIS_LEFT_OFFSET,
 	AXIS_TEXT_FILL,
 	AXIS_TEXT_FONT_SIZE,
 	AXIS_TEXT_OPACITY
@@ -17,6 +18,7 @@ export const AxisBottom: FC<IAxisBottomProps> = (props) => {
 		values: initValues = [],
 		renderLabel,
 	} = props;
+
 	const range = xScale.range();
 
 	const values = useMemo(() => [...new Set(initValues)], [initValues]);
@@ -27,25 +29,9 @@ export const AxisBottom: FC<IAxisBottomProps> = (props) => {
 		const width = range[1] - range[0];
 		const numberOfTicksTarget = Math.floor(width / pixelsPerTick);
 
-		if (renderLabel && typeof renderLabel === 'function') {
-			return values.map((axisValue) => {
-				const { value = axisValue, title } = renderLabel(axisValue, values);
-				return {
-					value,
-					title,
-					xOffset: xScale(value),
-				};
-			});
-		}
-
-		// if (isDateValues) {
-		// 	return renderDateTimeLine(values)
-		// 		.map(({ value, title }) => ({ value, title, xOffset: xScale(value) }));
-		// }
-
 		return xScale
 			.ticks(numberOfTicksTarget)
-			.reduce((acc, value, index, values) => {
+			.reduce((acc, value, index) => {
 				return [...acc, {
 					value,
 					title: dayMomentFormatter(values, value),
@@ -53,6 +39,22 @@ export const AxisBottom: FC<IAxisBottomProps> = (props) => {
 					index,
 				}];
 			}, []);
+
+		// if (renderLabel && typeof renderLabel === 'function') {
+		// 	return values.map((axisValue) => {
+		// 		const { value = axisValue, title } = renderLabel(axisValue, values);
+		// 		return {
+		// 			value,
+		// 			title,
+		// 			xOffset: xScale(value),
+		// 		};
+		// 	});
+		// }
+
+		// if (isDateValues) {
+		// 	return renderDateTimeLine(values)
+		// 		.map(({ value, title }) => ({ value, title, xOffset: xScale(value) }));
+		// }
 
 		// return xScale
 		// 	.ticks(numberOfTicksTarget)
@@ -67,6 +69,7 @@ export const AxisBottom: FC<IAxisBottomProps> = (props) => {
 		// 			xOffset: xScale(value),
 		// 		}];
 		// 	}, []);
+
 	}, [renderLabel, isDateValues, range, pixelsPerTick, xScale, values]);
 
 	return (

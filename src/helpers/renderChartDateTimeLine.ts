@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import moment from 'moment';
+import moment, { Duration } from 'moment';
 import {
 	AXIS_BOTTOM_RENDER_LIMIT,
 	AXIS_BOTTOM_RENDER_LIMIT_MAX,
@@ -8,6 +8,13 @@ import {
 import { ERenderFormatType } from "@/constants/EHexDatetimeForma.ts";
 
 const getDiffByType = (from, to, type): number => Math.abs(moment(to).endOf('day').diff(moment(from).startOf('day'), type, true));
+
+const getDuration = (from: number, to: number): Duration => {
+	const start = moment(from).startOf('day');
+	const end = moment(to).endOf('day');
+	const diff = Math.abs(end.diff(start, 'ms', true));
+	return moment.duration(diff, 'ms');
+};
 
 const distributeValues = (array: number[], length = AXIS_BOTTOM_RENDER_LIMIT_MAX): number[] => {
 	if (array.length % 2 !== 0) {
@@ -86,10 +93,20 @@ const DIFF_YEAR_RENDER_LIMIT = 4;
 
 const dateTimeDiffFormatType = (values: number[]): ERenderFormatType => {
 	const [from, to] = d3.extent(values, (d) => d);
-	const diffDay = getDiffByType(from, to, 'day');
-	const diffMonth = getDiffByType(from, to, 'month');
-	const diffQuarter = getDiffByType(from, to, 'quarter');
-	const diffYear = getDiffByType(from, to, 'year');
+	// const diffDay = getDiffByType(from, to, 'day');
+	// const diffMonth = getDiffByType(from, to, 'month');
+	// const diffQuarter = getDiffByType(from, to, 'quarter');
+	// const diffYear = getDiffByType(from, to, 'year');
+	// const isDaysMinRender = diffDay <= AXIS_BOTTOM_RENDER_LIMIT_MAX;
+	// const isDaysMaxRender = diffMonth < DIFF_MONTH_RENDER_LIMIT;
+	// const isMonthRender = diffMonth >= DIFF_MONTH_RENDER_LIMIT && diffYear < DIFF_QUATER_YEAR_RENDER_LIMIT;
+	// const isQuarterRender = diffYear >= DIFF_QUATER_YEAR_RENDER_LIMIT && diffYear <= DIFF_YEAR_RENDER_LIMIT;
+	// const isYearRender =diffYear > DIFF_YEAR_RENDER_LIMIT;
+
+	const duration = getDuration(Number(from), Number(to));
+	const diffDay = duration.asDays();
+	const diffMonth = duration.asMonths();
+	const diffYear = duration.asYears();
 
 	const isDaysMinRender = diffDay <= AXIS_BOTTOM_RENDER_LIMIT_MAX;
 	const isDaysMaxRender = diffMonth < DIFF_MONTH_RENDER_LIMIT;
