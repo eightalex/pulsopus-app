@@ -41,4 +41,4 @@ export const DOCUMENTS_TITLES = {
 };
 
 export const QUERY_TOKEN = 'token';
-export const QUERY_REDIRECT = 'redirect';
+export const QUERY_REDIRECT = 'target';
