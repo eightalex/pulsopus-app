@@ -43,7 +43,9 @@ function HexbinChart<T>(props: IHexbinChartProps<T>) {
 	const boundsWidth = useMemo(() => width, [width]);
 	const boundsHeight = useMemo(() => height , [height]);
 
-	const hexes = fillMatrixHexbinChart(matrix, boundsWidth, boundsHeight, r);
+	const hexes = useMemo(
+		() => fillMatrixHexbinChart(matrix, boundsWidth, boundsHeight, r),
+		[matrix, boundsWidth, boundsHeight, r]);
 
 	const hexbinGenerator = useMemo(() => hexbin()
 			.radius(r)
@@ -52,7 +54,7 @@ function HexbinChart<T>(props: IHexbinChartProps<T>) {
 
 	const hexagonPath = useMemo(() => hexbinGenerator.hexagon(), [hexbinGenerator]);
 
-	const data = hexes.matrix.flatMap((row, y, arr) =>
+	const data = useMemo(() => hexes.matrix.flatMap((row, y, arr) =>
 		row.map((col, x) => ({
 			x,
 			y,
@@ -62,7 +64,7 @@ function HexbinChart<T>(props: IHexbinChartProps<T>) {
 			data: col?.data ? { ...col.data } : null,
 			idx: y * arr.length + x,
 		}))
-	);
+	), [hexes]);
 
 	const shapes = useMemo(() => data.reduce((acc, item) => {
 		const arr = acc[item?.fill] || [];
@@ -70,13 +72,24 @@ function HexbinChart<T>(props: IHexbinChartProps<T>) {
 		return acc;
 	}, {} as Record<string, unknown>), [data]);
 
-	const renderShapes = useMemo(() => Object.entries(shapes).map(([k, s]) => {
+	const renderShapes = useMemo(() => Object.entries(shapes)
+		.map(([_, v]) => [uuidv4() as string, v])
+		.map(([k, s]) => {
 		const hexbinGroupData = hexbinGenerator(
 			s.map((item) => [item.xc, item.yc])
 		);
 
 		return (
-			<g id={k} key={`${k}-${uuidv4()}`}>
+			<g
+				id={k}
+				key={`${k}-${uuidv4()}`}
+				style={{
+					userSelect: 'none',
+					pointerEvents: 'auto'
+				}}
+				onClick={console.log}
+				onMouseUp={console.log}
+			>
 			{/*<g id={k} key={k}>*/}
 				{hexbinGroupData.map((d, i) => {
 					const point = s[i];
