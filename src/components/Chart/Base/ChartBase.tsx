@@ -135,11 +135,14 @@ export const ChartBase: FC<IChartBaseProps> = (props) => {
 		const xAxis = d3.select(xAxisRef.current);
 		xAxis.selectAll("*").remove();
 		const xAxisGenerator = d3.axisBottom(xScale);
-		const xAxesCall = xAxisGenerator.tickSize(0);
+		const xAxesCall = xAxisGenerator
+			.tickSize(0)
+			.tickFormat(d3.timeFormat('%b %d'));
 		xAxis
 			.append("g")
 			.attr("transform", "translate(0," + boundsHeight + ")")
 			.call(xAxesCall.ticks(8));
+
 
 		xAxis.select(".domain")
 			.attr("stroke-width","0")
