@@ -162,6 +162,8 @@ const loaderSurfaceDefault = allGreen500;
 const loaderSurfaceSecondary = typographyPrimary;
 const loaderSurfaceAlternative = allGray600;
 
+const tableHeadBackgroundColor = '#F2F4F833';
+
 export const extendPalette: IExtendPalette = {
 	backgroundColorPrimary,
 	backgroundColorSecondary,
@@ -285,6 +287,8 @@ export const extendPalette: IExtendPalette = {
 	loaderSurfaceDefault,
 	loaderSurfaceSecondary,
 	loaderSurfaceAlternative,
+	//
+	tableHeadBackgroundColor
 };
 
 export const typographyColors: ITypographyColors = {

@@ -1,11 +1,11 @@
 import { MouseEvent, ReactNode, useCallback, useMemo, useState } from "react";
 import ReactDOMServer from 'react-dom/server';
 
+import { TableHeadCellSort } from "@/components/Table";
 import Typography from "@/components/Typography";
 
+import { ITableHeadCellProps } from "../types.ts";
 import { TableHeadCellStyled, TableHeadCellTitleStyled } from "./styled.tsx";
-import { TableHeadCellSort } from "./TableHeadCellSort.tsx";
-import { ITableHeadCellProps } from "./types.ts";
 
 const isChildNull = (children: ReactNode) => {
     // return !Children.count(children);
@@ -14,7 +14,7 @@ const isChildNull = (children: ReactNode) => {
 
 export function TableHeadCell(props: ITableHeadCellProps){
     const {
-        title,
+        content,
         onClick,
         sortDirection,
         disableSortView,
@@ -28,8 +28,8 @@ export function TableHeadCell(props: ITableHeadCellProps){
     }, [onClick]);
 
     const disabledSortView = useMemo((): boolean => {
-        return Boolean(disableSortView || isChildNull(title));
-    }, [disableSortView, title]);
+        return Boolean(disableSortView || isChildNull(content));
+    }, [disableSortView, content]);
 
     return (
         <TableHeadCellStyled
@@ -42,7 +42,7 @@ export function TableHeadCell(props: ITableHeadCellProps){
                 onClick={handleClick}
             >
                 <Typography variant="text" textTransform='uppercase'>
-                    {title}
+                    {content}
                 </Typography>
                 <TableHeadCellSort
                     sortDirection={sortDirection}

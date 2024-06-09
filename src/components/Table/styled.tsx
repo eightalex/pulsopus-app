@@ -1,30 +1,35 @@
-import Stack, { StackProps } from "@mui/material/Stack";
 import { styled } from '@mui/system';
 
-interface ITableHeadCellStyledProps {
-    canAction: boolean;
-}
+export const TableStyled = styled('table')({
+    tableLayout: 'auto',
+    width: '100%',
+    textIndent: 0,
+    borderCollapse: 'collapse',
+    // borderSpacing: '2px',
+    borderSpacing: '2ch 0',
+    borderColor: 'red',
+    backgroundColor: 'green',
 
-export const TableHeadCellTitleStyled = styled(
-    (props: StackProps) =>
-        <Stack {...props}
-               component={'div'}
-               direction='row'
-               spacing={1}
-    />
-)(({ theme: { spacing } }) => ({
-    padding: spacing(3, 3.5),
-    alignItems: 'center',
-    justifyContent: 'space-between',
-}), { name: 'TableHeadCellTitleStyled' });
+    '&:is(td, th)': {
+        borderStyle: 'solid',
+        padding: '.5ch 1ch',
+        borderColor: 'red',
+        borderInlineWidth: '1px',
+    },
 
-export const TableHeadCellStyled = styled(
-    'th',
-    { shouldForwardProp: prop => prop !== 'canAction' }
-)<ITableHeadCellStyledProps>(({ canAction = false }) => ({
-    cursor: canAction ? 'pointer' : 'default',
-    backgroundColor: 'transparent',
-    userSelect: 'none',
-    height: 'auto',
-    minHeight: '48px',
-}));
+    // borderSpacing: 0,
+    //
+    // border: '1px solid transparent',
+    // boxSizing: 'border-box',
+    //
+    '& *': {
+        boxSizing: 'border-box',
+    }
+});
+
+/**
+ *   &:is(td, th) {
+ *     border-style: solid;
+ *     padding: .5ch 1ch;
+ *   }
+ *   */

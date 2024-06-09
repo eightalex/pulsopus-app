@@ -121,6 +121,8 @@ export interface IExtendPalette {
 	loaderSurfaceDefault: string;
 	loaderSurfaceSecondary: string;
 	loaderSurfaceAlternative: string;
+	//
+	tableHeadBackgroundColor: string;
 }
 
 export interface ITypographyColors {

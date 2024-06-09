@@ -1,9 +1,4 @@
 import { styled } from '@mui/system';
-
-export const TableStyled = styled('table')({
-    tableLayout: 'fixed',
-    width: '100%',
-    borderCollapse: 'collapse',
-    border: '1px solid transparent',
-});
 export const TableHeadStyled = styled('thead')({});
+
+export const TableHeadRowStyled = styled('tr')({});

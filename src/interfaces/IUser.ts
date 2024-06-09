@@ -31,5 +31,7 @@ export interface IUser {
 	username: string;
 	avatar?: string;
 	roles: EUserRole[];
-	activity: IActivity[]
+	activity: IActivity[];
+	status: 'INACTIVE' | 'ACTIVE'
+	department: Pick<IDepartment, 'id' | 'name' | 'label'>
 }

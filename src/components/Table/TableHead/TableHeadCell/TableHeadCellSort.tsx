@@ -5,7 +5,7 @@ import { FC, useMemo } from "react";
 import { ArrowSlimDownIcon, ArrowSlimUpIcon } from '@/icons';
 import { createSvgIcon } from "@/icons/utils/createSvgIcon.tsx";
 
-import { ITableHeadCellSortProps } from "./types.ts";
+import { ITableHeadCellSortProps } from "../types.ts";
 
 const renderSortDirection: Record<SortDirection, ReturnType<typeof createSvgIcon>> = {
     asc: ArrowSlimUpIcon,

@@ -1,6 +1,6 @@
 /* eslint-disable */
 // @ts-expect-error
-import ArrowSlimDown from '@/assets/icons/arrow-slim-down.svg?react';
+import ArrowSlimUp from '@/assets/icons/arrow-slim-up.svg?react';
 import { createSvgIcon } from './utils/createSvgIcon';
 
-export const ArrowSlimDownIcon = createSvgIcon(ArrowSlimDown, { viewBox: '0 0 16 16'});
+export const ArrowSlimUpIcon = createSvgIcon(ArrowSlimUp, { viewBox: '0 0 16 16'});

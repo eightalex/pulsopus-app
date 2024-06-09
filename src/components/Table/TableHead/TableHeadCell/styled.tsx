@@ -22,11 +22,19 @@ export const TableHeadCellStyled = styled(
     'th',
     { shouldForwardProp: prop => prop !== 'canAction' }
 )<ITableHeadCellStyledProps>(({ canAction = false, theme: { palette }  }) => ({
-    border: '2px solid #000',
-    cursor: canAction ? 'pointer' : 'default',
-    // backgroundColor: 'transparent',
-    backgroundColor: palette.tableHeadBackgroundColor,
-    userSelect: 'none',
-    height: 'auto',
-    minHeight: '48px',
+    // borderWidth: '2px',
+    // borderStyle: 'solid',
+    // borderColor: '#000',
+    // cursor: canAction ? 'pointer' : 'default',
+    // backgroundColor: palette.tableHeadBackgroundColor,
+    // userSelect: 'none',
+    // height: 'auto',
+    // minHeight: '48px',
+    //
+    // '&:first-of-type': {
+    //     borderLeftColor: palette.tableHeadBackgroundColor,
+    // },
+    // '&:last-of-type': {
+    //     borderRightColor: palette.tableHeadBackgroundColor,
+    // }
 }));
