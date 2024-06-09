@@ -7,6 +7,7 @@ export const ContentContainerStyled = styled(
     (props: StackProps) => <Stack spacing={8} {...props} />
 )(({ theme: { spacing } }) => ({
     flexGrow: 1,
+    overflow: 'hidden',
     paddingTop: spacing(8),
     height: "100%",
     position: 'relative',

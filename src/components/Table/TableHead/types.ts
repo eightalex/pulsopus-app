@@ -1,5 +1,5 @@
 import { DetailedHTMLProps, MouseEvent, ReactNode, ThHTMLAttributes } from "react";
-import { ITableHook } from "@/components/Table/types.ts";
+import { ITableHook, TSortDirection } from "@/components/Table/types.ts";
 
 export interface ITableHeadProps extends ITableHook {}
 export interface ITableHeadCellSortProps {
@@ -15,4 +15,6 @@ export interface ITableHeadCellProps
     extends Omit<IThHTMLAttributes, 'title'>, ITableHeadCellSortProps {
     onClick?: (event: MouseEvent<HTMLDivElement>) => void;
     content?: string | ReactNode;
+    children?: ReactNode;
+    filter?: false | ReactNode;
 }

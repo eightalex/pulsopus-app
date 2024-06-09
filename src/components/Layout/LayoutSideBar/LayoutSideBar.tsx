@@ -28,8 +28,11 @@ export const LayoutSideBar: FC<ILayoutSideBarProps> = ({ children }) => {
                 <Header/>
                 <Stack
                     flexGrow={1}
-                    height="100%"
-                    position='relative'
+                    sx={{
+                        height: "100%",
+                        position: 'relative',
+                        overflow: 'hidden',
+                    }}
                 >
                     {children}
                 </Stack>

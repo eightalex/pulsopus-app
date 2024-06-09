@@ -12,12 +12,13 @@ const isChildNull = (children: ReactNode) => {
     return !ReactDOMServer.renderToStaticMarkup(children);
 };
 
-export function TableHeadCell(props: ITableHeadCellProps){
+export function TableHeadCell(props: ITableHeadCellProps) {
     const {
         content,
         onClick,
         sortDirection,
         disableSortView,
+        filter= null,
         ...restProps
     } = props;
     const [rowHovered, setRowHovered] = useState(false);
@@ -33,23 +34,30 @@ export function TableHeadCell(props: ITableHeadCellProps){
 
     return (
         <TableHeadCellStyled
+            scope='col'
             {...restProps}
             onMouseEnter={() => setRowHovered(true)}
             onMouseLeave={() => setRowHovered(false)}
             canAction={!disabledSortView}
         >
-            <TableHeadCellTitleStyled
-                onClick={handleClick}
-            >
-                <Typography variant="text" textTransform='uppercase'>
-                    {content}
-                </Typography>
-                <TableHeadCellSort
-                    sortDirection={sortDirection}
-                    showSortDefaultView={rowHovered}
-                    disableSortView={disabledSortView}
-                />
-            </TableHeadCellTitleStyled>
+            {!filter && (
+                <TableHeadCellTitleStyled onClick={handleClick}>
+                    <Typography variant="text" textTransform='uppercase'>
+                        {content}
+                    </Typography>
+                    <TableHeadCellSort
+                        sortDirection={sortDirection}
+                        showSortDefaultView={rowHovered}
+                        disableSortView={disabledSortView}
+                    />
+                </TableHeadCellTitleStyled>
+            )}
+            {/*{Boolean(filter) && (*/}
+            {/*    <TableHeadCellTitleStyled>*/}
+            {/*        {filter}*/}
+            {/*    </TableHeadCellTitleStyled>*/}
+            {/*)}*/}
+            {Boolean(filter) && filter}
         </TableHeadCellStyled>
     );
 }

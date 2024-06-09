@@ -7,3 +7,5 @@ export * from './TableHead';
 //
 export * from './TableBody';
 export type * from './TableHead/types.ts';
+//
+export * from './constants.ts';

@@ -162,7 +162,18 @@ const loaderSurfaceDefault = allGreen500;
 const loaderSurfaceSecondary = typographyPrimary;
 const loaderSurfaceAlternative = allGray600;
 
-const tableHeadBackgroundColor = '#F2F4F833';
+// table
+const tableHeadBackgroundDefault = '#F2F4F833';
+const tableBodyBackgroundDefault = 'transparent';
+const tableBodyBackgroundHover = `${allGray500}33`;
+const tableBodyBackgroundSelect = allGray300;
+const tableBodyBorderDefault = `${allGray500}33`;
+const tableBodyBorderHover = tableBodyBorderDefault;
+const tableBodyBorderSelect = `${allGray500}33`;
+
+// checkbox
+const checkboxPrimarySurfaceChecked = allGreen500;
+const checkboxPrimarySurfaceDisabled = allStone600;
 
 export const extendPalette: IExtendPalette = {
 	backgroundColorPrimary,
@@ -288,7 +299,16 @@ export const extendPalette: IExtendPalette = {
 	loaderSurfaceSecondary,
 	loaderSurfaceAlternative,
 	//
-	tableHeadBackgroundColor
+	tableHeadBackgroundDefault,
+	tableBodyBackgroundDefault,
+	tableBodyBackgroundHover,
+	tableBodyBackgroundSelect,
+	tableBodyBorderDefault,
+	tableBodyBorderHover,
+	tableBodyBorderSelect,
+	//
+	checkboxPrimarySurfaceChecked,
+	checkboxPrimarySurfaceDisabled,
 };
 
 export const typographyColors: ITypographyColors = {

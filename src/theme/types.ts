@@ -122,7 +122,16 @@ export interface IExtendPalette {
 	loaderSurfaceSecondary: string;
 	loaderSurfaceAlternative: string;
 	//
-	tableHeadBackgroundColor: string;
+	tableHeadBackgroundDefault: string;
+	tableBodyBackgroundDefault: string;
+	tableBodyBackgroundHover: string;
+	tableBodyBackgroundSelect: string;
+	tableBodyBorderDefault: string;
+	tableBodyBorderHover: string;
+	tableBodyBorderSelect: string;
+	//
+	checkboxPrimarySurfaceChecked: string;
+	checkboxPrimarySurfaceDisabled: string;
 }
 
 export interface ITypographyColors {

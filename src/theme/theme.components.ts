@@ -1,7 +1,7 @@
-import { extendPalette, typographyColors } from '@/theme/extendPalette';
-import { typographyComponent } from '@/theme/theme.typography';
 import { buttonClasses } from '@mui/material/Button';
 import { createTheme, ThemeOptions } from '@mui/material/styles';
+import { extendPalette, typographyColors } from '@/theme/extendPalette';
+import { typographyComponent } from '@/theme/theme.typography';
 
 const theme = createTheme();
 
@@ -739,6 +739,30 @@ export const components: ThemeOptions['components'] = {
 				backgroundColor: '#050505',
 				margin: 12,
 				maxHeight: `calc(100% - 24px)`,
+			},
+		},
+	},
+	MuiCheckbox: {
+		defaultProps: {
+			color: 'primary',
+		},
+		styleOverrides: {
+			root: {
+				width: 24,
+				height: 24,
+				strokeWidth: '10px',
+			},
+			colorPrimary: {
+				'&.Mui-checked': {
+					'& > svg': {
+						color: extendPalette.checkboxPrimarySurfaceChecked,
+					}
+				},
+				'&.Mui-disabled': {
+					'& > svg': {
+						color: extendPalette.checkboxPrimarySurfaceDisabled,
+					}
+				}
 			},
 		},
 	},

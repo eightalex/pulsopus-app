@@ -1,5 +1,5 @@
+import Stack from "@mui/material/Stack";
 import {
-    ColumnDef,
     flexRender,
     getCoreRowModel,
     getSortedRowModel,
@@ -8,13 +8,35 @@ import {
     useReactTable,
 } from '@tanstack/react-table';
 import { observer } from "mobx-react";
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
-import { Table } from "@/components/Table";
+import { ETableColumnType, ETableFilterVariant, IColumnDef, Table } from "@/components/Table";
 import { useStores } from "@/hooks";
 import { IUser } from "@/interfaces";
 
-//custom sorting logic for one of our enum columns
+function IndeterminateCheckbox({
+                                   indeterminate,
+                                   className = '',
+                                   ...rest
+                               }: { indeterminate?: boolean } & HTMLProps<HTMLInputElement>) {
+    const ref = React.useRef<HTMLInputElement>(null!);
+
+    React.useEffect(() => {
+        if (typeof indeterminate === 'boolean') {
+            ref.current.indeterminate = !rest.checked && indeterminate;
+        }
+    }, [ref, indeterminate]);
+
+    return (
+        <input
+            type="checkbox"
+            ref={ref}
+            className={className + ' cursor-pointer'}
+            {...rest}
+        />
+    );
+}
+
 const sortStatusFn: SortingFn<IUser> = (rowA, rowB, _columnId) => {
     const statusA = rowA.original.status;
     const statusB = rowB.original.status;
@@ -26,51 +48,52 @@ export const AdministrationTable = observer(() => {
     const { rootStore: { usersStore: { users } } } = useStores();
 
     const [sorting, setSorting] = useState<SortingState>([]);
+    const [rowSelection, setRowSelection] = useState<{ [index: number]: boolean }>({});
 
-    const columns = useMemo<ColumnDef<IUser>[]>(
+    const columns = useMemo<IColumnDef<Data>[]>(
         () => [
             {
                 accessorKey: 'username',
                 header: 'Title',
                 cell: info => info.getValue(),
+                size: 230,
             },
             {
                 accessorKey: 'department',
                 header: 'Department',
                 accessorFn: (row) => row.department.label,
-                cell: info => {
-                    return (info.getValue() as IUser["department"]).label;
+                cell: info => info.getValue(),
+                size: 180,
+                meta: {
+                    filterVariant: ETableFilterVariant.SELECT,
                 },
+            },
+            {
+                header: 'Date',
+                cell: () => '25.07.2023',
+                size: 140,
             },
             {
                 accessorKey: 'roles',
                 header: 'Roles',
-                cell: info => info.getValue(),
-
+                cell: info => {
+                    return [...info.getValue()].join('/');
+                },
+                meta: {
+                    filterVariant: ETableFilterVariant.SELECT,
+                },
             },
-            // {
-            //     accessorFn: row => row.lastName,
-            //     id: 'lastName',
-            //     cell: info => info.getValue(),
-            //     header: () => <span>Last Name</span>,
-            //     sortUndefined: 'last', //force undefined values to the end
-            //     sortDescFirst: false, //first sort order will be ascending (nullable values can mess up auto detection of sort order)
-            // },
-            // {
-            //     accessorKey: 'visits',
-            //     header: () => <span>Visits</span>,
-            //     sortUndefined: 'last', //force undefined values to the end
-            // },
             {
                 accessorKey: 'status',
                 header: 'Status',
-                sortingFn: sortStatusFn, //use our custom sorting function for this enum column
+                meta: {
+                    filterVariant: ETableFilterVariant.SELECT,
+                },
+                sortingFn: sortStatusFn,
             },
-            // {
-            //     accessorKey: 'roles',
-            //     header: 'Roles',
-            //     invertSorting: true, //invert the sorting order (golf score-like where smaller is better)
-            // },
+            {
+                type: ETableColumnType.ROW_SELECT
+            },
         ],
         []
     );
@@ -80,6 +103,8 @@ export const AdministrationTable = observer(() => {
     const table = useReactTable({
         columns,
         data,
+        enableRowSelection: true,
+        onRowSelectionChange: setRowSelection,
         debugTable: true,
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(), //client-side sorting
@@ -90,6 +115,7 @@ export const AdministrationTable = observer(() => {
         //no need to pass pageCount or rowCount with client-side pagination as it is calculated automatically
         state: {
             sorting,
+            rowSelection,
         },
         // autoResetPageIndex: false, // turn off page index reset when sorting or filtering - default on/true
         // enableMultiSort: false, //Don't allow shift key to sort multiple columns - default on/true
@@ -101,81 +127,97 @@ export const AdministrationTable = observer(() => {
 
     //access sorting state from the table instance
     console.log(table.getState().sorting);
+    const test = true;
+
+    if (test) {
+        return (
+            <Stack direction='row' maxWidth='1000px' width='100%'>
+                <Table
+                    // data={[...data, ...data]}
+                    data={data}
+                    columns={columns}
+                    numCol
+                />
+            </Stack>
+        );
+    }
 
     return (
         <>
-            <Table
-                data={data}
-                columns={columns}
-                numCol
-            />
-        <div className="p-2">
-            <div className="h-2" />
-            <table>
-                <thead>
-                {table.getHeaderGroups().map(headerGroup => (
-                    <tr key={headerGroup.id}>
-                        {headerGroup.headers.map(header => {
+            <Stack direction='row' maxWidth='1000px' width='100%'>
+                <Table
+                    data={data}
+                    columns={columns}
+                    numCol
+                />
+            </Stack>
+            <div className="p-2">
+                <div className="h-2"/>
+                <table>
+                    <thead>
+                    {table.getHeaderGroups().map(headerGroup => (
+                        <tr key={headerGroup.id}>
+                            {headerGroup.headers.map(header => {
+                                return (
+                                    <th key={header.id} colSpan={header.colSpan}>
+                                        {header.isPlaceholder ? null : (
+                                            <div
+                                                className={
+                                                    header.column.getCanSort()
+                                                        ? 'cursor-pointer select-none'
+                                                        : ''
+                                                }
+                                                onClick={header.column.getToggleSortingHandler()}
+                                                title={
+                                                    header.column.getCanSort()
+                                                        ? header.column.getNextSortingOrder() === 'asc'
+                                                            ? 'Sort ascending'
+                                                            : header.column.getNextSortingOrder() === 'desc'
+                                                                ? 'Sort descending'
+                                                                : 'Clear sort'
+                                                        : undefined
+                                                }
+                                            >
+                                                {flexRender(
+                                                    header.column.columnDef.header,
+                                                    header.getContext()
+                                                )}
+                                                {{
+                                                    asc: ' 🔼',
+                                                    desc: ' 🔽',
+                                                }[header.column.getIsSorted() as string] ?? null}
+                                            </div>
+                                        )}
+                                    </th>
+                                );
+                            })}
+                        </tr>
+                    ))}
+                    </thead>
+                    <tbody>
+                    {table
+                        .getRowModel()
+                        .rows.slice(0, 10)
+                        .map(row => {
                             return (
-                                <th key={header.id} colSpan={header.colSpan}>
-                                    {header.isPlaceholder ? null : (
-                                        <div
-                                            className={
-                                                header.column.getCanSort()
-                                                    ? 'cursor-pointer select-none'
-                                                    : ''
-                                            }
-                                            onClick={header.column.getToggleSortingHandler()}
-                                            title={
-                                                header.column.getCanSort()
-                                                    ? header.column.getNextSortingOrder() === 'asc'
-                                                        ? 'Sort ascending'
-                                                        : header.column.getNextSortingOrder() === 'desc'
-                                                            ? 'Sort descending'
-                                                            : 'Clear sort'
-                                                    : undefined
-                                            }
-                                        >
-                                            {flexRender(
-                                                header.column.columnDef.header,
-                                                header.getContext()
-                                            )}
-                                            {{
-                                                asc: ' 🔼',
-                                                desc: ' 🔽',
-                                            }[header.column.getIsSorted() as string] ?? null}
-                                        </div>
-                                    )}
-                                </th>
+                                <tr key={row.id}>
+                                    {row.getVisibleCells().map(cell => {
+                                        return (
+                                            <td key={cell.id}>
+                                                {flexRender(
+                                                    cell.column.columnDef.cell,
+                                                    cell.getContext()
+                                                )}
+                                            </td>
+                                        );
+                                    })}
+                                </tr>
                             );
                         })}
-                    </tr>
-                ))}
-                </thead>
-                <tbody>
-                {table
-                    .getRowModel()
-                    .rows.slice(0, 10)
-                    .map(row => {
-                        return (
-                            <tr key={row.id}>
-                                {row.getVisibleCells().map(cell => {
-                                    return (
-                                        <td key={cell.id}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext()
-                                            )}
-                                        </td>
-                                    );
-                                })}
-                            </tr>
-                        );
-                    })}
-                </tbody>
-            </table>
-            <pre>{JSON.stringify(sorting, null, 2)}</pre>
-        </div>
+                    </tbody>
+                </table>
+                <pre>{JSON.stringify(sorting, null, 2)}</pre>
+            </div>
         </>
     );
 });

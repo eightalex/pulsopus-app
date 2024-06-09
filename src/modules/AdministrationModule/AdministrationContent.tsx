@@ -8,6 +8,7 @@ export const AdministrationContent = observer(() => {
         <Stack
             sx={{
                 width: '100%',
+                flexGrow: 1,
             }}
         >
             <AdministrationTable/>
