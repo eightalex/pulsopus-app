@@ -1,32 +1,43 @@
 import MenuItem from "@mui/material/MenuItem";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
-import React, { FC, useCallback } from 'react';
+import { SelectChangeEvent } from "@mui/material/Select";
+import { flexRender } from "@tanstack/react-table";
+import { FC, useCallback } from 'react';
 
 import Typography from "@/components/Typography";
-import {SelectStyled} from "./styled.tsx";
+
+import { TableHeadSelectStyled } from "./styled.tsx";
 export interface ITableSelect {
+    title?: string;
     value?: string;
     onChange?: (value?: string) => void;
     options?: Array<string | number>;
 }
 export const TableSelect: FC<ITableSelect> = (props) => {
-    const { value = '', onChange, options = [] } = props;
-    const handleChange = useCallback((event: SelectChangeEvent) => {
-        onChange?.(event.target.value);
+    const { title, value = '', onChange, options = [] } = props;
+
+    const handleChange = useCallback((event: SelectChangeEvent<unknown>) => {
+        const v = event?.target?.value as string;
+        onChange?.(v);
     }, [onChange]);
+
     return (
-        <SelectStyled
+        <TableHeadSelectStyled
             value={value}
+            label={title}
             onChange={handleChange}
-            fullWidth
-            // variant="filled"
-            variant="outlined"
-            renderValue={(value) => {
-                if(!value) return <Typography>empty</Typography>;
-                return <Typography>{value}</Typography>;
+            inputProps={{
+                value: value || title,
+                placeholder: title,
+            }}
+            renderValue={(renderValue) => {
+                const v = renderValue as string;
+                if(!value) return (
+                    <Typography textTransform='uppercase'>{title}</Typography>
+                );
+                return <span>Test {v}</span>;
             }}
         >
-            <MenuItem value=''>
+            <MenuItem disabled={!value} value=''>
                 {/*<em>*/}
                 {/*    {flexRender(*/}
                 {/*        header.column.columnDef.header,*/}
@@ -40,6 +51,6 @@ export const TableSelect: FC<ITableSelect> = (props) => {
                     {value}
                 </MenuItem>
             ))}
-        </Select>
+        </TableHeadSelectStyled>
     );
 };

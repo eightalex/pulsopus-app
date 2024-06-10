@@ -1,50 +1,67 @@
 import Select, { SelectProps } from "@mui/material/Select";
 import { styled } from '@mui/system';
 
-export const SelectStyled = styled(
-    (props: SelectProps) => <Select {...props} variant="filled"/>
-)({
+import { CaretDownIcon } from '@/icons';
+
+export const TableHeadSelectStyled = styled(
+    (props: Omit<SelectProps, 'variant'>) =>
+        <Select
+            variant='filled'
+            // IconComponent={(className) => {
+            //     return <CaretDownIcon fontSize='extraSmall' className={className}/>;
+            // }}
+            MenuProps={{
+                sx: ({ extendPalette }) => ({
+                    '& .MuiMenu-paper': {
+                        WebkitTextFillColor: extendPalette.autocompleteOptionTextDefault,
+                        borderRadius: 0,
+                        // backgroundColor: '#1C1C1C',
+                        backgroundColor: 'transparent',
+                        marginTop: 0.5,
+                        overflow: 'visible'
+                    },
+                    '& .MuiList-root': {
+                        minWidth: 'unset',
+                        width: 'calc(100% + 8px)',
+                        transform: 'translateX(-4px)',
+                    },
+                    '& .MuiMenuItem-root': {
+                        '&:hover': {
+                            backgroundColor: extendPalette.autocompleteOptionHover,
+                        },
+                    },
+                    '&[aria-selected="true"]': {
+                        backgroundColor: extendPalette.autocompleteOptionActive,
+                    },
+                    '&[aria-selected="true"].Mui-focused': {
+                        backgroundColor: extendPalette.autocompleteOptionPressed,
+                    },
+                    '& .Mui-selected': {
+                        backgroundColor: extendPalette.autocompleteOptionActive,
+                    },
+                })
+            }}
+            fullWidth={true}
+            {...props}
+        />
+)(({ theme: { spacing } }) => ({
     width: '100%',
     height: 'auto',
     maxHeight: '100%',
     flexGrow: 1,
-    zIndex: 0,
-});
-//
-// export const TableBodyRowStyled = styled(TableRow)(({ theme: { extendPalette } }) => ({
-//     height: DEFAULT_ROW_BODY_HEIGHT,
-//     maxHeight: DEFAULT_ROW_BODY_HEIGHT,
-//     width: '100%',
-//     border: '1px solid transparent',
-//
-//     "&:hover td": {
-//         borderColor: extendPalette.tableBodyBorderHover,
-//         backgroundColor: extendPalette.tableBodyBackgroundHover,
-//     }
-// }));
-//
-// export const TableBodyCellStyled = styled(
-//     TableCell,
-//     {
-//         shouldForwardProp: propName => propName !== 'selected',
-//     }
-// )<ITableBodyCellStyledProps>(({ selected = false, theme: { spacing, extendPalette } }) => ({
-//     boxSizing: 'border-box',
-//     borderWidth: 1,
-//     borderStyle: 'solid',
-//     borderColor: selected
-//         ? extendPalette.tableBodyBorderSelect
-//         : extendPalette.tableBodyBorderDefault,
-//     backgroundColor: selected
-//         ? extendPalette.tableBodyBackgroundSelect
-//         : extendPalette.tableBodyBackgroundDefault,
-//     padding: spacing(0.5, 3),
-//     height: 'auto',
-//     overflow: 'auto',
-//     minHeight: DEFAULT_ROW_BODY_HEIGHT,
-//
-//     '&:hover': {
-//         borderColor: extendPalette.tableBodyBorderHover,
-//         backgroundColor: extendPalette.tableBodyBackgroundHover,
-//     }
-// }));
+    outline: 'none',
+    backgroundColor: 'transparent',
+    borderColor: 'transparent',
+    borderRadius: 0,
+    borderWidth: 4,
+    padding: 0,
+
+    '&:hover': {
+        backgroundColor: 'transparent',
+        borderColor: 'transparent',
+    },
+
+    '& .MuiSelect-select': {
+        padding: spacing(2.5, 3),
+    },
+}));

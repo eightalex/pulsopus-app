@@ -8,11 +8,11 @@ import { TableSelect } from "@/components/Table/TableSelect";
 
 import { ITableHeadFilterComponent } from "./TableHeadFilter.tsx";
 
-export const TableHeadFilterSelect: FC<ITableHeadFilterComponent> = (props) => {
+export const TableHeadFilterSelect: FC<Required<ITableHeadFilterComponent>> = (props) => {
     const { header } = props;
     const { column } = header;
     const meta = header?.column?.columnDef?.meta || {};
-    const { filterVariant } = meta;
+    const { filterVariant } = meta as { filterVariant: ETableFilterVariant };
     const columnFilterValue = header?.column?.getFilterValue();
 
     console.log('header', header);
@@ -29,12 +29,13 @@ export const TableHeadFilterSelect: FC<ITableHeadFilterComponent> = (props) => {
         [column.getFacetedUniqueValues(), filterVariant]
     );
 
-    const handleChange = useCallback((value: string) => {
+    const handleChange = useCallback((value?: string) => {
         column.setFilterValue(value);
     }, [column]);
 
     return (
         <TableSelect
+            title={header.id}
             value={columnFilterValue?.toString()}
             onChange={handleChange}
             options={sortedUniqueValues}

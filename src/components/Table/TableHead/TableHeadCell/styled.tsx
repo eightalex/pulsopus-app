@@ -49,7 +49,7 @@ export const TableHeadCellTitleStyled = styled(
 // }));
 
 export const TableHeadCellStyled = styled(
-    (props: TableCellProps) => <TableCell{...props} component='th' />,
+    (props: TableCellProps) => <TableCell {...props} component='th' />,
     { shouldForwardProp: prop => prop !== 'canAction' }
 )<ITableHeadCellStyledProps>(({ canAction = false, theme: { palette, spacing } }) => ({
     height: DEFAULT_ROW_HEAD_HEIGHT,

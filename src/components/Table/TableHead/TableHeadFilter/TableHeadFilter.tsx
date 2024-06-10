@@ -10,14 +10,14 @@ interface ITableHeadFilterProps {
 
 export interface ITableHeadFilterComponent extends Required<ITableHeadFilterProps> {}
 
-const renderFilterByVariant: Record<ETableFilterVariant, (props: Required<ITableHeadFilterProps>) => JSX.Element> = {
+const renderFilterByVariant: Record<ETableFilterVariant, FC<Required<ITableHeadFilterProps>>> = {
     [ETableFilterVariant.SELECT]: TableHeadFilterSelect,
 };
 
 export const TableHeadFilter: FC<ITableHeadFilterProps> = (props) => {
     const { header } = props;
     const meta = header?.column?.columnDef?.meta || {};
-    const { filterVariant } = meta;
+    const { filterVariant } = meta as { filterVariant?: ETableFilterVariant };
 
     if(!filterVariant) {
         return null;

@@ -40,24 +40,21 @@ export function TableHeadCell(props: ITableHeadCellProps) {
             onMouseLeave={() => setRowHovered(false)}
             canAction={!disabledSortView}
         >
-            {!filter && (
-                <TableHeadCellTitleStyled onClick={handleClick}>
-                    <Typography variant="text" textTransform='uppercase'>
-                        {content}
-                    </Typography>
-                    <TableHeadCellSort
-                        sortDirection={sortDirection}
-                        showSortDefaultView={rowHovered}
-                        disableSortView={disabledSortView}
-                    />
-                </TableHeadCellTitleStyled>
-            )}
-            {/*{Boolean(filter) && (*/}
-            {/*    <TableHeadCellTitleStyled>*/}
-            {/*        {filter}*/}
-            {/*    </TableHeadCellTitleStyled>*/}
-            {/*)}*/}
-            {Boolean(filter) && filter}
+            <>
+                {!filter && (
+                    <TableHeadCellTitleStyled onClick={handleClick}>
+                        <Typography variant="text" textTransform='uppercase'>
+                            {content}
+                        </Typography>
+                        <TableHeadCellSort
+                            sortDirection={sortDirection}
+                            showSortDefaultView={rowHovered}
+                            disableSortView={disabledSortView}
+                        />
+                    </TableHeadCellTitleStyled>
+                )}
+                {Boolean(filter) && filter}
+            </>
         </TableHeadCellStyled>
     );
 }

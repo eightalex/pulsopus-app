@@ -10,6 +10,7 @@ export { ArrowUpIcon } from './ArrowUpIcon';
 export { BarChartOutlinedIcon } from './BarChartOutlinedIcon';
 //
 export { CalendarPlusIcon } from './CalendarPlusIcon';
+export { CaretDownIcon } from './CaretDownIcon';
 export { CloseIcon } from './CloseIcon';
 export { CompareIcon } from './CompareIcon';
 //

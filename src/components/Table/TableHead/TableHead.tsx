@@ -1,14 +1,14 @@
 import { flexRender } from "@tanstack/react-table";
-import { FC, HTMLProps } from "react";
+import { FC } from "react";
 
-import { DEFAULT_COLUMN_SIZE } from "@/components/Table";
+import { DEFAULT_COLUMN_SIZE, ETableFilterVariant } from "@/components/Table";
 import { TableHeadFilter } from "@/components/Table/TableHead/TableHeadFilter/TableHeadFilter.tsx";
 
 import { TableHeadRowStyled, TableHeadStyled } from "./styled.tsx";
 import { TableHeadCell } from "./TableHeadCell";
 import { ITableHeadProps } from "./types.ts";
 
-const getCellWidthStyle = (size?: number): HTMLProps<HTMLTableCellElement> => {
+const getCellWidthStyle = (size?: number): { width?: string; maxWidth?: string } => {
     if(!size || size === DEFAULT_COLUMN_SIZE) return {};
     return { width: `${size}px !important`, maxWidth: `${size}px !important` };
 };
@@ -31,7 +31,7 @@ export const TableHead: FC<ITableHeadProps> = ({ table }) => {
                         {headerGroup.headers.map(header => {
                             if (header.isPlaceholder) return null;
                             const meta = header.column.columnDef.meta || {};
-                            const { filterVariant } = meta;
+                            const { filterVariant } = meta as { filterVariant?: ETableFilterVariant };
                             return (
                                 <TableHeadCell
                                     key={header.id}

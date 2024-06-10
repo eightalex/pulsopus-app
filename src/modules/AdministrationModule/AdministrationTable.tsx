@@ -1,5 +1,6 @@
 import Stack from "@mui/material/Stack";
 import {
+    ColumnDef,
     flexRender,
     getCoreRowModel,
     getSortedRowModel,
@@ -8,9 +9,9 @@ import {
     useReactTable,
 } from '@tanstack/react-table';
 import { observer } from "mobx-react";
-import React, { useMemo, useState } from 'react';
+import React, { HTMLProps, useMemo, useState } from 'react';
 
-import { ETableColumnType, ETableFilterVariant, IColumnDef, Table } from "@/components/Table";
+import { ETableFilterVariant, Table } from "@/components/Table";
 import { useStores } from "@/hooks";
 import { IUser } from "@/interfaces";
 
@@ -50,7 +51,7 @@ export const AdministrationTable = observer(() => {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [rowSelection, setRowSelection] = useState<{ [index: number]: boolean }>({});
 
-    const columns = useMemo<IColumnDef<Data>[]>(
+    const columns = useMemo<ColumnDef<IUser>[]>(
         () => [
             {
                 accessorKey: 'username',
@@ -90,9 +91,6 @@ export const AdministrationTable = observer(() => {
                     filterVariant: ETableFilterVariant.SELECT,
                 },
                 sortingFn: sortStatusFn,
-            },
-            {
-                type: ETableColumnType.ROW_SELECT
             },
         ],
         []

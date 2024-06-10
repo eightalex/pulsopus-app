@@ -30,7 +30,7 @@ export const ProtectedRoute: FC<IAppRouteProps> = observer(({ children }) => {
 
 	const onAuth = useCallback(async () => {
 		// const token = decodeURIComponent(searchParams.get(QUERY_TOKEN) || sessionManager.token || '');
-		const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0ZDRiNzhjNi04NGVhLTRiN2YtOWVkYy05M2Y3MDEwMWQ4ZjgiLCJ1c2VybmFtZSI6ImFkbWluIGFkbWluIiwicm9sZXMiOlt7ImlkIjoiNTc5NTVlYmEtZjVjOS00MmZiLTlkNTEtNWM3ZjAzZjViNWZmIiwibmFtZSI6IkFETUlOIn1dLCJpYXQiOjE3MTc5NjM4NjYsImV4cCI6MTcxNzk2NzQwNn0.9-VRwOEhTBsfNoKvlmNwnH6VBN9Og5aRkB8HPE3AcCA';
+		const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0ZDRiNzhjNi04NGVhLTRiN2YtOWVkYy05M2Y3MDEwMWQ4ZjgiLCJ1c2VybmFtZSI6ImFkbWluIGFkbWluIiwicm9sZXMiOlt7ImlkIjoiNTc5NTVlYmEtZjVjOS00MmZiLTlkNTEtNWM3ZjAzZjViNWZmIiwibmFtZSI6IkFETUlOIn1dLCJpYXQiOjE3MTgwNDc5NTcsImV4cCI6MTcxODA1MTQ5N30.eO57OjcRJozBTc9qNGwiG258VESUeb2RWg623FH-8Tw';
 		sessionManager.setToken(token.trim());
 
 		setSearchParams({});

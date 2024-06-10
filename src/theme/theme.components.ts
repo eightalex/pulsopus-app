@@ -1,5 +1,6 @@
 import { buttonClasses } from '@mui/material/Button';
 import { createTheme, ThemeOptions } from '@mui/material/styles';
+import { CaretDownIcon } from "@/icons";
 import { extendPalette, typographyColors } from '@/theme/extendPalette';
 import { typographyComponent } from '@/theme/theme.typography';
 
@@ -766,4 +767,19 @@ export const components: ThemeOptions['components'] = {
 			},
 		},
 	},
+	MuiSelect: {
+		styleOverrides: {
+			root: {
+				'& .MuiSelect-select': {
+					'&[aria-expanded="true"] svg': {
+						transform: 'rotate(-180deg)',
+					}
+				},
+				'& svg': {
+					transition: 'transform .1s ease',
+					fill: '#D0D0D0',
+				}
+			},
+		},
+	}
 } as ThemeOptions['components'];
