@@ -1,15 +1,10 @@
 import Select, { SelectProps } from "@mui/material/Select";
 import { styled } from '@mui/system';
 
-import { CaretDownIcon } from '@/icons';
-
 export const TableHeadSelectStyled = styled(
     (props: Omit<SelectProps, 'variant'>) =>
         <Select
             variant='filled'
-            // IconComponent={(className) => {
-            //     return <CaretDownIcon fontSize='extraSmall' className={className}/>;
-            // }}
             MenuProps={{
                 sx: ({ extendPalette }) => ({
                     '& .MuiMenu-paper': {
