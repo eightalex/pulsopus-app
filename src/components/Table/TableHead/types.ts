@@ -17,4 +17,5 @@ export interface ITableHeadCellProps
     content?: string | ReactNode;
     children?: ReactNode;
     filter?: false | ReactNode;
+    filtered?: boolean;
 }

@@ -50,6 +50,7 @@ export function TableHead<Data>({ table, getRef }: ITableHeadProps<Data>) {
                                         ...getCellWidthStyle(header.getSize()),
                                     }}
                                     filter={!filterVariant ? false : <TableHeadFilter header={header} />}
+                                    filtered={header.column.getIsFiltered()}
                                 />
                             );
                         })}

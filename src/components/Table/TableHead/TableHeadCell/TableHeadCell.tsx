@@ -18,7 +18,8 @@ export function TableHeadCell(props: ITableHeadCellProps) {
         onClick,
         sortDirection,
         disableSortView,
-        filter= null,
+        filter = null,
+        filtered = false,
         ...restProps
     } = props;
     const [rowHovered, setRowHovered] = useState(false);
@@ -39,6 +40,7 @@ export function TableHeadCell(props: ITableHeadCellProps) {
             onMouseEnter={() => setRowHovered(true)}
             onMouseLeave={() => setRowHovered(false)}
             canAction={!disabledSortView}
+            isFiltered={filtered}
         >
             <>
                 {!filter && (

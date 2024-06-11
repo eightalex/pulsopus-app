@@ -6,6 +6,7 @@ import { DEFAULT_ROW_HEAD_HEIGHT } from "@/components/Table";
 
 interface ITableHeadCellStyledProps {
     canAction: boolean;
+    isFiltered?: boolean;
     sx: StackProps['sx'];
 }
 
@@ -23,39 +24,14 @@ export const TableHeadCellTitleStyled = styled(
     justifyContent: 'space-between',
 }), { name: 'TableHeadCellTitleStyled' });
 
-// export const TableHeadCellStyled = styled(
-//     'th',
-//     { shouldForwardProp: prop => prop !== 'canAction' }
-// )<ITableHeadCellStyledProps>(({ canAction = false, theme: { palette }  }) => ({
-//     // boxSizing: 'border-box',
-//     // padding: 0,
-//     // userSelect: 'none',
-//     // height: 'auto',
-//     // minHeight: '48px',
-//
-//     // borderWidth: '2px',
-//     // borderStyle: 'solid',
-//     // borderColor: '#000',
-//     // cursor: canAction ? 'pointer' : 'default',
-//
-//     // backgroundColor: palette.tableHeadBackgroundDefault,
-//
-//     // '&:first-of-type': {
-//     //     borderLeftColor: palette.tableHeadBackgroundDefault,
-//     // },
-//     // '&:last-of-type': {
-//     //     borderRightColor: palette.tableHeadBackgroundDefault,
-//     // }
-// }));
-
 export const TableHeadCellStyled = styled(
     (props: TableCellProps) => <TableCell {...props} component='th' />,
     { shouldForwardProp: prop => prop !== 'canAction' }
-)<ITableHeadCellStyledProps>(({ canAction = false, theme: { palette, spacing } }) => ({
+)<ITableHeadCellStyledProps>(({ canAction = false, isFiltered = false, theme: { palette } }) => ({
     height: DEFAULT_ROW_HEAD_HEIGHT,
     boxSizing: 'border-box',
     padding: 0,
-    backgroundColor: palette.tableHeadBackgroundDefault,
+    backgroundColor: isFiltered ? palette.tableBodyBackgroundHover : palette.tableHeadBackgroundDefault,
     cursor: canAction ? 'pointer' : 'default',
     borderWidth: '1px',
     borderBottomWidth: '2px',

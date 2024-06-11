@@ -1,7 +1,8 @@
+import Collapse from '@mui/material/Collapse';
 import MenuItem from "@mui/material/MenuItem";
 import { SelectChangeEvent } from "@mui/material/Select";
 import Stack from "@mui/material/Stack";
-import { FC, useCallback } from 'react';
+import { FC, useCallback, useMemo } from 'react';
 
 import Typography from "@/components/Typography";
 
@@ -15,26 +16,39 @@ export interface ITableSelect {
 }
 
 export const RenderHeadValue = ({ value = '', title = '' }: { value?: string, title?: string }) => {
-    const sxBase = {
+    const sxBase = useMemo(() => ({
         lineHeight: 1,
         textTransform: 'uppercase',
         fontSize: 10,
-    };
-    if (!value) return (
-        <Typography textTransform='uppercase'>{title}</Typography>
-    );
+        transition: 'all .25s ease',
+    }), []);
+
+    const titleRender = useMemo(() => {
+        let titleSx = {
+            textTransform: 'uppercase',
+        };
+        if(value) {
+            titleSx = {
+                ...titleSx,
+                ...sxBase,
+            };
+        }
+        return <Typography sx={titleSx} >{title}</Typography>;
+    }, [sxBase, title, value]);
 
     return (
         <Stack spacing={0}>
-            <Typography sx={sxBase}>{title}</Typography>
-            <Typography
-                sx={{
-                    ...sxBase,
-                    fontSize: 13,
-                }}
-            >
-                {value}
-            </Typography>
+            {titleRender}
+            <Collapse in={value}>
+                <Typography
+                    sx={{
+                        ...sxBase,
+                        fontSize: 13,
+                    }}
+                >
+                    {value}
+                </Typography>
+            </Collapse>
         </Stack>
     );
 };
