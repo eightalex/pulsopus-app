@@ -12,6 +12,7 @@ import {
     SortingState,
     useReactTable,
 } from "@tanstack/react-table";
+import * as d3 from 'd3';
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import {
@@ -107,9 +108,24 @@ export function Table<Data>(props: ITableProps<Data>) {
 
     const calculatePageSize = useCallback(() => {
         if(!showPagination || !containerRef?.current || !headRef?.current) return;
+
         const bH = containerRef.current?.clientHeight - headRef.current?.clientHeight - 90;
-        const ROW_HEIGHT = 40;
-        const pS = Math.max(DEFAULT_MIN_ROW_PER_PAGE, Math.floor(bH/ROW_HEIGHT));
+
+        let maxRowHeight = 40;
+
+        try {
+            const tbody = containerRef.current?.querySelector('tbody');
+            if(!tbody) return;
+            const trs = tbody.querySelectorAll('tr');
+            const tsHs = Array.from(trs).map((tr) => tr.offsetHeight);
+            const [_, max] = d3.extent(tsHs);
+            if(!max) return;
+            maxRowHeight = max;
+        } catch (err) {
+            console.error(err);
+        }
+
+        const pS = Math.max(DEFAULT_MIN_ROW_PER_PAGE, Math.floor(bH/maxRowHeight));
         setPageSize(pS);
         table.setPageSize(pS);
     }, [showPagination, table]);

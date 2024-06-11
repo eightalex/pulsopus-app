@@ -7,7 +7,7 @@ export type TSortDirection = null | false | SortDirection;
 
 export type TTable<Data> = ReturnType<typeof useReactTable<Data>>;
 
-export type TTableStyleOverrides = (row: Row<RowData>) => CSSProperties;
+export type TTableStyleOverrides<Data> = (row: Row<Data>) => CSSProperties;
 
 // export interface IColumnDef<Data> extends ColumnDef<Data> {
 //     type?: ETableColumnType,

@@ -2,6 +2,7 @@ import { FC, useCallback, useMemo } from "react";
 
 import { ETableFilterVariant } from "@/components/Table";
 import { TableSelect } from "@/components/Table/TableSelect";
+import { ETableSelectType } from "@/components/Table/TableSelect/TableSelect.tsx";
 
 import { ITableHeadFilterComponent } from "./TableHeadFilter.tsx";
 
@@ -33,6 +34,7 @@ export const TableHeadFilterSelect: FC<Required<ITableHeadFilterComponent>> = (p
             value={columnFilterValue?.toString()}
             onChange={handleChange}
             options={sortedUniqueValues}
+            type={ETableSelectType.HEAD}
         />
     );
 };

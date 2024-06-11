@@ -1,6 +1,12 @@
 import Select, { SelectProps } from "@mui/material/Select";
 import { styled } from '@mui/system';
 
+import { ETableSelectType } from "@/components/Table/TableSelect/TableSelect.tsx";
+
+interface ITableHeadSelectStyledProps {
+    variant?: ETableSelectType;
+}
+
 export const TableHeadSelectStyled = styled(
     (props: Omit<SelectProps, 'variant'>) =>
         <Select
@@ -37,17 +43,22 @@ export const TableHeadSelectStyled = styled(
             }}
             fullWidth={true}
             {...props}
-        />
-)(({ theme: { spacing } }) => ({
+        />,
+    {
+        shouldForwardProp: prop => prop !== 'variant',
+    }
+)<ITableHeadSelectStyledProps>(({ variant, theme: { spacing } }) => ({
+    color: 'inherit',
     width: '100%',
     height: 'auto',
-    maxHeight: '100%',
+    minHeight: variant === ETableSelectType.HEAD ? 44 : 36,
+    maxHeight: variant === ETableSelectType.HEAD ? '100%' : 36,
     flexGrow: 1,
     outline: 'none',
     backgroundColor: 'transparent',
     borderColor: 'transparent',
     borderRadius: 0,
-    borderWidth: 4,
+    borderWidth: variant === ETableSelectType.HEAD ? 4 : 0,
     padding: 0,
 
     '&:hover': {

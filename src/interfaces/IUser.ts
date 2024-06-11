@@ -34,4 +34,5 @@ export interface IUser {
 	activity: IActivity[];
 	status: EUserStatus,
 	department: Pick<IDepartment, 'id' | 'name' | 'label'>
+	isPending?: boolean;
 }

@@ -8,14 +8,27 @@ import Typography from "@/components/Typography";
 
 import { TableHeadSelectStyled } from "./styled.tsx";
 
+export const enum ETableSelectType {
+    HEAD = 'HEAD',
+    ROW = 'ROW',
+}
+
 export interface ITableSelect {
     title?: string;
     value?: string;
     onChange?: (value?: string) => void;
     options?: Array<string | number>;
+    type?: ETableSelectType;
 }
 
-export const RenderHeadValue = ({ value = '', title = '' }: { value?: string, title?: string }) => {
+export interface IRenderHeadValueProps {
+    value?: string;
+    title?: string;
+    type?: ITableSelect['type'];
+}
+
+export const RenderHeadValue: FC<IRenderHeadValueProps> = (props) => {
+    const { value = '', title = '', type } = props;
     const sxBase = useMemo(() => ({
         lineHeight: 1,
         textTransform: 'uppercase',
@@ -37,6 +50,18 @@ export const RenderHeadValue = ({ value = '', title = '' }: { value?: string, ti
         return <Typography sx={titleSx} >{title}</Typography>;
     }, [sxBase, title, value]);
 
+    if(type === ETableSelectType.ROW) {
+        return <Typography
+            sx={{
+                ...sxBase,
+                fontSize: 16,
+                color: 'inherit'
+        }}
+        >
+            {value}
+        </Typography>;
+    }
+
     return (
         <Stack spacing='2px' justifyContent='center'>
             {titleRender}
@@ -54,7 +79,13 @@ export const RenderHeadValue = ({ value = '', title = '' }: { value?: string, ti
     );
 };
 export const TableSelect: FC<ITableSelect> = (props) => {
-    const { title, value = '', onChange, options = [] } = props;
+    const {
+        title,
+        value = '',
+        onChange,
+        options = [],
+        type = ETableSelectType.ROW,
+    } = props;
 
     const handleChange = useCallback((event: SelectChangeEvent<unknown>) => {
         const v = event?.target?.value as string;
@@ -74,12 +105,16 @@ export const TableSelect: FC<ITableSelect> = (props) => {
                 <RenderHeadValue
                     value={!value ? '' :renderValue as string}
                     title={title || ''}
+                    type={type}
                 />
             }
+            variant={type}
         >
-            <MenuItem disabled={!value} value=''>
-                <em>All</em>
-            </MenuItem>
+            {type === ETableSelectType.HEAD && (
+                <MenuItem disabled={!value} value=''>
+                    <em>All</em>
+                </MenuItem>
+            )}
             {options.map((value, index) => (
                 <MenuItem
                     key={`${index}-${value}`}

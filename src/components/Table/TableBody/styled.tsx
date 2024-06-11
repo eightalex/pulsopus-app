@@ -52,23 +52,18 @@ export const TableBodyCellStyled = styled(
     {
         shouldForwardProp: propName => propName !== 'selected',
     }
-)<ITableBodyCellStyledProps>(({ selected = false, theme: { spacing, extendPalette } }) => ({
+)<ITableBodyCellStyledProps>(({ theme: { extendPalette } }) => ({
     boxSizing: 'border-box',
     color: 'inherit',
     borderWidth: 1,
     borderStyle: 'solid',
     borderColor: 'inherit',
-    // borderColor: selected
-    //     ? extendPalette.tableBodyBorderSelect
-    //     : extendPalette.tableBodyBorderDefault,
     backgroundColor: 'inherit',
-    // backgroundColor: selected
-    //     ? extendPalette.tableBodyBackgroundSelect
-    //     : extendPalette.tableBodyBackgroundDefault,
-     padding: spacing(0.5, 3),
+    padding: 0,
     height: 'auto',
     overflow: 'auto',
     minHeight: DEFAULT_ROW_BODY_HEIGHT,
+    alignItems: 'center',
 
     '&:hover': {
         borderColor: extendPalette.tableBodyBorderHover,

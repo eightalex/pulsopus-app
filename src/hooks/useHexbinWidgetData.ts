@@ -9,7 +9,7 @@ export const RADIUS = 20;
 /**
  * @deprecated: refactor hexbin chart
  * */
-export const useHexbinWidgetData = (data: IUser[]): IUser[][] => {
+export const useHexbinWidgetData = (data: IUser[]): { fill: string, data: IUser }[][] => {
 	const d = data
 		.sort((a, b) => +b.activity[0]?.value - +a.activity[0]?.value)
 		.map((data) => ({ fill: getColorByActivity(data.activity[0]?.value || 0), data }));

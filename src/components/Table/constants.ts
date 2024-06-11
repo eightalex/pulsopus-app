@@ -1,3 +1,5 @@
+import { allGreen400 } from "@/theme/palette.ts";
+
 export const DEFAULT_COLUMN_SIZE = 160;
 export const DEFAULT_COLUMN_MIN_SIZE = 46;
 export const DEFAULT_COLUMN_MAX_SIZE = 230;
@@ -14,3 +16,6 @@ export const enum ETableColumnType {
 export const enum ETableFilterVariant {
     SELECT = 'SELECT',
 }
+export const COLORS = {
+    ACTIVE: allGreen400,
+};

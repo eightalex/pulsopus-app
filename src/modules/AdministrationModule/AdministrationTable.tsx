@@ -3,10 +3,10 @@ import { ColumnDef } from '@tanstack/react-table';
 import { observer } from "mobx-react";
 import React, { HTMLProps, useMemo, useState } from 'react';
 
-import Table, { ETableFilterVariant } from "@/components/Table";
+import Table, { COLORS, ETableFilterVariant } from "@/components/Table";
+import { TableSelect } from "@/components/Table/TableSelect/TableSelect.tsx";
 import { useStores } from "@/hooks";
 import { IUser } from "@/interfaces";
-import { allGreen400 } from "@/theme/palette.ts";
 
 import { filterRolesFn, filterStatusFn, ROLES_SEPARATOR, sortStatusFn } from "./col.helper.tsx";
 
@@ -74,6 +74,18 @@ export const AdministrationTable = observer(() => {
         {
             accessorKey: 'status',
             header: 'Status',
+            cell: info => {
+                const uniqueValues = info.column.getFacetedUniqueValues();
+                const opts = [...uniqueValues].map(([k]) => k);
+                const v = info.getValue() as string;
+                return (
+                    <TableSelect
+                        value={v}
+                        onChange={console.log}
+                        options={opts}
+                    />
+                );
+            },
             meta: {
                 filterVariant: ETableFilterVariant.SELECT,
             },
@@ -92,7 +104,7 @@ export const AdministrationTable = observer(() => {
                 showPagination
                 rowStyleOverrides={(row) => {
                     return {
-                        color: row.original?.isPending ? allGreen400 : 'unset',
+                        color: row.original?.isPending ? COLORS.ACTIVE : 'unset',
                     };
                 }}
             />
