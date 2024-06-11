@@ -1,12 +1,11 @@
 import { flexRender } from "@tanstack/react-table";
-import { FC } from "react";
 
 import Typography from "@/components/Typography";
 
 import { TableBodyCellStyled, TableBodyRowStyled, TableBodyStyled } from "./styled.tsx";
 import { ITableBodyProps } from "./types.ts";
 
-export const TableBody: FC<ITableBodyProps> = ({ table, maxPerPage = 0 }) => {
+export function TableBody<Data>({ table, maxPerPage = 0 }: ITableBodyProps<Data>) {
     const max = maxPerPage || table.getRowModel().rows?.length || 100;
     return (
         <TableBodyStyled>
@@ -40,4 +39,4 @@ export const TableBody: FC<ITableBodyProps> = ({ table, maxPerPage = 0 }) => {
             })}
         </TableBodyStyled>
     );
-};
+}

@@ -11,6 +11,8 @@ export { BarChartOutlinedIcon } from './BarChartOutlinedIcon';
 //
 export { CalendarPlusIcon } from './CalendarPlusIcon';
 export { CaretDownIcon } from './CaretDownIcon';
+export { ChevronLeftIcon } from './ChevronLeftIcon.ts';
+export { ChevronRightIcon } from './ChevronRightIcon';
 export { CloseIcon } from './CloseIcon';
 export { CompareIcon } from './CompareIcon';
 //

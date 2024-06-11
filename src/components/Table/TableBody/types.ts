@@ -1,5 +1,5 @@
-import { ITableHook } from "@/components/Table/types.ts";
+import { ITableModule } from "@/components/Table/types.ts";
 
-export interface ITableBodyProps extends ITableHook {
+export interface ITableBodyProps<Data> extends ITableModule<Data> {
     maxPerPage?: number;
 }

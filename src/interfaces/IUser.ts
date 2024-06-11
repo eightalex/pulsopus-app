@@ -1,4 +1,4 @@
-import { EUserRole } from "@/constants/EUser.ts";
+import { EUserRole, EUserStatus } from "@/constants/EUser.ts";
 import { IActivity } from "@/interfaces/IActivity.ts";
 import { IDepartment } from '@/interfaces/IDepartment';
 
@@ -32,6 +32,6 @@ export interface IUser {
 	avatar?: string;
 	roles: EUserRole[];
 	activity: IActivity[];
-	status: 'INACTIVE' | 'ACTIVE'
+	status: EUserStatus,
 	department: Pick<IDepartment, 'id' | 'name' | 'label'>
 }

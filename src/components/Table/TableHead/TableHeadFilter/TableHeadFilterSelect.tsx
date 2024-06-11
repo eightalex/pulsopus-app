@@ -1,7 +1,4 @@
-import MenuItem from '@mui/material/MenuItem';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { flexRender } from "@tanstack/react-table";
-import React, { FC, useCallback } from "react";
+import { FC, useCallback, useMemo } from "react";
 
 import { ETableFilterVariant } from "@/components/Table";
 import { TableSelect } from "@/components/Table/TableSelect";
@@ -15,18 +12,15 @@ export const TableHeadFilterSelect: FC<Required<ITableHeadFilterComponent>> = (p
     const { filterVariant } = meta as { filterVariant: ETableFilterVariant };
     const columnFilterValue = header?.column?.getFilterValue();
 
-    console.log('header', header);
-
-    console.log('column.getFacetedUniqueValues()', column.getFacetedUniqueValues());
-
-    const sortedUniqueValues = React.useMemo(
-        () =>
-            filterVariant !== ETableFilterVariant.SELECT
-                ? []
-                : Array.from(column.getFacetedUniqueValues().keys())
-                    .sort()
-                    .slice(0, 5000),
-        [column.getFacetedUniqueValues(), filterVariant]
+    const sortedUniqueValues = useMemo(
+        () => {
+            switch (filterVariant) {
+                case ETableFilterVariant.SELECT:
+                    return Array.from(column.getFacetedUniqueValues().keys()).sort();
+                default:
+                    return [];
+            }
+        }, [column, filterVariant]
     );
 
     const handleChange = useCallback((value?: string) => {
@@ -40,17 +34,5 @@ export const TableHeadFilterSelect: FC<Required<ITableHeadFilterComponent>> = (p
             onChange={handleChange}
             options={sortedUniqueValues}
         />
-        // <select
-        //     onChange={e => column.setFilterValue(e.target.value)}
-        //     value={columnFilterValue?.toString()}
-        // >
-        //     <option value="">All</option>
-        //     {sortedUniqueValues.map(value => (
-        //         //dynamically generated select options from faceted values feature
-        //         <option value={value} key={value}>
-        //             {value}
-        //         </option>
-        //     ))}
-        // </select>
     );
 };

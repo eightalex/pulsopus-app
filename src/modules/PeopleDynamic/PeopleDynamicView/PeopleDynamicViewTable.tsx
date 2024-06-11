@@ -2,7 +2,6 @@ import { Stack } from '@mui/material';
 import { observer } from 'mobx-react';
 import moment from "moment";
 
-import Table from '@/components/Table';
 import Typography from '@/components/Typography';
 import { useStores } from '@/hooks';
 
@@ -10,7 +9,6 @@ export const PeopleDynamicViewTable = observer(() => {
 	const { rootStore: { peopleDynamicStore: { usersForRender } } } = useStores();
 	return (
 		<div>
-			<Table/>
 			<Stack spacing={1}>
 				{usersForRender && Boolean(usersForRender.length) && usersForRender.map((user) => {
 					const { id, username, department, position, activity } = user;

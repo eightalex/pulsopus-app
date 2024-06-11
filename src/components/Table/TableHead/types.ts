@@ -1,7 +1,7 @@
 import { DetailedHTMLProps, MouseEvent, ReactNode, ThHTMLAttributes } from "react";
-import { ITableHook, TSortDirection } from "@/components/Table/types.ts";
+import { ITableModule, TSortDirection } from "@/components/Table/types.ts";
 
-export interface ITableHeadProps extends ITableHook {}
+export interface ITableHeadProps<Data> extends ITableModule<Data> {}
 export interface ITableHeadCellSortProps {
     sortDirection?: TSortDirection;
     showSortDefaultView?: boolean;
