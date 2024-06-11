@@ -10,7 +10,6 @@ export const TableHeadSelectStyled = styled(
                     '& .MuiMenu-paper': {
                         WebkitTextFillColor: extendPalette.autocompleteOptionTextDefault,
                         borderRadius: 0,
-                        // backgroundColor: '#1C1C1C',
                         backgroundColor: 'transparent',
                         marginTop: 0.5,
                         overflow: 'visible'
@@ -57,6 +56,6 @@ export const TableHeadSelectStyled = styled(
     },
 
     '& .MuiSelect-select': {
-        padding: spacing(2.5, 3),
+        padding: spacing(1.5, 3),
     },
 }));

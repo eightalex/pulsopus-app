@@ -1,13 +1,13 @@
 import Stack, { StackProps } from "@mui/material/Stack";
 import { styled } from '@mui/system';
-export const TablePaginationStyled = styled(Stack)({
+export const TablePaginationStyled = styled(Stack)(({ theme: { spacing } }) => ({
     width: '100%',
     minHeight: 40,
     alignItems: 'center',
     justifyContent: 'flex-end',
     flexGrow: 2,
-    paddingBottom: 30,
-});
+    padding: spacing(6, 0),
+}));
 
 export const TablePaginationRowStyled = styled(
     (props: StackProps) => <Stack {...props} direction='row'/>

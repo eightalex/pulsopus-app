@@ -1,10 +1,13 @@
-import { ColumnDef, TableState, Updater, useReactTable } from "@tanstack/react-table";
-import { SortDirection, TableOptions } from "@tanstack/table-core";
+import { ColumnDef, Row, TableState, Updater, useReactTable } from "@tanstack/react-table";
+import { RowData, SortDirection, TableOptions } from "@tanstack/table-core";
 import { ETableColumnType, ETableFilterVariant } from "@/components/Table/constants.ts";
+import { ITableBodyProps } from "@/components/Table/TableBody";
 
 export type TSortDirection = null | false | SortDirection;
 
 export type TTable<Data> = ReturnType<typeof useReactTable<Data>>;
+
+export type TTableStyleOverrides = (row: Row<RowData>) => CSSProperties;
 
 // export interface IColumnDef<Data> extends ColumnDef<Data> {
 //     type?: ETableColumnType,
@@ -35,4 +38,5 @@ export interface ITableProps<Data> {
     numCol?: boolean;
     tableOptions?: Partial<TableOptions<Data>>;
     showPagination?: boolean;
+    rowStyleOverrides?: ITableBodyProps<Data>["styleOverrides"];
 }

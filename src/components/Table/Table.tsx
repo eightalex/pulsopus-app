@@ -38,6 +38,7 @@ export function Table<Data>(props: ITableProps<Data>) {
         tableOptions = {},
         onChange,
         showPagination = false,
+        rowStyleOverrides,
     } = props;
 
     const containerRef = useRef<HTMLDivElement | null>();
@@ -106,7 +107,7 @@ export function Table<Data>(props: ITableProps<Data>) {
 
     const calculatePageSize = useCallback(() => {
         if(!showPagination || !containerRef?.current || !headRef?.current) return;
-        const bH = containerRef.current?.clientHeight - headRef.current?.clientHeight - 80;
+        const bH = containerRef.current?.clientHeight - headRef.current?.clientHeight - 90;
         const ROW_HEIGHT = 40;
         const pS = Math.max(DEFAULT_MIN_ROW_PER_PAGE, Math.floor(bH/ROW_HEIGHT));
         setPageSize(pS);
@@ -119,7 +120,7 @@ export function Table<Data>(props: ITableProps<Data>) {
 
     return (
             <Stack
-                spacing={10}
+                spacing={0}
                 overflow='hidden'
                 flexGrow={1}
                 justifyContent='space-between'
@@ -130,7 +131,7 @@ export function Table<Data>(props: ITableProps<Data>) {
                 <Stack flexGrow={0}>
                     <TableStyled size="small" stickyHeader={false}>
                         <TableHead<Data> table={table} getRef={(r) => headRef.current = r}/>
-                        <TableBody<Data> table={table}/>
+                        <TableBody<Data> table={table} styleOverrides={rowStyleOverrides}/>
                     </TableStyled>
                 </Stack>
                 <Stack flexGrow={2}>

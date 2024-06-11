@@ -6,6 +6,7 @@ import React, { HTMLProps, useMemo, useState } from 'react';
 import Table, { ETableFilterVariant } from "@/components/Table";
 import { useStores } from "@/hooks";
 import { IUser } from "@/interfaces";
+import { allGreen400 } from "@/theme/palette.ts";
 
 import { filterRolesFn, filterStatusFn, ROLES_SEPARATOR, sortStatusFn } from "./col.helper.tsx";
 
@@ -89,6 +90,11 @@ export const AdministrationTable = observer(() => {
                 columns={columns}
                 numCol
                 showPagination
+                rowStyleOverrides={(row) => {
+                    return {
+                        color: row.original?.isPending ? allGreen400 : 'unset',
+                    };
+                }}
             />
         </Stack>
     );

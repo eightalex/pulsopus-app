@@ -25,21 +25,22 @@ export const RenderHeadValue = ({ value = '', title = '' }: { value?: string, ti
 
     const titleRender = useMemo(() => {
         let titleSx = {
-            textTransform: 'uppercase',
+            ...sxBase,
+            fontSize: 16,
         };
         if(value) {
             titleSx = {
                 ...titleSx,
-                ...sxBase,
+                fontSize: 10,
             };
         }
         return <Typography sx={titleSx} >{title}</Typography>;
     }, [sxBase, title, value]);
 
     return (
-        <Stack spacing={0}>
+        <Stack spacing='2px' justifyContent='center'>
             {titleRender}
-            <Collapse in={value}>
+            <Collapse in={Boolean(value)}>
                 <Typography
                     sx={{
                         ...sxBase,

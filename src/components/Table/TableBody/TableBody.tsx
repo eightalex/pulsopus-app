@@ -5,7 +5,7 @@ import Typography from "@/components/Typography";
 import { TableBodyCellStyled, TableBodyRowStyled, TableBodyStyled } from "./styled.tsx";
 import { ITableBodyProps } from "./types.ts";
 
-export function TableBody<Data>({ table, maxPerPage = 0 }: ITableBodyProps<Data>) {
+export function TableBody<Data>({ table, maxPerPage = 0, styleOverrides }: ITableBodyProps<Data>) {
     const max = maxPerPage || table.getRowModel().rows?.length || 100;
     return (
         <TableBodyStyled>
@@ -13,8 +13,13 @@ export function TableBody<Data>({ table, maxPerPage = 0 }: ITableBodyProps<Data>
             .getRowModel()
             .rows.slice(0, max)
             .map(row => {
+                const sx = styleOverrides?.(row) || {};
                 return (
-                    <TableBodyRowStyled key={row.id} >
+                    <TableBodyRowStyled
+                        key={row.id}
+                        selected={row.getIsSelected()}
+                        sx={sx}
+                    >
                         {row.getVisibleCells().map((cell, index) => {
                             return (
                                 <TableBodyCellStyled
@@ -25,6 +30,10 @@ export function TableBody<Data>({ table, maxPerPage = 0 }: ITableBodyProps<Data>
                                 >
                                     <Typography
                                         component='span'
+                                        color='inherit'
+                                        sx={{
+                                            color: 'inherit',
+                                        }}
                                     >
                                         {flexRender(
                                             cell.column.columnDef.cell,
