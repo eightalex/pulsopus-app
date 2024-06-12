@@ -5,8 +5,13 @@ export const enum EUserRole {
     VIEWER = 'VIEWER',
 }
 
-export const enum EUserStatus {
+export enum EUserStatus {
     INACTIVE = 'INACTIVE',
     ACTIVE = 'ACTIVE',
+    PENDING = 'PENDING',
 }
 
+export const userStatusMap = new Map<EUserStatus, string>(Object.entries(EUserStatus).reduce((map, [k, v]) => {
+    map.set(k, v);
+    return map;
+}, new Map()));

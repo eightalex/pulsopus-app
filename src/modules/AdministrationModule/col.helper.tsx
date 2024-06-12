@@ -7,7 +7,7 @@ export const ROLES_SEPARATOR = '/';
 export const sortStatusFn: SortingFn<IUser> = (rowA, rowB, _columnId) => {
     const statusA = rowA.original.status;
     const statusB = rowB.original.status;
-    const statusOrder = ['INACTIVE', 'ACTIVE'];
+    const statusOrder = ['PENDING', 'INACTIVE', 'ACTIVE'];
     return statusOrder.indexOf(statusA) - statusOrder.indexOf(statusB);
 };
 

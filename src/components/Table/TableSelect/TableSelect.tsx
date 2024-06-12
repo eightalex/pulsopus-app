@@ -115,15 +115,16 @@ export const TableSelect: FC<ITableSelect> = (props) => {
                     <em>All</em>
                 </MenuItem>
             )}
-            {options.map((value, index) => (
+            {options.map((optV, index) => (
                 <MenuItem
-                    key={`${index}-${value}`}
-                    value={value}
+                    disabled={value === optV}
+                    key={`${index}-${optV}`}
+                    value={optV}
                 >
                     <Typography
                         textTransform='uppercase'
                     >
-                        {value}
+                        {optV}
                     </Typography>
                 </MenuItem>
             ))}

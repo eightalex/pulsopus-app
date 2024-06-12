@@ -67,6 +67,7 @@ export const TableHeadSelectStyled = styled(
     },
 
     '& .MuiSelect-select': {
+        WebkitTextFillColor: 'initial',
         padding: spacing(1.5, 3),
     },
 }));

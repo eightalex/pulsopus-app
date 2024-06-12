@@ -13,7 +13,7 @@ import {
     useReactTable,
 } from "@tanstack/react-table";
 import * as d3 from 'd3';
-import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import {
     DEFAULT_COLUMN_MAX_SIZE,
@@ -21,6 +21,7 @@ import {
     DEFAULT_COLUMN_SIZE,
 } from "@/components/Table/constants.ts";
 import { ITableProps } from "@/components/Table/types.ts";
+import { useSkipper } from "@/hooks";
 
 import { headerColPersistFormatter } from "./col.helpers.ts";
 import { rowNumCol } from "./col.presets.tsx";
@@ -33,21 +34,26 @@ const DEFAULT_MIN_ROW_PER_PAGE = 10;
 
 export function Table<Data>(props: ITableProps<Data>) {
     const {
-        data,
+        data: initialData,
         columns,
         numCol = false,
         tableOptions = {},
         onChange,
         showPagination = false,
         rowStyleOverrides,
+        getTable,
+        initialState = {},
     } = props;
+
+    const [data, setData] = useState(initialData);
+    const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper();
 
     const containerRef = useRef<HTMLDivElement | null>();
     const headRef = useRef<HTMLDivElement | null>();
 
     const [pageSize, setPageSize] = useState(showPagination ? 10 : data.length);
 
-    const [sorting, setSorting] = useState<SortingState>([]);
+    const [sorting, setSorting] = useState<SortingState>([...initialState?.sorting || []]);
     const [rowSelection, setRowSelection] = useState<{ [index: number]: boolean }>({});
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const [pagination, setPagination] = useState<PaginationState>({
@@ -70,11 +76,13 @@ export function Table<Data>(props: ITableProps<Data>) {
         columns: cols,
         data,
         state: {
+            ...initialState,
             sorting,
             rowSelection,
             columnFilters,
             pagination,
         },
+        autoResetPageIndex,
         onStateChange: onChange,
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(), //client-side sorting
@@ -94,7 +102,24 @@ export function Table<Data>(props: ITableProps<Data>) {
             maxSize: DEFAULT_COLUMN_MAX_SIZE,
         },
         maxMultiSortColCount: 3,
-        autoResetPageIndex: true,
+        meta: {
+            filterVariant: undefined,
+            ...(tableOptions?.meta || {}),
+            updateData: (rowIndex, columnId, value) => {
+                skipAutoResetPageIndex();
+                setData(old =>
+                    old.map((row, index) => {
+                        if (index === rowIndex) {
+                            return {
+                                ...old[rowIndex]!,
+                                [columnId]: value,
+                            };
+                        }
+                        return row;
+                    })
+                );
+            },
+        },
         ...tableOptions,
         debugTable: true,
         debugHeaders: true,
@@ -133,6 +158,10 @@ export function Table<Data>(props: ITableProps<Data>) {
     useLayoutEffect(() => {
         calculatePageSize();
     }, [calculatePageSize]);
+
+    useEffect(() => {
+        getTable?.(table, data);
+    }, [getTable, table, data]);
 
     return (
             <Stack

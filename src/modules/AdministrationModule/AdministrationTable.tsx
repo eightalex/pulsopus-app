@@ -1,10 +1,11 @@
 import Stack from "@mui/material/Stack";
-import { ColumnDef } from '@tanstack/react-table';
+import { ColumnDef, TableMeta } from '@tanstack/react-table';
 import { observer } from "mobx-react";
-import React, { HTMLProps, useMemo, useState } from 'react';
+import React, { HTMLProps, useMemo, useRef } from 'react';
 
-import Table, { COLORS, ETableFilterVariant } from "@/components/Table";
+import Table, { COLORS, ETableColumnType, ETableFilterVariant, ROW_SELECT_COL_KEY, TTable } from "@/components/Table";
 import { TableSelect } from "@/components/Table/TableSelect/TableSelect.tsx";
+import { userStatusMap } from "@/constants/EUser.ts";
 import { useStores } from "@/hooks";
 import { IUser } from "@/interfaces";
 
@@ -34,8 +35,14 @@ function IndeterminateCheckbox({
 }
 
 export const AdministrationTable = observer(() => {
-    const { rootStore: { usersStore: { users } } } = useStores();
-    const [data, setData] = useState(() => users);
+    const { rootStore: { usersStore: { users: data } } } = useStores();
+    const tableRef = useRef<TTable<IUser>>();
+    const tableDataRef = useRef<IUser[]>();
+
+    console.log('tableRef', tableRef);
+    console.log('tableRef.current', tableRef.current);
+    console.log('tableRef.current?.getState()', tableRef.current?.getState());
+    console.log('tableDataRef.current', tableDataRef.current);
 
     const columns = useMemo<ColumnDef<IUser>[]>(() => [
         {
@@ -74,14 +81,21 @@ export const AdministrationTable = observer(() => {
         {
             accessorKey: 'status',
             header: 'Status',
-            cell: info => {
-                const uniqueValues = info.column.getFacetedUniqueValues();
-                const opts = [...uniqueValues].map(([k]) => k);
-                const v = info.getValue() as string;
+            cell: (info) => {
+                const { getValue, table: infoTable, row, column } = info;
+                const initialValue = getValue() as string;
+                const opts = [...userStatusMap].map(([_, v]) => v);
+                const meta = (infoTable.options.meta) as TableMeta<IUser>;
+
+                const onChange = (newValue?: string) => {
+                    if(!newValue) return;
+                    meta.updateData(row.index, column.id, newValue);
+                };
+
                 return (
                     <TableSelect
-                        value={v}
-                        onChange={console.log}
+                        value={initialValue}
+                        onChange={onChange}
                         options={opts}
                     />
                 );
@@ -92,13 +106,19 @@ export const AdministrationTable = observer(() => {
             filterFn: filterStatusFn,
             sortingFn: sortStatusFn,
         },
+        {
+            type: ETableColumnType.ROW_SELECT,
+        }
     ], []);
 
     return (
         <Stack direction='row' maxWidth='1000px' width='100%' flexGrow={1}>
             <Table
-                // data={data}
-                data={[...data, ...data]}
+                getTable={(t, d) => {
+                    tableRef.current = t;
+                    tableDataRef.current = d;
+                }}
+                data={data}
                 columns={columns}
                 numCol
                 showPagination
@@ -107,6 +127,15 @@ export const AdministrationTable = observer(() => {
                         color: row.original?.isPending ? COLORS.ACTIVE : 'unset',
                     };
                 }}
+                initialState={{
+                    sorting: [
+                        {
+                            id: 'status',
+                            desc: false,
+                        }
+                    ]
+                }}
+                onChange={(updater) => console.log('updater', updater)}
             />
         </Stack>
     );
