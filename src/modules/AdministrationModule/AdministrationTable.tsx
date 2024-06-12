@@ -39,11 +39,6 @@ export const AdministrationTable = observer(() => {
     const tableRef = useRef<TTable<IUser>>();
     const tableDataRef = useRef<IUser[]>();
 
-    console.log('tableRef', tableRef);
-    console.log('tableRef.current', tableRef.current);
-    console.log('tableRef.current?.getState()', tableRef.current?.getState());
-    console.log('tableDataRef.current', tableDataRef.current);
-
     const columns = useMemo<ColumnDef<IUser>[]>(() => [
         {
             accessorKey: 'username',
@@ -107,7 +102,10 @@ export const AdministrationTable = observer(() => {
             sortingFn: sortStatusFn,
         },
         {
-            type: ETableColumnType.ROW_SELECT,
+            accessorKey: ROW_SELECT_COL_KEY,
+            meta: {
+                type: ETableColumnType.ROW_SELECT
+            }
         }
     ], []);
 
@@ -118,7 +116,8 @@ export const AdministrationTable = observer(() => {
                     tableRef.current = t;
                     tableDataRef.current = d;
                 }}
-                data={data}
+                // data={data}
+                data={[...data, ...data]}
                 columns={columns}
                 numCol
                 showPagination

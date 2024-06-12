@@ -1,7 +1,12 @@
 import Checkbox from '@mui/material/Checkbox';
 import { ColumnDef } from "@tanstack/react-table";
 
-import { DEFAULT_COLUMN_MIN_SIZE, ROW_NUM_COL_KEY, ROW_SELECT_COL_KEY } from "@/components/Table/constants.ts";
+import {
+    DEFAULT_COLUMN_MIN_SIZE,
+    ETableColumnType,
+    ROW_NUM_COL_KEY,
+    ROW_SELECT_COL_KEY
+} from "@/components/Table/constants.ts";
 import Typography from "@/components/Typography";
 
 const defSizes = {
@@ -15,6 +20,9 @@ export const rowNumCol: ColumnDef<unknown> = {
     header: '',
     accessorKey: ROW_NUM_COL_KEY,
     cell: info => <Typography textAlign='center' color='inherit'>{info.row.index + 1}</Typography>,
+    meta: {
+        type: ETableColumnType.ROW_NUMBER
+    },
     enableSorting: false,
     enableResizing: false,
     ...defSizes,
@@ -22,7 +30,6 @@ export const rowNumCol: ColumnDef<unknown> = {
 
 export const rowSelectCol: ColumnDef<unknown> = {
     id: ROW_SELECT_COL_KEY,
-    header: '',
     accessorKey: ROW_SELECT_COL_KEY,
     header: ({ table }) => (
         <Checkbox
@@ -52,6 +59,9 @@ export const rowSelectCol: ColumnDef<unknown> = {
             }}
         />
     ),
+    meta: {
+        type: ETableColumnType.ROW_SELECT
+    },
     enableSorting: false,
     enableResizing: false,
     ...defSizes,
