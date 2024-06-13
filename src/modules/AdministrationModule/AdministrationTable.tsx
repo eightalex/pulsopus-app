@@ -5,7 +5,7 @@ import React, { HTMLProps, useMemo, useRef } from 'react';
 
 import Table, { COLORS, ETableColumnType, ETableFilterVariant, ROW_SELECT_COL_KEY, TTable } from "@/components/Table";
 import { TableSelect } from "@/components/Table/TableSelect/TableSelect.tsx";
-import { userStatusMap } from "@/constants/EUser.ts";
+import { EUserStatus, userStatusMap } from "@/constants/EUser.ts";
 import { useStores } from "@/hooks";
 import { IUser } from "@/interfaces";
 
@@ -79,7 +79,11 @@ export const AdministrationTable = observer(() => {
             cell: (info) => {
                 const { getValue, table: infoTable, row, column } = info;
                 const initialValue = getValue() as string;
-                const opts = [...userStatusMap].map(([_, v]) => v);
+                const opts = [...userStatusMap].reduce((acc, [k, v]) => {
+                    const excludeStatus: EUserStatus[] = [EUserStatus.PENDING];
+                    if(excludeStatus.includes(k)) return acc;
+                    return [...acc, v];
+                }, [] as string[]);
                 const meta = (infoTable.options.meta) as TableMeta<IUser>;
 
                 const onChange = (newValue?: string) => {
@@ -90,7 +94,7 @@ export const AdministrationTable = observer(() => {
                 return (
                     <TableSelect
                         value={initialValue}
-                        onChange={onChange}
+                        onChange={(v) => onChange(v as string)}
                         options={opts}
                     />
                 );
@@ -110,14 +114,20 @@ export const AdministrationTable = observer(() => {
     ], []);
 
     return (
-        <Stack direction='row' maxWidth='1000px' width='100%' flexGrow={1}>
+        <Stack
+            direction='row'
+            maxWidth='1000px'
+            width='100%'
+            flexGrow={1}
+            overflow='hidden'
+        >
             <Table
                 getTable={(t, d) => {
                     tableRef.current = t;
                     tableDataRef.current = d;
                 }}
                 // data={data}
-                data={[...data, ...data]}
+                data={[...data, ...data, ...data]}
                 columns={columns}
                 numCol
                 showPagination
@@ -126,14 +136,14 @@ export const AdministrationTable = observer(() => {
                         color: row.original?.isPending ? COLORS.ACTIVE : 'unset',
                     };
                 }}
-                initialState={{
-                    sorting: [
-                        {
-                            id: 'status',
-                            desc: false,
-                        }
-                    ]
-                }}
+                // initialState={{
+                //     sorting: [
+                //         {
+                //             id: 'status',
+                //             desc: false,
+                //         }
+                //     ]
+                // }}
                 onChange={(updater) => console.log('updater', updater)}
             />
         </Stack>

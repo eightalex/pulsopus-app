@@ -6,10 +6,14 @@ import Typography from "@/components/Typography";
 import { TableBodyCellStyled, TableBodyRowStyled, TableBodyStyled } from "./styled.tsx";
 import { ITableBodyProps } from "./types.ts";
 
-export function TableBody<Data>({ table, maxPerPage = 0, styleOverrides = {} }: ITableBodyProps<Data>) {
+export function TableBody<Data>({ getRef, table, maxPerPage = 0, styleOverrides = {} }: ITableBodyProps<Data>) {
     const max = maxPerPage || table.getRowModel().rows?.length || 100;
     return (
-        <TableBodyStyled>
+        <TableBodyStyled
+            ref={(instance) => {
+                getRef?.(instance as HTMLTableSectionElement);
+            }}
+        >
         {table
             .getRowModel()
             .rows.slice(0, max)

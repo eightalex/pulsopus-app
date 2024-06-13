@@ -1,6 +1,5 @@
 import { buttonClasses } from '@mui/material/Button';
 import { createTheme, ThemeOptions } from '@mui/material/styles';
-import { CaretDownIcon } from "@/icons";
 import { extendPalette, typographyColors } from '@/theme/extendPalette';
 import { typographyComponent } from '@/theme/theme.typography';
 
@@ -23,6 +22,18 @@ export const components: ThemeOptions['components'] = {
 				width: '100%',
 				height: '100%',
 			},
+			// "*": {
+			// 	scrollbarGutter: 'stable',
+			// },
+			// '*::-webkit-scrollbar': {
+			// 	width: '8px',
+			// },
+			// '*::-webkit-scrollbar-track': {
+			// 	backgroundColor: 'darkgrey',
+			// },
+			// '*::-webkit-scrollbar-thumb': {
+			// 	boxShadow: 'inset 0 0 6px rgba(0, 0, 0, 0.3)',
+			// },
 		},
 	},
 	MuiTypography: typographyComponent,

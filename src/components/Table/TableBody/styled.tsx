@@ -25,6 +25,8 @@ export const TableBodyStyled = styled(TableBody)({
 export const TableBodyRowStyled = styled(
     TableRow
 )<ITableBodyCellStyledProps>(({ selected, theme: { extendPalette } }) => ({
+    position: 'relative',
+    zIndex: 0,
     height: DEFAULT_ROW_BODY_HEIGHT,
     maxHeight: DEFAULT_ROW_BODY_HEIGHT,
     width: '100%',
@@ -33,7 +35,6 @@ export const TableBodyRowStyled = styled(
     borderWidth: 1,
     borderStyle: 'solid',
     color: '#D0D0D0',
-    // borderColor: 'transparent',
     borderColor: selected
         ? extendPalette.tableBodyBorderSelect
         : extendPalette.tableBodyBorderDefault,
@@ -44,6 +45,10 @@ export const TableBodyRowStyled = styled(
     "&:hover td": {
         borderColor: extendPalette.tableBodyBorderHover,
         backgroundColor: extendPalette.tableBodyBackgroundHover,
+    },
+
+    '&.Mui-selected': {
+        backgroundColor: extendPalette.tableBodyBackgroundSelect,
     }
 }));
 

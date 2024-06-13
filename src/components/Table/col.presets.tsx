@@ -1,4 +1,5 @@
 import Checkbox from '@mui/material/Checkbox';
+import Stack from "@mui/material/Stack";
 import { ColumnDef } from "@tanstack/react-table";
 
 import {
@@ -34,9 +35,14 @@ export const rowSelectCol: ColumnDef<unknown> = {
     header: ({ table }) => (
         <Checkbox
             disabled={false}
-            checked={table.getIsAllRowsSelected()}
-            indeterminate={table.getIsSomeRowsSelected()}
-            onChange={table.getToggleAllRowsSelectedHandler()}
+            checked={table.getIsAllPageRowsSelected()}
+            indeterminate={table.getIsSomePageRowsSelected()}
+            onClick={() => {
+                const isChecked = table.getIsAllPageRowsSelected();
+                const isIndeterminate = table.getIsSomePageRowsSelected();
+                const state = isChecked || isIndeterminate;
+                table.toggleAllPageRowsSelected(!state);
+            }}
             sx={{
                 padding: 0,
             }}
@@ -46,18 +52,26 @@ export const rowSelectCol: ColumnDef<unknown> = {
         />
     ),
     cell: ({ row }) => (
-        <Checkbox
-            disabled={!row.getCanSelect()}
-            checked={row.getIsSelected()}
-            indeterminate={row.getIsSomeSelected()}
-            onChange={row.getToggleSelectedHandler()}
-            sx={{
-                padding: 0,
-            }}
-            inputProps={{
-                'aria-label': 'select row',
-            }}
-        />
+        <Stack
+            sx={({ spacing }) => ({
+                padding: spacing(0, 3),
+                alignItems: 'center',
+                justifyContent: 'center',
+            })}
+        >
+            <Checkbox
+                disabled={!row.getCanSelect()}
+                checked={row.getIsSelected()}
+                indeterminate={row.getIsSomeSelected()}
+                onChange={row.getToggleSelectedHandler()}
+                sx={{
+                    padding: 0,
+                }}
+                inputProps={{
+                    'aria-label': 'select row',
+                }}
+            />
+        </Stack>
     ),
     meta: {
         type: ETableColumnType.ROW_SELECT

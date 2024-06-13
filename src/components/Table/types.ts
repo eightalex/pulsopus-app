@@ -14,7 +14,7 @@ export interface ITableHook<Data> {
 }
 
 export interface ITableModule<Data> extends ITableHook<Data> {
-    getRef?: (ref: HTMLDivElement) => void;
+    getRef?: <T extends HTMLTableSectionElement>(ref: T) => void;
 }
 
 export interface ITableProps<Data> {

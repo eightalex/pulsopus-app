@@ -45,11 +45,13 @@ export function Table<Data>(props: ITableProps<Data>) {
         initialState = {},
     } = props;
 
+    const containerRef = useRef<HTMLDivElement | null>();
+    const tableRef = useRef<HTMLTableElement | null>();
+    const headRef = useRef<HTMLTableSectionElement | null>();
+    const bodyRef = useRef<HTMLTableSectionElement | null>();
+
     const [data, setData] = useState(initialData);
     const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper();
-
-    const containerRef = useRef<HTMLDivElement | null>();
-    const headRef = useRef<HTMLDivElement | null>();
 
     const [pageSize, setPageSize] = useState(showPagination ? 10 : data.length);
 
@@ -63,7 +65,7 @@ export function Table<Data>(props: ITableProps<Data>) {
 
     const cols = useMemo<ColumnDef<Data>[]>(() => {
         let result = [...columns];
-        if(numCol) {
+        if (numCol) {
             result = [
                 rowNumCol as ColumnDef<Data>,
                 ...result
@@ -132,7 +134,13 @@ export function Table<Data>(props: ITableProps<Data>) {
     });
 
     const calculatePageSize = useCallback(() => {
-        if(!showPagination || !containerRef?.current || !headRef?.current) return;
+        if (!showPagination) {
+            setPageSize(data.length);
+            table.setPageSize(data.length);
+            return;
+        }
+
+        if (!containerRef?.current || !headRef?.current) return;
 
         const bH = containerRef.current?.clientHeight - headRef.current?.clientHeight - 90;
 
@@ -140,20 +148,20 @@ export function Table<Data>(props: ITableProps<Data>) {
 
         try {
             const tbody = containerRef.current?.querySelector('tbody');
-            if(!tbody) return;
+            if (!tbody) return;
             const trs = tbody.querySelectorAll('tr');
             const tsHs = Array.from(trs).map((tr) => tr.offsetHeight);
             const [_, max] = d3.extent(tsHs);
-            if(!max) return;
+            if (!max) return;
             maxRowHeight = max;
         } catch (err) {
             console.error(err);
         }
 
-        const pS = Math.max(DEFAULT_MIN_ROW_PER_PAGE, Math.floor(bH/maxRowHeight));
+        const pS = Math.max(DEFAULT_MIN_ROW_PER_PAGE, Math.floor(bH / maxRowHeight));
         setPageSize(pS);
         table.setPageSize(pS);
-    }, [showPagination, table]);
+    }, [data.length, showPagination, table]);
 
     useLayoutEffect(() => {
         calculatePageSize();
@@ -164,26 +172,42 @@ export function Table<Data>(props: ITableProps<Data>) {
     }, [getTable, table, data]);
 
     return (
+        <Stack
+            spacing={0}
+            overflow='hidden'
+            flexGrow={1}
+            justifyContent='space-between'
+            height='100%'
+            component='div'
+            ref={(r) => containerRef.current = r}
+        >
             <Stack
-                spacing={0}
-                overflow='hidden'
-                flexGrow={1}
-                justifyContent='space-between'
-                height='100%'
-                component='div'
-                ref={(r) => containerRef.current = r}
+                flexGrow={0}
+                overflow='auto'
+                maxHeight='100%'
+                position='relative'
             >
-                <Stack flexGrow={0}>
-                    <TableStyled size="small" stickyHeader={false}>
-                        <TableHead<Data> table={table} getRef={(r) => headRef.current = r}/>
-                        <TableBody<Data> table={table} styleOverrides={rowStyleOverrides}/>
-                    </TableStyled>
-                </Stack>
-                <Stack flexGrow={2}>
-                    {showPagination && table.getPageCount() > 1 && (
-                        <TablePagination<Data> table={table}/>
-                    )}
-                </Stack>
+                <TableStyled
+                    size="small"
+                    stickyHeader={!showPagination && false}
+                    ref={(r) => tableRef.current = r}
+                >
+                    <TableHead<Data>
+                        table={table}
+                        getRef={(r) => headRef.current = r}
+                    />
+                    <TableBody<Data>
+                        table={table}
+                        styleOverrides={rowStyleOverrides}
+                        getRef={(r) => bodyRef.current = r}
+                    />
+                </TableStyled>
             </Stack>
+            <Stack flexGrow={2}>
+                {showPagination && table.getPageCount() > 1 && (
+                    <TablePagination<Data> table={table}/>
+                )}
+            </Stack>
+        </Stack>
     );
 }

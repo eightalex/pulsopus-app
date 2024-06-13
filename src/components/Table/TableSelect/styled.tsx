@@ -1,7 +1,7 @@
 import Select, { SelectProps } from "@mui/material/Select";
 import { styled } from '@mui/system';
 
-import { ETableSelectType } from "@/components/Table/TableSelect/TableSelect.tsx";
+import { ETableSelectType } from "@/components/Table/TableSelect";
 
 interface ITableHeadSelectStyledProps {
     variant?: ETableSelectType;

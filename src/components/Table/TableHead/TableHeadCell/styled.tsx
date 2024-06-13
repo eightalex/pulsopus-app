@@ -7,7 +7,6 @@ import { DEFAULT_ROW_HEAD_HEIGHT } from "@/components/Table";
 interface ITableHeadCellStyledProps {
     canAction: boolean;
     isFiltered?: boolean;
-    sx: StackProps['sx'];
 }
 
 export const TableHeadCellTitleStyled = styled(
@@ -26,7 +25,9 @@ export const TableHeadCellTitleStyled = styled(
 
 export const TableHeadCellStyled = styled(
     (props: TableCellProps) => <TableCell {...props} component='th' />,
-    { shouldForwardProp: prop => prop !== 'canAction' }
+    {
+        shouldForwardProp: prop => !['canAction', 'isFiltered'].includes(prop as string)
+    }
 )<ITableHeadCellStyledProps>(({ canAction = false, isFiltered = false, theme: { palette } }) => ({
     height: DEFAULT_ROW_HEAD_HEIGHT,
     boxSizing: 'border-box',

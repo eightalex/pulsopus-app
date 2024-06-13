@@ -1,4 +1,5 @@
 import { flexRender } from "@tanstack/react-table";
+import { Header, RowData } from "@tanstack/table-core";
 
 import { DEFAULT_COLUMN_SIZE, ETableFilterVariant } from "@/components/Table";
 import { TableHeadFilter } from "@/components/Table/TableHead/TableHeadFilter/TableHeadFilter.tsx";
@@ -8,7 +9,7 @@ import { TableHeadCell } from "./TableHeadCell";
 import { ITableHeadProps } from "./types.ts";
 
 const getCellWidthStyle = (size?: number): { width?: string; maxWidth?: string } => {
-    if(!size || size === DEFAULT_COLUMN_SIZE) return {};
+    if (!size || size === DEFAULT_COLUMN_SIZE) return {};
     return { width: `${size}px !important`, maxWidth: `${size}px !important` };
 };
 
@@ -26,7 +27,7 @@ export function TableHead<Data>({ table, getRef }: ITableHeadProps<Data>) {
             ))}
             <TableHeadStyled
                 ref={(instance) => {
-                    getRef?.(instance as HTMLDivElement);
+                    getRef?.(instance as HTMLTableSectionElement);
                 }}
             >
                 {table.getHeaderGroups().map(headerGroup => (
@@ -49,7 +50,11 @@ export function TableHead<Data>({ table, getRef }: ITableHeadProps<Data>) {
                                     style={{
                                         ...getCellWidthStyle(header.getSize()),
                                     }}
-                                    filter={!filterVariant ? false : <TableHeadFilter header={header} />}
+                                    filter={!filterVariant
+                                        ? false
+                                        : <TableHeadFilter
+                                            header={header as Header<RowData, unknown>}
+                                        />}
                                     filtered={header.column.getIsFiltered()}
                                 />
                             );

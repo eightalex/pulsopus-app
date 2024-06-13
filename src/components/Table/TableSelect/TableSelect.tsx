@@ -1,90 +1,23 @@
-import Collapse from '@mui/material/Collapse';
 import MenuItem from "@mui/material/MenuItem";
 import { SelectChangeEvent } from "@mui/material/Select";
-import Stack from "@mui/material/Stack";
-import { FC, useCallback, useMemo } from 'react';
+import { FC, useCallback } from 'react';
 
+import { TableSelectRenderValue } from "@/components/Table/TableSelect/TableSelectRenderValue.tsx";
+import { ITableSelect } from "@/components/Table/TableSelect/types.ts";
 import Typography from "@/components/Typography";
 
+import { ETableSelectType } from "./constants.ts";
 import { TableHeadSelectStyled } from "./styled.tsx";
 
-export const enum ETableSelectType {
-    HEAD = 'HEAD',
-    ROW = 'ROW',
-}
-
-export interface ITableSelect {
-    title?: string;
-    value?: string;
-    onChange?: (value?: string) => void;
-    options?: Array<string | number>;
-    type?: ETableSelectType;
-}
-
-export interface IRenderHeadValueProps {
-    value?: string;
-    title?: string;
-    type?: ITableSelect['type'];
-}
-
-export const RenderHeadValue: FC<IRenderHeadValueProps> = (props) => {
-    const { value = '', title = '', type } = props;
-    const sxBase = useMemo(() => ({
-        lineHeight: 1,
-        textTransform: 'uppercase',
-        fontSize: 10,
-        transition: 'all .25s ease',
-    }), []);
-
-    const titleRender = useMemo(() => {
-        let titleSx = {
-            ...sxBase,
-            fontSize: 16,
-        };
-        if(value) {
-            titleSx = {
-                ...titleSx,
-                fontSize: 10,
-            };
-        }
-        return <Typography sx={titleSx} >{title}</Typography>;
-    }, [sxBase, title, value]);
-
-    if(type === ETableSelectType.ROW) {
-        return <Typography
-            sx={{
-                ...sxBase,
-                fontSize: 16,
-                color: 'inherit'
-        }}
-        >
-            {value}
-        </Typography>;
-    }
-
-    return (
-        <Stack spacing='2px' justifyContent='center'>
-            {titleRender}
-            <Collapse in={Boolean(value)}>
-                <Typography
-                    sx={{
-                        ...sxBase,
-                        fontSize: 13,
-                    }}
-                >
-                    {value}
-                </Typography>
-            </Collapse>
-        </Stack>
-    );
-};
-export const TableSelect: FC<ITableSelect> = (props) => {
+export const TableSelect: FC<ITableSelect> = (props) =>  {
     const {
         title,
         value = '',
         onChange,
         options = [],
         type = ETableSelectType.ROW,
+        renderValue,
+        renderOption,
     } = props;
 
     const handleChange = useCallback((event: SelectChangeEvent<unknown>) => {
@@ -101,13 +34,18 @@ export const TableSelect: FC<ITableSelect> = (props) => {
                 value: value || title,
                 placeholder: title,
             }}
-            renderValue={(renderValue) =>
-                <RenderHeadValue
-                    value={!value ? '' :renderValue as string}
-                    title={title || ''}
-                    type={type}
-                />
-            }
+            renderValue={(rValue) => {
+                if (renderValue && typeof renderValue === 'function') {
+                    return renderValue?.(rValue);
+                }
+                return (
+                    <TableSelectRenderValue
+                        value={!value ? '' : rValue as string}
+                        title={title || ''}
+                        type={type}
+                    />
+                );
+            }}
             variant={type}
         >
             {type === ETableSelectType.HEAD && (
@@ -115,17 +53,23 @@ export const TableSelect: FC<ITableSelect> = (props) => {
                     <em>All</em>
                 </MenuItem>
             )}
-            {options.map((optV, index) => (
+            {options.map((optV, index, opts) => (
                 <MenuItem
                     disabled={value === optV}
                     key={`${index}-${optV}`}
                     value={optV}
                 >
-                    <Typography
-                        textTransform='uppercase'
-                    >
-                        {optV}
-                    </Typography>
+                    {(renderOption && typeof renderOption === 'function')
+                        ? renderOption?.(optV, index, opts)
+                        : (
+                            <Typography
+                                lineHeight={1}
+                                textTransform='uppercase'
+                            >
+                                {optV}
+                            </Typography>
+                        )
+                    }
                 </MenuItem>
             ))}
         </TableHeadSelectStyled>

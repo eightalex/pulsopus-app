@@ -12,7 +12,7 @@ interface IThHTMLAttributes extends DetailedHTMLProps<ThHTMLAttributes<HTMLTable
     HTMLTableCellElement> {}
 
 export interface ITableHeadCellProps
-    extends Omit<IThHTMLAttributes, 'title'>, ITableHeadCellSortProps {
+    extends Omit<IThHTMLAttributes, 'title' | 'onClick' | 'content'>, ITableHeadCellSortProps {
     onClick?: (event: MouseEvent<HTMLDivElement>) => void;
     content?: string | ReactNode;
     children?: ReactNode;

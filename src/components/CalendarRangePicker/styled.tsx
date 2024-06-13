@@ -10,10 +10,10 @@ interface IRangeLabelContainer {
 interface IRangePeriodItem {
 	active?: boolean;
 }
-
-export const RangeLabelContainerStyled = styled(({ ...props }: StackProps) =>
-		<Stack{...props} direction="row"/>, {
-		shouldForwardProp: (prop) => prop !== 'fullLine',
+export const RangeLabelContainerStyled = styled(
+	(props: StackProps) => <Stack {...props} direction="row"/>,
+	{
+		shouldForwardProp: prop => prop !== 'fullLine',
 	}
 )<IRangeLabelContainer>(({ theme: { spacing, extendPalette }, fullLine }) => ({
 	position: 'relative',

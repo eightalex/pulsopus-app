@@ -1,8 +1,7 @@
 import { FC, useCallback, useMemo } from "react";
 
 import { ETableFilterVariant } from "@/components/Table";
-import { TableSelect } from "@/components/Table/TableSelect";
-import { ETableSelectType } from "@/components/Table/TableSelect/TableSelect.tsx";
+import { ETableSelectType,TableSelect } from "@/components/Table/TableSelect";
 
 import { ITableHeadFilterComponent } from "./TableHeadFilter.tsx";
 
