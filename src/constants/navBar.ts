@@ -25,8 +25,8 @@ export const NAV_ICON_BY_PATH = {
 const allRoles = Object.values(EUserRole).map((v) => v as EUserRole);
 
 export const SIDE_NAV_OPTIONS_BY_ROLES: Record<string, EUserRole[]> = {
-	[PEOPLE_DYNAMIC_ROUTE]: allRoles,
-	[DIAGRAM_ROUTE]: allRoles,
+	[PEOPLE_DYNAMIC_ROUTE]: [EUserRole.ADMIN, EUserRole.MANAGER, EUserRole.USER, EUserRole.VIEWER],
+	[DIAGRAM_ROUTE]: [EUserRole.ADMIN, EUserRole.MANAGER, EUserRole.USER, EUserRole.VIEWER],
 	[ADMINISTRATION_ROUTE]: [EUserRole.ADMIN, EUserRole.MANAGER],
 	[EVENTS_ROUTE]: [EUserRole.ADMIN, EUserRole.MANAGER],
 };
