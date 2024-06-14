@@ -1,5 +1,5 @@
 
-export const enum EUserRole {
+export enum EUserRole {
     VIEWER = 'VIEWER',
     MANAGER = 'MANAGER',
     USER = 'USER',

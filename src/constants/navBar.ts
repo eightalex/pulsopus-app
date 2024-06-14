@@ -22,9 +22,11 @@ export const NAV_ICON_BY_PATH = {
 	[EVENTS_ROUTE]: TodayOutlinedIcon,
 };
 
+const allRoles = Object.values(EUserRole).map((v) => v as EUserRole);
+
 export const SIDE_NAV_OPTIONS_BY_ROLES: Record<string, EUserRole[]> = {
-	[PEOPLE_DYNAMIC_ROUTE]: [EUserRole.USER, EUserRole.ADMIN],
-	[DIAGRAM_ROUTE]: [EUserRole.USER, EUserRole.ADMIN],
-	[ADMINISTRATION_ROUTE]: [EUserRole.ADMIN],
-	[EVENTS_ROUTE]: [EUserRole.ADMIN],
+	[PEOPLE_DYNAMIC_ROUTE]: allRoles,
+	[DIAGRAM_ROUTE]: allRoles,
+	[ADMINISTRATION_ROUTE]: [EUserRole.ADMIN, EUserRole.MANAGER],
+	[EVENTS_ROUTE]: [EUserRole.ADMIN, EUserRole.MANAGER],
 };
