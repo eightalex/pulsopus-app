@@ -5,7 +5,18 @@ import { Triangle } from 'react-loader-spinner';
 import { ILoader } from '@/components/Loader/types';
 import { extendPalette } from '@/theme';
 
-const Loader: FC<ILoader> = ({ fullSize = false, ...restProps }) => {
+const sizes: Record<ILoader['size'], { width: number, height: number }> = {
+	small: {
+		height: 24,
+		width: 24,
+	},
+	medium: {
+		height: 50,
+		width: 50,
+	},
+};
+
+const Loader: FC<ILoader> = ({ fullSize = false, size = 'medium', ...restProps }) => {
 
 	const wrapperStyled = useMemo(() => {
 		if (fullSize) {
@@ -29,21 +40,20 @@ const Loader: FC<ILoader> = ({ fullSize = false, ...restProps }) => {
 		<Stack
 			sx={{
 				...wrapperStyled,
-				display: 'flex',
 				alignItems: 'center',
 				justifyContent: 'center',
 				pointerEvents: 'none',
 			}}
 		>
 			<Triangle
-				visible={true}
+				visible
 				height="50"
 				width="50"
-				radius="9"
 				color={extendPalette.loaderSurfaceDefault}
 				ariaLabel="triangle-loading"
 				wrapperStyle={{}}
 				wrapperClass=""
+				{...sizes[size]}
 				{...restProps}
 			/>
 		</Stack>

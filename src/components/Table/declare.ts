@@ -7,6 +7,8 @@ declare module '@tanstack/react-table' {
         filterVariant?: ETableFilterVariant;
         type?: ETableColumnType;
         updateData: (rowIndex: number, columnId: string, value: unknown) => void;
+        setLoading: (rowIndex: number, columnId: string, state?: boolean) => void;
+        getLoading: (rowIndex: number, columnId: string) => boolean;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

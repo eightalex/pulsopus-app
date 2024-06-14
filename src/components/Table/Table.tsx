@@ -51,6 +51,7 @@ export function Table<Data>(props: ITableProps<Data>) {
     const bodyRef = useRef<HTMLTableSectionElement | null>();
 
     const [data, setData] = useState(initialData);
+    const [loadingState, setLoadingState] = useState<{ [rowIndex: number]: { [columnId: string]: boolean } }>({});
     const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper();
 
     const [pageSize, setPageSize] = useState(showPagination ? 10 : data.length);
@@ -120,6 +121,21 @@ export function Table<Data>(props: ITableProps<Data>) {
                         return row;
                     })
                 );
+            },
+            setLoading: (rowIndex, columnId, state = true) => {
+                skipAutoResetPageIndex();
+                setLoadingState(prev => ({
+                    ...prev,
+                    [rowIndex]: {
+                        ...prev[rowIndex],
+                        [columnId]: Boolean(state)
+                    }
+                }));
+            },
+            getLoading: (rowIndex, columnId): boolean => {
+                skipAutoResetPageIndex();
+                const rowState = loadingState[rowIndex] || {};
+                return Boolean(rowState[columnId]);
             },
         },
         ...tableOptions,

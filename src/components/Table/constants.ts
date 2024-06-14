@@ -15,6 +15,7 @@ export const enum ETableColumnType {
 
 export const enum ETableFilterVariant {
     SELECT = 'SELECT',
+    ROW_SELECT = 'ROW_SELECT',
 }
 export const COLORS = {
     ACTIVE: allGreen400,

@@ -3,7 +3,7 @@ import { IUser } from "@/interfaces/IUser.ts";
 
 export interface IDepartment {
 	id: string;
-	name: string;
+	value: string;
 	label: string;
 	activity: IActivity[];
 	users: IUser[];

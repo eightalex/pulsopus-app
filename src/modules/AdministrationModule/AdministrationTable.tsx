@@ -5,11 +5,11 @@ import React, { HTMLProps, useMemo, useRef } from 'react';
 
 import Table, { COLORS, ETableColumnType, ETableFilterVariant, ROW_SELECT_COL_KEY, TTable } from "@/components/Table";
 import { TableSelect } from "@/components/Table/TableSelect/TableSelect.tsx";
-import { EUserStatus, userStatusMap } from "@/constants/EUser.ts";
+import { EUserRole, EUserStatus } from "@/constants/EUser.ts";
 import { useStores } from "@/hooks";
 import { IUser } from "@/interfaces";
 
-import { filterRolesFn, filterStatusFn, ROLES_SEPARATOR, sortStatusFn } from "./col.helper.tsx";
+import { filterRolesFn, filterStatusFn, sortStatusFn } from "./col.helper.tsx";
 
 function IndeterminateCheckbox({
                                    indeterminate,
@@ -35,83 +35,146 @@ function IndeterminateCheckbox({
 }
 
 export const AdministrationTable = observer(() => {
-    const { rootStore: { usersStore: { users: data } } } = useStores();
+    const {
+        rootStore: {
+            usersStore: {
+                users: data,
+                setUserStatusById,
+                usersStatuses,
+                usersRoles,
+            },
+            authStore: {
+                isAdmin,
+                user: currentUser,
+            },
+        }
+    } = useStores();
     const tableRef = useRef<TTable<IUser>>();
     const tableDataRef = useRef<IUser[]>();
 
-    const columns = useMemo<ColumnDef<IUser>[]>(() => [
-        {
-            accessorKey: 'username',
-            header: 'Title',
-            cell: info => info.getValue(),
-            size: 230,
-        },
-        {
-            accessorKey: 'department',
-            header: 'Department',
-            accessorFn: (row) => row.department.label,
-            cell: info => info.getValue(),
-            size: 180,
-            meta: {
-                filterVariant: ETableFilterVariant.SELECT,
-            },
-        },
-        {
-            header: 'Date',
-            cell: () => '25.07.2023',
-            size: 140,
-        },
-        {
-            accessorKey: 'roles',
-            header: 'Role',
-            cell: info => {
-                return [(info.getValue() as string[]).join(ROLES_SEPARATOR)];
-            },
-            filterFn: filterRolesFn,
-            meta: {
-                filterVariant: ETableFilterVariant.SELECT,
-            },
-            getUniqueValues: (row) => [row.roles.join(ROLES_SEPARATOR)],
-        },
-        {
-            accessorKey: 'status',
-            header: 'Status',
-            cell: (info) => {
-                const { getValue, table: infoTable, row, column } = info;
-                const initialValue = getValue() as string;
-                const opts = [...userStatusMap].reduce((acc, [k, v]) => {
-                    const excludeStatus: EUserStatus[] = [EUserStatus.PENDING];
-                    if(excludeStatus.includes(k)) return acc;
-                    return [...acc, v];
-                }, [] as string[]);
-                const meta = (infoTable.options.meta) as TableMeta<IUser>;
 
-                const onChange = (newValue?: string) => {
-                    if(!newValue) return;
-                    meta.updateData(row.index, column.id, newValue);
-                };
+    const columns = useMemo<ColumnDef<IUser>[]>(() => {
+        const base = [
+            {
+                accessorKey: 'username',
+                header: 'Title',
+                cell: info => info.getValue(),
+                size: 230,
+            },
+            {
+                accessorKey: 'department',
+                header: 'Department',
+                accessorFn: (row) => row.department.label,
+                cell: info => info.getValue(),
+                size: 180,
+                meta: {
+                    filterVariant: ETableFilterVariant.SELECT,
+                },
+            },
+            {
+                header: 'Date',
+                cell: () => '25.07.2023',
+                size: 140,
+            },
+            {
+                accessorKey: 'role',
+                header: 'Role',
+                cell: info => {
+                    const { getValue, table: infoTable, row, column } = info;
+                    const initialValue = getValue() as string;
+                    const opts = usersRoles.reduce((acc, s) => {
+                        if(!s.canSetted) return acc;
+                        return [...acc, s.value];
+                    }, [] as string[]);
 
-                return (
-                    <TableSelect
-                        value={initialValue}
-                        onChange={(v) => onChange(v as string)}
-                        options={opts}
-                    />
-                );
+                    const meta = (infoTable.options.meta) as TableMeta<IUser>;
+                    const rowUserId = row.original.id;
+
+                    const loading = meta.getLoading(row.index, column.id);
+
+                    const onChange = async (newValue?: string) => {
+                        if(!newValue) return;
+
+                        meta.setLoading(row.index, column.id);
+                        meta.updateData(row.index, column.id, newValue);
+                        try {
+                            await setUserRoleById(rowUserId, EUserRole[newValue as keyof typeof EUserRole]);
+                        } finally {
+                            meta.setLoading(row.index, column.id, false);
+                        }
+                    };
+
+
+                    return (
+                        <TableSelect
+                            loading={loading}
+                            disabled={currentUser?.id === rowUserId || !isAdmin}
+                            value={initialValue}
+                            onChange={(v) => onChange(v as string)}
+                            options={opts}
+                        />
+                    );
+                },
+                filterFn: filterRolesFn,
+                meta: {
+                    filterVariant: ETableFilterVariant.SELECT,
+                },
             },
-            meta: {
-                filterVariant: ETableFilterVariant.SELECT,
+            {
+                accessorKey: 'status',
+                header: 'Status',
+                cell: (info) => {
+                    const { getValue, table: infoTable, row, column } = info;
+                    const initialValue = getValue() as string;
+                    const opts = usersStatuses.reduce((acc, s) => {
+                        if(!s.canSetted) return acc;
+                        return [...acc, s.value];
+                    }, [] as string[]);
+
+                    const meta = (infoTable.options.meta) as TableMeta<IUser>;
+                    const rowUserId = row.original.id;
+
+                    const loading = meta.getLoading(row.index, column.id);
+
+                    const onChange = async (newValue?: string) => {
+                        if(!newValue) return;
+
+                        meta.setLoading(row.index, column.id);
+                        meta.updateData(row.index, column.id, newValue);
+                        try {
+                            await setUserStatusById(rowUserId, EUserStatus[newValue as keyof typeof EUserStatus]);
+                        } finally {
+                            meta.setLoading(row.index, column.id, false);
+                        }
+                    };
+
+                    return (
+                        <TableSelect
+                            loading={loading}
+                            disabled={currentUser?.id === rowUserId || !isAdmin}
+                            value={initialValue}
+                            onChange={(v) => onChange(v as string)}
+                            options={opts}
+                        />
+                    );
+                },
+                meta: {
+                    filterVariant: ETableFilterVariant.SELECT,
+                },
+                filterFn: filterStatusFn,
+                sortingFn: sortStatusFn,
             },
-            filterFn: filterStatusFn,
-            sortingFn: sortStatusFn,
-        },
-        {
-            accessorKey: ROW_SELECT_COL_KEY,
-            meta: {
-                type: ETableColumnType.ROW_SELECT
-            }
+        ];
+        if(isAdmin) {
+            base.push( {
+                accessorKey: ROW_SELECT_COL_KEY,
+                meta: {
+                    type: ETableColumnType.ROW_SELECT
+                }
+            });
         }
-    ], []);
+        return base;
+    }, [isAdmin, currentUser, setUserStatusById]);
 
     return (
         <Stack
@@ -126,7 +189,6 @@ export const AdministrationTable = observer(() => {
                     tableRef.current = t;
                     tableDataRef.current = d;
                 }}
-                // data={data}
                 data={[...data, ...data, ...data]}
                 columns={columns}
                 numCol
@@ -144,7 +206,6 @@ export const AdministrationTable = observer(() => {
                 //         }
                 //     ]
                 // }}
-                onChange={(updater) => console.log('updater', updater)}
             />
         </Stack>
     );

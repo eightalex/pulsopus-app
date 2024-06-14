@@ -7,6 +7,8 @@ import { BaseStore } from './BaseStore';
 
 export class UsersStore extends BaseStore implements IUsersStore {
 	public usersMap: Map<IUser['id'], IUser> = new Map();
+	public usersStatuses: { value: string, canSetted: boolean }[] = [];
+	public usersRoles: { value: string, canSetted: boolean }[] = [];
 
 	private asyncStatuses = {
 		getUsers: this.createKey('getUsers'),
@@ -17,6 +19,9 @@ export class UsersStore extends BaseStore implements IUsersStore {
 		super(rootStore);
 		makeObservable(this, {
 			usersMap: observable,
+			usersStatuses: observable,
+			usersRoles: observable,
+			//
 			users: computed,
 			usersAutocompleteOptions: computed,
 			// loading
@@ -26,6 +31,8 @@ export class UsersStore extends BaseStore implements IUsersStore {
 			getUsers: action.bound,
 			getUser: action.bound,
 			getUsersByDepartmentId: action.bound,
+			setUserStatusById: action.bound,
+			setUserRoleById: action.bound,
 		});
 	}
 
@@ -43,10 +50,24 @@ export class UsersStore extends BaseStore implements IUsersStore {
 		});
 	}
 
+	private async getStatuses() {
+		this.usersStatuses =  await api.usersService.getUserStatuses();
+	}
+
+	private async getRoles() {
+		this.usersRoles = await api.usersService.getUserRoles();
+	}
+
+	private async getSubUsersInfo() {
+		await this.getStatuses();
+		await this.getRoles();
+	}
+
 	public async getUsers(): Promise<void> {
 		const key = this.asyncStatuses.getUsers;
 		this.setLoading(key);
 		try {
+			await this.getSubUsersInfo();
 			const users =  await api.usersService.getAll();
 			runInAction(() => {
 				for (const user of users) {
@@ -95,5 +116,25 @@ export class UsersStore extends BaseStore implements IUsersStore {
 				label: 'username',
 			}
 		});
+	}
+
+	public async setUserStatusById(id: IUser["id"], status: IUser["status"]) {
+		try {
+			const user = await api.usersService.updateById(id, {
+				status,
+			});
+			this.setUser(user);
+		} catch (err) {
+			console.error(err);
+		}
+	}
+
+	public async setUserRoleById(id: IUser["id"], role: IUser["role"]) {
+		try {
+			const user = await api.usersService.updateById(id, { role });
+			this.setUser(user);
+		} catch (err) {
+			console.error(err);
+		}
 	}
 }

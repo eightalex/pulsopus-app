@@ -10,8 +10,10 @@ import { EUserRole } from "@/constants/EUser.ts";
 import {
 	ADMINISTRATION_ROUTE,
 	DIAGRAM_ROUTE,
-	EVENTS_ROUTE, LOGOUT_ROUTE,
-	PEOPLE_DYNAMIC_ROUTE, PROFILE_ROUTE,
+	EVENTS_ROUTE,
+	LOGOUT_ROUTE,
+	PEOPLE_DYNAMIC_ROUTE,
+	PROFILE_ROUTE,
 	ROOT_ID,
 	ROOT_ROUTE,
 	ROUTE_DEFAULT,
@@ -69,14 +71,14 @@ export const routes: RouteObject[] = [
 			{
 				path: ADMINISTRATION_ROUTE,
 				element:
-					<RequireRoleRoute allowedRoles={[EUserRole.ADMIN]}>
+					<RequireRoleRoute allowedRoles={[EUserRole.ADMIN, EUserRole.MANAGER]}>
 						<AdministrationModule/>
 					</RequireRoleRoute>
 			},
 			{
 				path: EVENTS_ROUTE,
 				element:
-					<RequireRoleRoute allowedRoles={[EUserRole.ADMIN]}>
+					<RequireRoleRoute allowedRoles={[EUserRole.ADMIN, EUserRole.MANAGER]}>
 						<EventsModule/>
 					</RequireRoleRoute>
 			},

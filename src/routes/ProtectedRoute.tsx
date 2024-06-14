@@ -29,8 +29,8 @@ export const ProtectedRoute: FC<IAppRouteProps> = observer(({ children }) => {
 	} = useStores();
 
 	const onAuth = useCallback(async () => {
-		// const token = decodeURIComponent(searchParams.get(QUERY_TOKEN) || sessionManager.token || '');
-		const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkNTkwZGE2Yi1mNmEyLTQxOTctOTFiMS00NTVlM2ViMjg0ZmYiLCJ1c2VybmFtZSI6ImFkbWluIGFkbWluIiwicm9sZXMiOlt7ImlkIjoiZmFlODM2OTItZTM2OC00MjY0LTliNzUtZWUyMDJhZmM2ZmRjIiwibmFtZSI6IkFETUlOIn1dLCJpYXQiOjE3MTgyODY1ODIsImV4cCI6MTcxODMyMTk4Mn0.btkzftsTnBxtMnAxUk-YKq3HydRzO65KxZxGjOJtU1o';
+		const token = decodeURIComponent(searchParams.get(QUERY_TOKEN) || sessionManager.token || '');
+		// const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MTYwODVmOC1mNjU1LTQ2NzEtODQ3Mi1mZDcwYzY2ZDVlOTMiLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6eyJ2YWx1ZSI6IkFETUlOIn0sInN0YXR1cyI6eyJ2YWx1ZSI6IkFDVElWRSJ9LCJpYXQiOjE3MTgzNjUyODIsImV4cCI6MTcxODQwMDY4Mn0._PJ5nIieaFyVJUNqTF76fA0n24JhBE9iYGpcu4z_fPk';
 		sessionManager.setToken(token.trim());
 
 		setSearchParams({});

@@ -70,4 +70,11 @@ export const TableHeadSelectStyled = styled(
         WebkitTextFillColor: 'initial',
         padding: spacing(1.5, 3),
     },
+
+    '&.Mui-disabled': {
+        color: 'unset',
+        "& .MuiSelect-icon": {
+            opacity: 0,
+        }
+    },
 }));

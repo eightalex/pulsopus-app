@@ -31,7 +31,7 @@ export const TableHeadFilterSelect: FC<Required<ITableHeadFilterComponent>> = (p
         <TableSelect
             title={header.id}
             value={columnFilterValue?.toString()}
-            onChange={handleChange}
+            onChange={(v) => handleChange(v as string)}
             options={sortedUniqueValues}
             type={ETableSelectType.HEAD}
         />

@@ -18,7 +18,6 @@ export const SideNavBar: FC<ISideNavBarProps> = observer((props) => {
 	} = props;
 	const { size: { width }, breakpointSizes } = useWindowSize();
 	const { rootStore: { authStore: { onLogout, user } } } = useStores();
-	const userRoles = user?.roles || [];
 
 	const isMinimize = useMemo(() => width <= breakpointSizes.xl, [width, breakpointSizes]);
 
@@ -27,7 +26,7 @@ export const SideNavBar: FC<ISideNavBarProps> = observer((props) => {
 		height: isMinimize ? 15 : 18,
 	}), [isMinimize]);
 
-	const options = getSidebarNavLinksByRoles(userRoles || []);
+	const options = getSidebarNavLinksByRoles(user?.role);
 
 	const handleLogout = useCallback(() => {
 		onLogout();

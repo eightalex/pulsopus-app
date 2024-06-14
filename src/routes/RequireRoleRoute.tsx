@@ -17,14 +17,18 @@ export const RequireRoleRoute:FC<IProtectedAdminRouteProps> = observer((props) =
     const {
         rootStore: {
             authStore: {
-                roles: userRoles
+                role: userRole
             }
         }
     } = useStores();
 
+
     const isExistRole = useMemo(
-        () => userRoles?.find(role => allowedRoles?.includes(role)),
-        [userRoles, allowedRoles]);
+        () => {
+            if(!allowedRoles.length) return true;
+             return allowedRoles.includes(userRole);
+        },
+        [userRole, allowedRoles]);
 
     const fallbackNavigatePath = useMemo(
         () => fallbackPath.startsWith('/')

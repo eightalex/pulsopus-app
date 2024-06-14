@@ -2,6 +2,7 @@ import { action, computed, makeObservable, observable, runInAction } from 'mobx'
 import api from "@/api";
 import sessionManager from "@/api/SessionManager.ts";
 import { CLIENT_URL } from "@/config";
+import { EUserRole } from "@/constants/EUser.ts";
 import { IAuthStore, IRootStore, IUser } from '@/interfaces';
 import { BaseStore } from '@/stores/BaseStore';
 
@@ -17,7 +18,9 @@ export class AuthStore extends BaseStore implements IAuthStore {
 		makeObservable(this, {
 			user: observable,
 
-			roles: computed,
+			role: computed,
+			isAdmin: computed,
+			userId: computed,
 
 			isLoadingLogin: computed,
 			isLoadingLogout: computed,
@@ -90,7 +93,19 @@ export class AuthStore extends BaseStore implements IAuthStore {
 		}
 	}
 
-	public get roles(): IUser["roles"] {
-		return this.user?.roles || [];
+	public get role(): IUser["role"] {
+		const r = this.user?.role;
+		if(!r) {
+			throw new Error('Unexpected exception. No user role');
+		}
+		return r;
+	}
+
+	public get userId() {
+		return this.user?.id;
+	}
+
+	public get isAdmin():boolean {
+		return this.user?.isAdmin || this.user?.role === EUserRole.ADMIN;
 	}
 }

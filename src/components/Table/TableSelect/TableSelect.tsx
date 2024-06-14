@@ -2,6 +2,7 @@ import MenuItem from "@mui/material/MenuItem";
 import { SelectChangeEvent } from "@mui/material/Select";
 import { FC, useCallback } from 'react';
 
+import { Loader } from "@/components/Loader";
 import { TableSelectRenderValue } from "@/components/Table/TableSelect/TableSelectRenderValue.tsx";
 import { ITableSelect } from "@/components/Table/TableSelect/types.ts";
 import Typography from "@/components/Typography";
@@ -18,6 +19,8 @@ export const TableSelect: FC<ITableSelect> = (props) =>  {
         type = ETableSelectType.ROW,
         renderValue,
         renderOption,
+        disabled = false,
+        loading = false
     } = props;
 
     const handleChange = useCallback((event: SelectChangeEvent<unknown>) => {
@@ -27,6 +30,7 @@ export const TableSelect: FC<ITableSelect> = (props) =>  {
 
     return (
         <TableHeadSelectStyled
+            disabled={disabled}
             value={value}
             label={title}
             onChange={handleChange}
@@ -35,6 +39,7 @@ export const TableSelect: FC<ITableSelect> = (props) =>  {
                 placeholder: title,
             }}
             renderValue={(rValue) => {
+                if(loading) return <Loader size='small'/>;
                 if (renderValue && typeof renderValue === 'function') {
                     return renderValue?.(rValue);
                 }

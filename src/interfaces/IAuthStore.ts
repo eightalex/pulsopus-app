@@ -8,7 +8,10 @@ export interface IAuthAuthorize {
 
 export interface IAuthStore {
 	user?: IUser;
-	roles: IUser['roles']
+
+	role: IUser['role']
+	userId?: IUser["id"];
+	isAdmin: boolean;
 
 	isLoadingLogin: boolean;
 	isLoadingLogout: boolean;

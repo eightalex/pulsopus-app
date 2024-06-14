@@ -1,5 +1,5 @@
 import { flexRender } from "@tanstack/react-table";
-import { Header, RowData } from "@tanstack/table-core";
+import { Header, RowData,Table } from "@tanstack/table-core";
 
 import { DEFAULT_COLUMN_SIZE, ETableFilterVariant } from "@/components/Table";
 import { TableHeadFilter } from "@/components/Table/TableHead/TableHeadFilter/TableHeadFilter.tsx";
@@ -54,6 +54,7 @@ export function TableHead<Data>({ table, getRef }: ITableHeadProps<Data>) {
                                         ? false
                                         : <TableHeadFilter
                                             header={header as Header<RowData, unknown>}
+                                            table={table as Table<RowData>}
                                         />}
                                     filtered={header.column.getIsFiltered()}
                                 />

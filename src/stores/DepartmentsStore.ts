@@ -65,7 +65,7 @@ export class DepartmentsStore extends BaseStore implements IDepartmentsStore {
 			type: 'department',
 			keys: {
 				value: 'id',
-				label: 'name',
+				label: 'value',
 			}
 		});
 	}

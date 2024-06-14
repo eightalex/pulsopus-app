@@ -1,5 +1,6 @@
 import { EUserRole, EUserStatus } from "@/constants/EUser.ts";
-import { IActivity } from "@/interfaces/IActivity.ts";
+import { IActivity } from "@/interfacces/IActivity.ts";
+import { IEntity } from "@/interfaces";
 import { IDepartment } from '@/interfaces/IDepartment';
 
 export interface IUserAuth {
@@ -25,14 +26,17 @@ export interface IUserAuth {
 // 	role: string[];
 // }
 
-export interface IUser {
-	id: string;
-	email: string;
+export interface IUserBase extends IEntity {
 	username: string;
+	email: string;
 	avatar?: string;
-	roles: EUserRole[];
+}
+
+export interface IUser extends IUserBase{
+	role: EUserRole;
 	activity: IActivity[];
 	status: EUserStatus,
-	department: Pick<IDepartment, 'id' | 'name' | 'label'>
+	department: Pick<IDepartment, 'id' | 'value' | 'label'>
 	isPending?: boolean;
+	isAdmin?: boolean;
 }

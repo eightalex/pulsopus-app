@@ -1,7 +1,7 @@
+import moment from 'moment';
 import { ICalendarRange } from '@/components/Calendar';
 import { getActivityRate } from '@/helpers/getActivityRate';
 import { IDepartmentActivity, IUserActivity } from '@/interfaces';
-import moment from 'moment';
 
 export interface IGenerateActivityData {
 	diff: number,
@@ -25,9 +25,10 @@ export const generateActivityData = (
 	const { from, to } = calendarRange || { from: moment(), to: moment() };
 	const start = moment(from).startOf('day').valueOf();
 	const end = moment(to).endOf('day').valueOf();
-	const activity = (activities as TActivity[]) || [];
+	const initActivity = (activities as TActivity[]) || [];
+	const activity = initActivity.filter(a => Boolean(a) && Boolean(a.date));
 
-	const currentValues: number[] = activity.reduce((acc, { date, rate }) => {
+	const currentValues: number[] = activity.filter(a => !!a).reduce((acc, { date, rate }) => {
 		const isBetweenOrEq = moment(date).isBetween(start, end, null, '[]');
 		if (!isBetweenOrEq) return acc;
 		acc.push(rate);

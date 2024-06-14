@@ -4,6 +4,8 @@ import { IUser } from '@/interfaces/IUser';
 
 export interface IUsersStore {
 	usersMap: Map<IUser['id'], IUser>;
+	usersStatuses: { value: string, canSetted: boolean }[];
+	usersRoles: { value: string, canSetted: boolean }[];
 
 	users: IUser[];
 	usersAutocompleteOptions: IAutocompleteOption[];
@@ -14,4 +16,7 @@ export interface IUsersStore {
 	getUsers: () => void;
 	getUser: (id: IUser['id']) => Promise<IUser>;
 	getUsersByDepartmentId: (departmentId: IDepartment['id']) => IUser[];
+
+	setUserStatusById: (id: IUser["id"], status: IUser["status"]) => Promise<void>;
+	setUserRoleById: (id: IUser["id"], role: IUser["role"]) => Promise<void>;
 }

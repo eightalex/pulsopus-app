@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 
 import {
     DEFAULT_COLUMN_MIN_SIZE,
-    ETableColumnType,
+    ETableColumnType, ETableFilterVariant,
     ROW_NUM_COL_KEY,
     ROW_SELECT_COL_KEY
 } from "@/components/Table/constants.ts";
@@ -32,31 +32,36 @@ export const rowNumCol: ColumnDef<unknown> = {
 export const rowSelectCol: ColumnDef<unknown> = {
     id: ROW_SELECT_COL_KEY,
     accessorKey: ROW_SELECT_COL_KEY,
-    header: ({ table }) => (
-        <Checkbox
-            disabled={false}
-            checked={table.getIsAllPageRowsSelected()}
-            indeterminate={table.getIsSomePageRowsSelected()}
-            onClick={() => {
-                const isChecked = table.getIsAllPageRowsSelected();
-                const isIndeterminate = table.getIsSomePageRowsSelected();
-                const state = isChecked || isIndeterminate;
-                table.toggleAllPageRowsSelected(!state);
-            }}
-            sx={{
-                padding: 0,
-            }}
-            inputProps={{
-                'aria-label': 'select all rows',
-            }}
-        />
-    ),
+    header: ROW_SELECT_COL_KEY,
+    // header: ({ table }) => (
+    //     <Checkbox
+    //         disabled={false}
+    //         checked={table.getIsAllPageRowsSelected()}
+    //         indeterminate={table.getIsAllPageRowsSelected()
+    //             ? table.getIsSomePageRowsSelected()
+    //             : table.getIsSomeRowsSelected()
+    //         }
+    //         onClick={() => {
+    //             const isChecked = table.getIsAllPageRowsSelected();
+    //             const isIndeterminate = table.getIsSomePageRowsSelected();
+    //             const state = isChecked || isIndeterminate;
+    //             table.toggleAllPageRowsSelected(!state);
+    //         }}
+    //         sx={{
+    //             padding: 0,
+    //         }}
+    //         inputProps={{
+    //             'aria-label': 'select all rows',
+    //         }}
+    //     />
+    // ),
     cell: ({ row }) => (
         <Stack
             sx={({ spacing }) => ({
                 padding: spacing(0, 3),
                 alignItems: 'center',
                 justifyContent: 'center',
+                cursor: 'pointer',
             })}
         >
             <Checkbox
@@ -74,8 +79,10 @@ export const rowSelectCol: ColumnDef<unknown> = {
         </Stack>
     ),
     meta: {
-        type: ETableColumnType.ROW_SELECT
+        type: ETableColumnType.ROW_SELECT,
+        filterVariant: ETableFilterVariant.ROW_SELECT,
     },
+    filterFn: (row) => row.getIsSelected(),
     enableSorting: false,
     enableResizing: false,
     ...defSizes,
