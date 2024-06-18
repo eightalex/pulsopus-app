@@ -2,6 +2,7 @@ import Collapse from '@mui/material/Collapse';
 import Stack from "@mui/material/Stack";
 import { FC, useMemo } from 'react';
 
+import { replacedValue } from "@/components/Table/TableSelect/helpers.ts";
 import Typography from "@/components/Typography";
 
 import { ETableSelectType } from "./constants.ts";
@@ -38,7 +39,7 @@ export const TableSelectRenderValue: FC<ITableSelectRenderValueProps> = (props) 
                 color: 'inherit'
         }}
         >
-            {value}
+            {replacedValue(value.toString())}
         </Typography>;
     }
 
@@ -52,7 +53,7 @@ export const TableSelectRenderValue: FC<ITableSelectRenderValueProps> = (props) 
                         fontSize: 13,
                     }}
                 >
-                    {value}
+                    {replacedValue(value.toString())}
                 </Typography>
             </Collapse>
         </Stack>

@@ -28,6 +28,10 @@ export const AppInitRequests: FC<IRootInitRequestsProps> = observer(({ children 
     const requestInitData = useCallback(() => {
         getUsers();
         getDepartments();
+        // const t = setInterval(() => {
+        //     getUsers();
+        //     getDepartments();
+        // }, 3000);
     }, [getUsers, getDepartments]);
 
     useEffect(() => {

@@ -1,5 +1,6 @@
 import { FilterFn, SortingFn } from "@tanstack/react-table";
 
+import { DEFAULT_BLANK_KEY } from "@/components/Table/TableSelect";
 import { IUser } from "@/interfaces";
 
 export const ROLES_SEPARATOR = '/';
@@ -15,8 +16,6 @@ export const filterStatusFn: FilterFn<IUser> = (row, columnId, filterValue): boo
     return row.getValue(columnId) === filterValue;
 };
 
-export const filterRolesFn: FilterFn<IUser> = (row, columnId, filterValue): boolean => {
-    const rV = row.getValue(columnId) as string[];
-    const v = rV.join(ROLES_SEPARATOR);
-    return v.includes(filterValue);
+export const filterDepartmentFn: FilterFn<IUser> = (row, columnId, filterValue): boolean => {
+    return (row.getValue(columnId) || DEFAULT_BLANK_KEY) === filterValue;
 };

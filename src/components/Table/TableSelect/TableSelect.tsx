@@ -2,7 +2,8 @@ import MenuItem from "@mui/material/MenuItem";
 import { SelectChangeEvent } from "@mui/material/Select";
 import { FC, useCallback } from 'react';
 
-import { Loader } from "@/components/Loader";
+import { RowLoader } from "@/components/Loader";
+import { replacedValue } from "@/components/Table/TableSelect/helpers.ts";
 import { TableSelectRenderValue } from "@/components/Table/TableSelect/TableSelectRenderValue.tsx";
 import { ITableSelect } from "@/components/Table/TableSelect/types.ts";
 import Typography from "@/components/Typography";
@@ -39,7 +40,7 @@ export const TableSelect: FC<ITableSelect> = (props) =>  {
                 placeholder: title,
             }}
             renderValue={(rValue) => {
-                if(loading) return <Loader size='small'/>;
+                if(loading) return <RowLoader/>;
                 if (renderValue && typeof renderValue === 'function') {
                     return renderValue?.(rValue);
                 }
@@ -71,7 +72,7 @@ export const TableSelect: FC<ITableSelect> = (props) =>  {
                                 lineHeight={1}
                                 textTransform='uppercase'
                             >
-                                {optV}
+                                {replacedValue(optV)}
                             </Typography>
                         )
                     }

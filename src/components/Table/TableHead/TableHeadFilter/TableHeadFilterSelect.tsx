@@ -1,7 +1,7 @@
 import { FC, useCallback, useMemo } from "react";
 
 import { ETableFilterVariant } from "@/components/Table";
-import { ETableSelectType,TableSelect } from "@/components/Table/TableSelect";
+import { DEFAULT_BLANK_KEY, ETableSelectType, TableSelect } from "@/components/Table/TableSelect";
 
 import { ITableHeadFilterComponent } from "./TableHeadFilter.tsx";
 
@@ -16,7 +16,9 @@ export const TableHeadFilterSelect: FC<Required<ITableHeadFilterComponent>> = (p
         () => {
             switch (filterVariant) {
                 case ETableFilterVariant.SELECT:
-                    return Array.from(column.getFacetedUniqueValues().keys()).sort();
+                    return Array.from(column.getFacetedUniqueValues().keys())
+                        .map(k => !k ? DEFAULT_BLANK_KEY : k)
+                        .sort();
                 default:
                     return [];
             }

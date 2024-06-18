@@ -1,5 +1,5 @@
 import Stack from "@mui/material/Stack";
-import { ColumnDef, TableMeta } from '@tanstack/react-table';
+import { CellContext, ColumnDef, TableMeta } from '@tanstack/react-table';
 import { observer } from "mobx-react";
 import React, { HTMLProps, useMemo, useRef } from 'react';
 
@@ -9,7 +9,7 @@ import { EUserRole, EUserStatus } from "@/constants/EUser.ts";
 import { useStores } from "@/hooks";
 import { IUser } from "@/interfaces";
 
-import { filterRolesFn, filterStatusFn, sortStatusFn } from "./col.helper.tsx";
+import { filterDepartmentFn, filterStatusFn, sortStatusFn } from "./col.helper.tsx";
 
 function IndeterminateCheckbox({
                                    indeterminate,
@@ -40,6 +40,7 @@ export const AdministrationTable = observer(() => {
             usersStore: {
                 users: data,
                 setUserStatusById,
+                setUserRoleById,
                 usersStatuses,
                 usersRoles,
             },
@@ -58,18 +59,19 @@ export const AdministrationTable = observer(() => {
             {
                 accessorKey: 'username',
                 header: 'Title',
-                cell: info => info.getValue(),
+                cell: (info: CellContext<IUser, unknown>) => info.getValue(),
                 size: 230,
             },
             {
                 accessorKey: 'department',
                 header: 'Department',
-                accessorFn: (row) => row.department.label,
-                cell: info => info.getValue(),
+                accessorFn: (row: IUser) => row.department?.label,
+                cell: (info: CellContext<IUser, unknown>) => info.getValue(),
                 size: 180,
                 meta: {
                     filterVariant: ETableFilterVariant.SELECT,
                 },
+                filterFn: filterDepartmentFn,
             },
             {
                 header: 'Date',
@@ -79,7 +81,7 @@ export const AdministrationTable = observer(() => {
             {
                 accessorKey: 'role',
                 header: 'Role',
-                cell: info => {
+                cell: (info: CellContext<IUser, unknown>) => {
                     const { getValue, table: infoTable, row, column } = info;
                     const initialValue = getValue() as string;
                     const opts = usersRoles.reduce((acc, s) => {
@@ -115,7 +117,6 @@ export const AdministrationTable = observer(() => {
                         />
                     );
                 },
-                filterFn: filterRolesFn,
                 meta: {
                     filterVariant: ETableFilterVariant.SELECT,
                 },
@@ -123,7 +124,7 @@ export const AdministrationTable = observer(() => {
             {
                 accessorKey: 'status',
                 header: 'Status',
-                cell: (info) => {
+                cell: (info: CellContext<IUser, unknown>) => {
                     const { getValue, table: infoTable, row, column } = info;
                     const initialValue = getValue() as string;
                     const opts = usersStatuses.reduce((acc, s) => {
@@ -166,15 +167,15 @@ export const AdministrationTable = observer(() => {
             },
         ];
         if(isAdmin) {
-            base.push( {
+            base.push({
                 accessorKey: ROW_SELECT_COL_KEY,
                 meta: {
-                    type: ETableColumnType.ROW_SELECT
+                    type: ETableColumnType.ROW_SELECT,
                 }
             });
         }
         return base;
-    }, [isAdmin, currentUser, setUserStatusById]);
+    }, [isAdmin, usersRoles, currentUser?.id, setUserRoleById, usersStatuses, setUserStatusById]);
 
     return (
         <Stack
@@ -189,13 +190,19 @@ export const AdministrationTable = observer(() => {
                     tableRef.current = t;
                     tableDataRef.current = d;
                 }}
-                data={[...data, ...data, ...data]}
+                globalFilter={''}
+                // data={[...data, ...data, ...data]}
+                data={data}
                 columns={columns}
                 numCol
                 showPagination
                 rowStyleOverrides={(row) => {
+                    const uId = row.original.id;
+                    // const isPending = data.find(u => u.id === uId)?.isPending;
+                    const isPending = row.original.isPending;
+                    const color = isPending ? COLORS.ACTIVE : 'unset';
                     return {
-                        color: row.original?.isPending ? COLORS.ACTIVE : 'unset',
+                        color,
                     };
                 }}
                 // initialState={{

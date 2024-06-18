@@ -1,26 +1,28 @@
 import { FC, memo } from 'react';
-import { Triangle } from 'react-loader-spinner';
+import { LineWave } from 'react-loader-spinner';
 
 import { BASE_COLOR, loaderSizes } from "@/components/Loader/constsants.ts";
 import { LoaderWrapper } from "@/components/Loader/LoaderWrapper.tsx";
+import { ILoader } from '@/components/Loader/types';
 
-import { ILoader } from './types.ts';
-
-const Loader: FC<ILoader> = (props) => {
+const RowLoader: FC<ILoader> = (props) => {
 	const { size = 'medium', ...restProps } = props;
-	return (
+    return (
 		<LoaderWrapper {...props}>
-			<Triangle
+			<LineWave
 				visible
 				color={BASE_COLOR}
-				ariaLabel="triangle-loading"
+				ariaLabel="line-wave-loading"
 				wrapperStyle={{}}
 				wrapperClass=""
+				firstLineColor=""
+				middleLineColor=""
+				lastLineColor=""
 				{...loaderSizes[size]}
 				{...restProps}
 			/>
 		</LoaderWrapper>
-	);
+    );
 };
 
-export default memo(Loader);
+export default memo(RowLoader);

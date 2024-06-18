@@ -1,6 +1,13 @@
-import { Props } from 'react-loader-spinner';
+import { ReactNode } from "react";
+import { Props as LoaderProps } from 'react-loader-spinner';
 
-export interface ILoader extends Props {
+export type TLoaderSize = 'small' | 'medium';
+
+export interface ILoaderWrapperProps {
+	children: ReactNode;
 	fullSize?: boolean;
-	size?: 'small' | 'medium'
+}
+
+export interface ILoader extends LoaderProps, Omit<ILoaderWrapperProps, 'children'> {
+	size?: TLoaderSize,
 }

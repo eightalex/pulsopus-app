@@ -5,6 +5,7 @@ import { observer } from 'mobx-react';
 import { useMemo } from "react";
 
 import Table, { ETableFilterVariant } from "@/components/Table";
+import { DEFAULT_BLANK_KEY } from "@/components/Table/TableSelect";
 import { CONTENT_ACTION_WIDTH } from "@/constants/size.ts";
 import { useHexbinWidgetData, useStores } from '@/hooks';
 import { IUser } from "@/interfaces";
@@ -29,12 +30,13 @@ export const PeopleDynamicViewTable = observer(() => {
         },
         {
             header: 'Department',
-            accessorFn: (row) => row.data.department.label,
+            accessorFn: (row) => row.data.department?.label,
             cell: info => info.getValue(),
             size: 240,
             meta: {
                 filterVariant: ETableFilterVariant.SELECT,
             },
+            filterFn: (row, columnId, filterValue) => (row.getValue(columnId) || DEFAULT_BLANK_KEY) === filterValue,
         },
         {
             header: '% activity',

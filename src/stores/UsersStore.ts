@@ -65,7 +65,7 @@ export class UsersStore extends BaseStore implements IUsersStore {
 
 	public async getUsers(): Promise<void> {
 		const key = this.asyncStatuses.getUsers;
-		this.setLoading(key);
+		// this.setLoading(key);
 		try {
 			await this.getSubUsersInfo();
 			const users =  await api.usersService.getAll();
