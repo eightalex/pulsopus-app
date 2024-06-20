@@ -1,4 +1,6 @@
 export interface IActivity {
-    date: number;
+    date: string;
     value: number;
+    rate: number;
+    trend?: number
 }

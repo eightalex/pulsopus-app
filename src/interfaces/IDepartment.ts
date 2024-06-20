@@ -1,5 +1,4 @@
-import { IActivity } from "@/interfaces/IActivity.ts";
-import { IUser } from "@/interfaces/IUser.ts";
+import { IActivity, IUser } from "@/interfaces";
 
 export interface IDepartment {
 	id: string;

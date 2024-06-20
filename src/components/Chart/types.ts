@@ -60,5 +60,6 @@ export interface ILineChartProps extends IExtenderChartBaseProps {
 export interface IInteractionData<T> {
 	xPos: number;
 	yPos: number;
+	value: number;
 	data?: T;
 }

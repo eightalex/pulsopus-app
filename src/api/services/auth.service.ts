@@ -1,6 +1,7 @@
 import { AxiosInstance } from 'axios';
 import sessionManager from '@/api/SessionManager.ts';
 import { CLIENT_URL } from "@/config";
+import { QUERY_REDIRECT, ROUTE_DEFAULT } from "@/constants/routes.ts";
 import { IAuthAuthorize } from "@/interfaces/IAuthStore.ts";
 
 export class AuthService {
@@ -8,8 +9,11 @@ export class AuthService {
 
 	public async onRedirectClient(): Promise<void> {
 		const { pathname, search } = window.location;
-		const location = `${pathname}${search}`;
-		const redirectPath = `${CLIENT_URL}/login?redirect=${location}`;
+		let location = `${pathname}${search}`;
+		if(location.length >= 1) {
+			location = `/${ROUTE_DEFAULT}`;
+		}
+		const redirectPath = `${CLIENT_URL}/login?${QUERY_REDIRECT}=${location}`;
 		window.location.replace(redirectPath);
 	}
 

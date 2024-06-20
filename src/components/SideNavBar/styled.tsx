@@ -1,6 +1,7 @@
-import { SIDE_BAR_WIDTH_MAX, SIDE_BAR_WIDTH_MIN } from '@/constants/size';
 import Stack, { StackProps } from '@mui/material/Stack';
 import { styled } from '@mui/system';
+
+import { SIDE_BAR_WIDTH_MAX, SIDE_BAR_WIDTH_MIN } from '@/constants/size';
 
 interface ISideNavBarStyledProps {
 	isMinimize: boolean;
@@ -9,6 +10,7 @@ interface ISideNavBarStyledProps {
 interface SideNavBarLinkStyledProp {
 	isActive: boolean;
 	isMinimize: boolean;
+	isDefaultActive: boolean;
 }
 
 export const SideNavBarStyled = styled(({ ...props }: StackProps) =>
@@ -18,7 +20,7 @@ export const SideNavBarStyled = styled(({ ...props }: StackProps) =>
 		justifyContent="space-between"
 	/>, {
 	shouldForwardProp: (prop) => prop !== 'isMinimize',
-})<ISideNavBarStyledProps>(({ theme: { extendPalette: { backgroundColorSecondary, borderColorHide }, spacing}, isMinimize}) => ({
+})<ISideNavBarStyledProps>(({ theme: { extendPalette: { backgroundColorSecondary, borderColorHide }, spacing }, isMinimize }) => ({
 	backgroundColor: backgroundColorSecondary,
 	borderRight: `1px solid ${borderColorHide}`,
 	maxWidth: isMinimize ? SIDE_BAR_WIDTH_MIN : SIDE_BAR_WIDTH_MAX,
@@ -31,7 +33,7 @@ export const SideNavBarStyled = styled(({ ...props }: StackProps) =>
 	transition: 'width .3s ease'
 }));
 
-export const SideNavBarLinkStyled = styled(Stack, { shouldForwardProp: (prop) => prop !== 'isActive' && prop !== 'isMinimize' })<SideNavBarLinkStyledProp>(({theme: { extendPalette }, isActive, isMinimize }) => ({
+export const SideNavBarLinkStyled = styled(Stack, { shouldForwardProp: (prop) => prop !== 'isActive' && prop !== 'isMinimize' && prop !== 'isDefaultActive' })<SideNavBarLinkStyledProp>(({ theme: { extendPalette }, isDefaultActive, isActive, isMinimize }) => ({
 	justifyContent: isMinimize ? 'center' : 'flex-start',
 	width: '100%',
 	display: 'flex',
@@ -47,7 +49,9 @@ export const SideNavBarLinkStyled = styled(Stack, { shouldForwardProp: (prop) =>
 		width: 4,
 		borderBottomRightRadius: 8,
 		borderTopRightRadius: 8,
-		backgroundColor: isActive && isMinimize ? extendPalette.navLinkColorActive : 'transparent',
+		backgroundColor: isDefaultActive || !(isActive && isMinimize)
+			? 'transparent'
+			: extendPalette.navLinkColorActive,
 	}
 }));
 

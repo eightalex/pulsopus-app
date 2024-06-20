@@ -1,15 +1,19 @@
 import Slider, { SliderProps } from '@mui/material/Slider';
-import { FC, memo, useCallback, useMemo } from 'react';
+import { FC, KeyboardEvent,memo, useCallback, useMemo } from 'react';
 
-interface IHexbinWidgetZoomSliderProps extends Omit<SliderProps, 'onChange'> {
+interface IHexbinWidgetZoomSliderProps extends Omit<SliderProps, 'onChange' | 'value'> {
 	onChange: (value: number) => void;
-	scaleExpand: { min: number, max: number };
+	value?: number;
+	scaleExtent: {
+		min: number,
+		max: number
+	};
 }
 
 export const HexbinWidgetZoomSlider: FC<IHexbinWidgetZoomSliderProps> = memo((props) => {
-	const { onChange, value, scaleExpand: { min, max }, ...restProps } = props;
+	const { onChange, value = 0, scaleExtent: { min = 1, max = 2 }, ...restProps } = props;
 
-	const onKeyPreventNavigation = useCallback((e: React.KeyboardEvent) => {
+	const onKeyPreventNavigation = useCallback((e: KeyboardEvent) => {
 		const activeKeys = ['ArrowUp', 'ArrowDown'];
 		if (!activeKeys.includes(e.key)) {
 			e.preventDefault();

@@ -9,6 +9,9 @@ export interface IDepartmentsStore {
 
 	isLoadingDepartments: boolean;
 
-	getDepartments: () => void;
-	findDepartment: (value?: string) => IDepartment | null;
+	getDepartments(): void;
+	findDepartment(value?: string): IDepartment | null;
+
+	getCompanyActivity(): number;
+	getCompanyActivity(from: number, to: number): number;
 }

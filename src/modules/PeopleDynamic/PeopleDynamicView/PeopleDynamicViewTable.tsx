@@ -4,6 +4,7 @@ import * as d3 from "d3";
 import { observer } from 'mobx-react';
 import { useMemo } from "react";
 
+import { IHexbinChartMatrixParam } from "@/components/Chart/HexbinChart";
 import Table, { ETableFilterVariant } from "@/components/Table";
 import { DEFAULT_BLANK_KEY } from "@/components/Table/TableSelect";
 import { CONTENT_ACTION_WIDTH } from "@/constants/size.ts";
@@ -11,17 +12,19 @@ import { useHexbinWidgetData, useStores } from '@/hooks';
 import { IUser } from "@/interfaces";
 
 export const PeopleDynamicViewTable = observer(() => {
-    const { rootStore: { peopleDynamicStore: { usersForRender } } } = useStores();
-    const data = useHexbinWidgetData(usersForRender);
+    const { rootStore: { peopleDynamicStore: { hexbinUsersData } } } = useStores();
+    const data = useHexbinWidgetData(hexbinUsersData);
+    console.log('data', data);
     const d = data
         .flatMap(d => d)
-        .filter(d => !!d)
-        .sort((a, b) => a.data.activity[0].value - b.data.activity[0].value);
-
+        .filter(d => !!d && !!d.data)
+        .sort((a, b) => a.value - b.value);
+    console.log('d', d);
+    return;
     const [vMin, vMax] = d3.extent(d, (r) => r.data.activity[0].value);
     const half = (Number(vMax) - Number(vMin)) / 2;
 
-    const columns = useMemo<ColumnDef<{ fill: string, data: IUser }>[]>(() => [
+    const columns = useMemo<ColumnDef<IHexbinChartMatrixParam<IUser>>[]>(() => [
         {
             header: 'Title',
             accessorFn: (row) => row.data.username,
@@ -40,7 +43,7 @@ export const PeopleDynamicViewTable = observer(() => {
         },
         {
             header: '% activity',
-            accessorFn: (row) => row.data.activity[0].value,
+            accessorFn: (row) => row.value,
             cell: info => {
                 const v = info.getValue();
                 return Math.round(Number(v));

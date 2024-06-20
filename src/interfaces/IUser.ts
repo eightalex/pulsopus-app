@@ -1,42 +1,27 @@
 import { EUserRole, EUserStatus } from "@/constants/EUser.ts";
-import { IActivity } from "@/interfacces/IActivity.ts";
 import { IEntity } from "@/interfaces";
 import { IDepartment } from '@/interfaces/IDepartment';
+import { IActivity } from "./IActivity.ts";
 
-export interface IUserAuth {
-	id: number;
-	firstName: string;
-	lastName: string;
-	username: string;
-	avatar?: string;
-	role: string;
+export interface IUserPosition {
+	label: string;
+	value: string;
 }
 
-// export interface IUserActivity {
-// 	date: number;
-// 	rate: number;
-// }
-
-// export interface IUser extends Omit<IUserAuth, 'username' | 'role'> {
-// 	email: string;
-// 	department: IDepartment;
-// 	activity: IUserActivity[];
-// 	index: '+' | '-' | '=';
-// 	date: number;
-// 	role: string[];
-// }
+export interface IUserDepartment extends Pick<IDepartment, 'value' | 'label'> {}
 
 export interface IUserBase extends IEntity {
 	username: string;
 	email: string;
 	avatar?: string;
+	role: EUserRole;
 }
 
-export interface IUser extends IUserBase{
-	role: EUserRole;
-	activity: IActivity[];
-	status: EUserStatus,
-	department: Pick<IDepartment, 'id' | 'value' | 'label'>
+export interface IUser extends IUserBase {
+	activity?: IActivity[];
+	department?: IUserDepartment;
+	position?: IUserPosition;
+	status: EUserStatus;
 	isPending?: boolean;
 	isAdmin?: boolean;
 }

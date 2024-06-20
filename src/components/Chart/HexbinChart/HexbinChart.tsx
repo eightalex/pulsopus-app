@@ -9,14 +9,12 @@ import { TooltipChartHex } from '@/components/Chart/Base/TooltipChartHex';
 import { fillMatrixHexbinChart } from '@/components/Chart/HexbinChart/fillMatrixHexbinChart';
 import { HexbinChartItem } from '@/components/Chart/HexbinChart/HexbinChartItem';
 import { HEX_CHART_RADIUS_DEFAULT } from "@/constants/chart.ts";
-import { createRoundedPathByString } from "@/helpers/createRoundedPathByCoords.ts";
 import { useDimensions } from '@/hooks';
 
 import { IHexbinChartProps, TZoomBehavior } from './types';
 
 const r = HEX_CHART_RADIUS_DEFAULT;
 
-// const HexbinChart: <T>(props: IHexbinChartProps<T>) => ReactElement<IHexbinChartProps<T>> = (props) => {
 function HexbinChart<T>(props: IHexbinChartProps<T>) {
 	const {
 		width: incomeWidth,
@@ -62,6 +60,7 @@ function HexbinChart<T>(props: IHexbinChartProps<T>) {
 			yc: y * hexes.r * 1.5,
 			fill: col?.fill,
 			data: col?.data ? { ...col.data } : null,
+			value: col?.value,
 			idx: y * arr.length + x,
 		}))
 	), [hexes]);
@@ -81,7 +80,7 @@ function HexbinChart<T>(props: IHexbinChartProps<T>) {
 
 		return (
 			<g
-				id={k}
+				id={`${k}`}
 				key={`${k}-${uuidv4()}`}
 				style={{
 					userSelect: 'none',
@@ -90,7 +89,6 @@ function HexbinChart<T>(props: IHexbinChartProps<T>) {
 				onClick={console.log}
 				onMouseUp={console.log}
 			>
-			{/*<g id={k} key={k}>*/}
 				{hexbinGroupData.map((d, i) => {
 					const point = s[i];
 					const offset = { x: d.x, y: d.y };
@@ -104,7 +102,7 @@ function HexbinChart<T>(props: IHexbinChartProps<T>) {
 							fill={point.fill}
 							// urlId={point.data?.id ? `pattern-${point.data?.id }` : null}
 							svg={svgRef}
-							groupId={k}
+							groupId={`${k}`}
 							hovering={!!point.data}
 							onMouseOver={(e) => {
 								const { currentTarget } = e;
@@ -113,7 +111,11 @@ function HexbinChart<T>(props: IHexbinChartProps<T>) {
 								const xPos = offset.width + offset.left - parentOffset.left; // d.x;
 								const yPos = offset.height / 2 - r + offset.top - parentOffset.top;  // d.y;
 								const hd: IInteractionData<T> = {
-									xPos, yPos, data: point.data
+									...point,
+									xPos,
+									yPos,
+									data: point.data,
+									value: point.value,
 								};
 								setHovered(hd);
 							}}

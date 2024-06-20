@@ -1,5 +1,8 @@
 import { activityColorValues, DEFAULT_INACTIVE_COLOR, DEFAULT_ZERO_COLOR } from '@/constants/activity';
 
+/**
+ * @param activity {number} activity value in percent (min:0 max:100).
+ * */
 export const getColorByActivity = (activity: number): string => {
 	if(!activity) return DEFAULT_ZERO_COLOR;
 	return Object.entries(activityColorValues).reduce((acc, [value, color]) => {

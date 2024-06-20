@@ -9,9 +9,6 @@ enum DIRECTION {
 	UP
 }
 
-/**
- * @deprecated: refactor hexbin chart
- * */
 export const createMatrixFromArray = <T extends number>(arr: T[]) => {
 	if(!arr || !arr.length) {
 		throw new Error('Unexpected params exception!');

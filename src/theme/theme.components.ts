@@ -608,6 +608,9 @@ export const components: ThemeOptions['components'] = {
 					WebkitTextFillColor: extendPalette.inputOnSurfacePlaceholder,
 					opacity: 1,
 				},
+				'&.Mui-disabled': {
+					WebkitTextFillColor: extendPalette.inputOnSurfacePlaceholder,
+				}
 			},
 			adornedEnd: {
 				right: 10,
@@ -661,9 +664,9 @@ export const components: ThemeOptions['components'] = {
 				'& .MuiOutlinedInput-root': {
 					paddingLeft: 10,
 				},
-				'&:hover': {
+				'&:hover:not(.Mui-disabled))': {
 					backgroundColor: extendPalette.inputSurfaceHover,
-				}
+				},
 			},
 			endAdornment: {
 				'& > button:last-child': {
@@ -676,6 +679,13 @@ export const components: ThemeOptions['components'] = {
 				minWidth: 350,
 				height: 36,
 				right: 'unset',
+				'&.Mui-disabled': {
+					border: `1px solid ${extendPalette.inputBorderDefault}`,
+					'&:hover': {
+						background: 'transparent',
+						border: 'none',
+					}
+				},
 			},
 			paper: {
 				transform: 'translateY(6px)',

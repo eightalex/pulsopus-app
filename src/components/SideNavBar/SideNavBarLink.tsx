@@ -31,6 +31,7 @@ export const SideNavBarLink: FC<ISideNavBarLinkProps> = memo((props) => {
 					spacing={3}
 					direction="row"
 					isActive={isActive}
+					isDefaultActive={Boolean(defaultActive)}
 					isMinimize={isMinimize}
 					onClick={() => restProps.onClick?.()}
 				>
