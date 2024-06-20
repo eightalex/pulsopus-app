@@ -1,5 +1,5 @@
 import { action, makeObservable, observable, runInAction } from 'mobx';
-import moment from 'moment';
+import moment, { unitOfTime } from 'moment';
 import { ICalendarRange } from '@/components/CalendarRangePicker';
 import { ICalendarRangeBase, IRootStore } from '@/interfaces';
 import { BaseStore } from "@/stores/BaseStore.ts";
@@ -11,6 +11,8 @@ export class CalendarRangeBase extends BaseStore implements ICalendarRangeBase {
 		super(rootStore);
 		makeObservable(this, {
 			calendarRange: observable,
+			//
+			getCalendarRangeDiff: action.bound,
 			setCalendarRange: action.bound,
 		});
 		this.calendarRange = this.createDefaultValue();
@@ -34,6 +36,12 @@ export class CalendarRangeBase extends BaseStore implements ICalendarRangeBase {
 		runInAction(() => {
 			this.calendarRange = range as Required<ICalendarRange>;
 		});
+	}
+
+	public getCalendarRangeDiff(unitTimeDiff: unitOfTime.Diff  = 'day'): number {
+		const { from, to } = this.calendarRange;
+		if(!from || !to) return 0;
+		return Math.abs(moment(from).diff(to, unitTimeDiff));
 	}
 
 }

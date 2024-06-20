@@ -1,9 +1,9 @@
+import { Box, Stack } from '@mui/material';
+import { FC, ReactNode } from 'react';
+
 import ButtonIcon from '@/components/ButtonIcon';
 import { InfoIcon } from '@/icons';
-import {Box, Stack} from '@mui/material';
-import MuiIconButton from '@mui/material/IconButton';
-import MuiTooltip from '@mui/material/Tooltip';
-import { FC, ReactNode } from 'react';
+
 import { PeopleDynamicViewContentStyled, PeopleDynamicViewSideStyled, PeopleDynamicViewWrapperStyled } from '../styled';
 
 interface IPeopleDynamicViewContentProps {

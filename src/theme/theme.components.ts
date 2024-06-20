@@ -47,6 +47,10 @@ export const components: ThemeOptions['components'] = {
 				alignItems: 'center',
 				justifyContent: 'center',
 			},
+			colorInherit: {
+				color: 'inherit',
+				stroke: 'inherit',
+			},
 			colorPrimary: {
 				color: extendPalette.iconColorPrimary,
 			},

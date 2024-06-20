@@ -12,14 +12,14 @@ const ABSOLUTE_DATA_TITLE = 'Absolute data';
 export const PeopleDynamicViewAbsoluteData = observer(() => {
 	const {
 		rootStore: {
-			peopleDynamicStore: { absoluteDtaActivities }
+			peopleDynamicStore: { absoluteActivityData }
 		}
 	} = useStores();
 
-	const data = useMemo(() => absoluteDtaActivities.map(({ date, value }) => ({
+	const data = useMemo(() => absoluteActivityData.activities.map(({ date, rate }) => ({
 		x: Number(date),
-		y: Number(value)
-	})), [absoluteDtaActivities]);
+		y: Number(rate)
+	})), [absoluteActivityData]);
 	return (
 		<Stack spacing={3}>
 			<Typography variant="text">{ABSOLUTE_DATA_TITLE.toUpperCase()}</Typography>

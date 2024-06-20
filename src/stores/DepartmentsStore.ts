@@ -2,7 +2,7 @@ import { action, computed, makeObservable, observable, runInAction } from 'mobx'
 import api from "@/api";
 import { IAutocompleteOption } from '@/components/Autocomplete';
 import { generateAutocompleteOption } from "@/helpers/generateAutocompleteOption.ts";
-import { IDepartment, IDepartmentsStore, IRootStore } from '@/interfaces';
+import { IActivity, IDepartment, IDepartmentsStore, IRootStore } from '@/interfaces';
 import { DateTime } from "@/utils";
 import { BaseStore } from './BaseStore';
 
@@ -27,6 +27,8 @@ export class DepartmentsStore extends BaseStore implements IDepartmentsStore {
 			getDepartments: action.bound,
 			findDepartment: action.bound,
 			getCompanyActivity: action.bound,
+			getActivityByDepartmentValue: action.bound,
+			getActivitiesByDepartmentValue: action.bound,
 		});
 	}
 
@@ -86,16 +88,27 @@ export class DepartmentsStore extends BaseStore implements IDepartmentsStore {
 		return [...this.departments].find(({ label, value }) => value === searchValue || label === searchValue) || null;
 	}
 
-	public getCompanyActivity(from?: number, to?: number): number {
+	public getActivitiesByDepartmentValue(value: string, from?: number, to?: number): IActivity[] {
 		return this.departments
-			.find(({ value }) => value === 'COMPANY')?.activity
-			.reduce((acc, d) => {
-				const { date, value } = d;
-				if(!from || !to) return acc + value;
+			.find(d => d.value === value)?.activity
+			.reduce((acc, a) => {
+				const { date } = a;
+				if(!from || !to) return [...acc, a];
 				const isInclude = DateTime.isBetweenOrEquals(Number(date), from, to);
 				if(!isInclude) return acc;
+				return [...acc, a];
+			}, [] as IActivity[]) || [];
+	}
+
+	public getActivityByDepartmentValue(value: string, from?: number, to?: number): number {
+		return this.getActivitiesByDepartmentValue(value, from, to)
+			.reduce((acc, { value }) => {
 				return acc + Number(value);
 			}, 0) || 0;
+	}
+
+	public getCompanyActivity(from?: number, to?: number): number {
+		return this.getActivityByDepartmentValue('COMPANY', from, to);
 	}
 }
 

@@ -2,8 +2,9 @@ import { Collapse } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import { observer } from 'mobx-react';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
+import { RateTrendView } from "src/components/RateTrendView";
 
 import HexbinWidget from '@/components/HexbinWidget';
 import { Loader } from "@/components/Loader";
@@ -13,29 +14,10 @@ import { useStores } from '@/hooks';
 import { IUser } from "@/interfaces";
 import { PeopleDynamicViewAbsoluteData } from '@/modules/PeopleDynamic/PeopleDynamicView/PeopleDynamicViewAbsoluteDate';
 import { PeopleDynamicViewContent } from '@/modules/PeopleDynamic/PeopleDynamicView/PeopleDynamicViewContent';
-import { PeopleDynamicViewInfo } from '@/modules/PeopleDynamic/PeopleDynamicView/PeopleDynamicViewInfo';
 
 import { PeopleDynamicViewDiagramUserTooltip } from "./PeopleDynamicViewDiagramUserTooltip.tsx";
 
 const tooltipTitleDefault = 'Your contribution graph and Achievements show activity from public repositories. You can choose to show activity from both public and private, with specific details of your activity in private repositories anonymized.  A viewer can only see information in the activity overview about repositories they have read access to. Get more information.';
-
-interface IGetViewDataProps {
-    title: string;
-    difference: number;
-    values: { value: number, label: string }[];
-}
-
-const getViewDataProps = (label, data): IGetViewDataProps => {
-    if (!data) return {} as IGetViewDataProps;
-    return {
-        title: label,
-        difference: data.diff,
-        values: [
-            { value: data.trend, label: 'Growth Trend' },
-            { value: data.rate, label: 'Activity Rate' },
-        ],
-    };
-};
 
 export const PeopleDynamicViewDiagram = observer(() => {
     const {
@@ -47,15 +29,12 @@ export const PeopleDynamicViewDiagram = observer(() => {
                 hexbinUsersData,
                 departmentActivityData,
                 absoluteActivityData,
-            }
+            },
         }
     } = useStores();
     const scrollRef = useRef<HTMLDivElement>();
 
     const navigate = useNavigate();
-
-    const departmentActivityViewDataProps = useMemo(() => getViewDataProps(department?.label, department && departmentActivityData), [department, departmentActivityData]);
-    const absoluteActivityViewDataProps = useMemo(() => getViewDataProps('', department && absoluteActivityData), [department, absoluteActivityData]);
 
     const scrollToAbsolute = useCallback(() => {
         if (showAbsoluteData) {
@@ -65,7 +44,7 @@ export const PeopleDynamicViewDiagram = observer(() => {
     }, [showAbsoluteData]);
 
     const handleHexClick = useCallback(async (user: IUser) => {
-        if(!user?.id) return;
+        if (!user?.id) return;
         navigate(`/${DIAGRAM_ROUTE}`, { state: { id: user.id }, relative: 'route' });
     }, [navigate]);
 
@@ -73,7 +52,7 @@ export const PeopleDynamicViewDiagram = observer(() => {
         scrollToAbsolute();
     }, [scrollToAbsolute]);
 
-    if(!department?.users?.length) {
+    if (!department?.users?.length) {
         return (
             <span>No data to render</span>
         );
@@ -106,9 +85,21 @@ export const PeopleDynamicViewDiagram = observer(() => {
             }
             side={(
                 <Stack spacing={10}>
-                    <Stack spacing={6}>
-                        <PeopleDynamicViewInfo {...departmentActivityViewDataProps} />
-                        <Stack>
+                    <Stack spacing={department?.value == 'COMPANY' ? 0 : 6}>
+                        {Boolean(department?.value) && (
+                            <RateTrendView
+                                title={department?.label}
+                                rate={departmentActivityData.rate}
+                                trend={departmentActivityData.trend}
+                                hideRate={department?.value === 'COMPANY'}
+                                hideTrend={department?.value === 'COMPANY'}
+                            />
+                        )}
+                        <RateTrendView
+                            rate={absoluteActivityData.rate}
+                            trend={absoluteActivityData.trend}
+                            hideRate
+                        >
                             <Stack
                                 direction="row"
                                 alignItems="center"
@@ -117,7 +108,12 @@ export const PeopleDynamicViewDiagram = observer(() => {
                                 <Typography
                                     variant="subtitle"
                                     textTransform="uppercase"
-                                    color={absoluteActivityViewDataProps.difference > 0 ? 'success' : 'primary'}
+                                    color={department?.value == 'COMPANY'
+                                        ? 'success'
+                                        : absoluteActivityData.trend > 0
+                                            ? 'success'
+                                            : 'primary'
+                                    }
                                 >
                                     Absolute data
                                 </Typography>
@@ -130,8 +126,7 @@ export const PeopleDynamicViewDiagram = observer(() => {
                                     }}
                                 />
                             </Stack>
-                            <PeopleDynamicViewInfo {...absoluteActivityViewDataProps} />
-                        </Stack>
+                        </RateTrendView>
                     </Stack>
                 </Stack>
             )}

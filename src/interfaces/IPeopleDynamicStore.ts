@@ -1,6 +1,5 @@
 import { IHexbinWidgetData } from "@/components/HexbinWidget";
 import { EPeopleDynamicView } from '@/constants/EPeopleDynamic';
-import { IGenerateActivityData } from '@/helpers/generateActivityData';
 import { IActivity } from "@/interfaces/IActivity.ts";
 import { ICalendarRangeBase } from "@/interfaces/ICalendarRangeBase.ts";
 import { IDepartment } from '@/interfaces/IDepartment';
@@ -8,8 +7,11 @@ import { IUser } from '@/interfaces/IUser';
 
 export interface IPeopleDynamicHexbinData extends Array<IHexbinWidgetData<IUser>> {}
 
-export interface IPeopleDynamicTableData extends IPeopleDynamicHexbinData {
+export interface IPeopleDynamicTableData {
+	rate: number;
 	trend: number;
+	fill: string;
+	user: IUser;
 }
 
 export interface IPeopleDynamicStore extends ICalendarRangeBase {
@@ -17,10 +19,14 @@ export interface IPeopleDynamicStore extends ICalendarRangeBase {
 	showAbsoluteData: boolean;
 	department: IDepartment | null;
 	//
-	hexbinUsersData: IPeopleDynamicHexbinData
+	hexbinUsersData: IPeopleDynamicHexbinData;
+	tableUsersData: IPeopleDynamicTableData[];
+	//TODO: create return interface
+	departmentActivityData: { rate: number, trend: number };
+	//TODO: create return interface
+	absoluteActivityData: { rate: number, trend: number, activities: IActivity[] };
+	//
 	absoluteDtaActivities: IActivity[];
-	departmentActivityData: IGenerateActivityData;
-	absoluteActivityData: IGenerateActivityData;
 	//
 	isLoading: boolean;
 	isLoadingMounting: boolean;

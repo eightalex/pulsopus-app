@@ -1,9 +1,15 @@
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import moment from 'moment';
-import { IHexbinWidgetProps } from "@/components/HexbinWidget";
 import { EPeopleDynamicView } from '@/constants/EPeopleDynamic';
-import { generateActivityData } from '@/helpers/generateActivityData';
-import { IDepartment, IPeopleDynamicHexbinData, IPeopleDynamicStore, IRootStore, IUser } from '@/interfaces';
+import { getColorByActivity } from "@/helpers/getColorByActivity.ts";
+import {
+	IDepartment,
+	IPeopleDynamicHexbinData,
+	IPeopleDynamicStore,
+	IPeopleDynamicTableData,
+	IRootStore,
+	IUser
+} from '@/interfaces';
 import { IActivity } from "@/interfaces/IActivity.ts";
 import { CalendarRangeBase } from "@/stores/CalendarRangeBase.ts";
 import { DateTime } from "@/utils";
@@ -51,47 +57,28 @@ export class PeopleDynamicStore extends CalendarRangeBase implements IPeopleDyna
 		return this.isLoadingMounting || isLoadingUsers || isLoadingDepartments;
 	}
 
-	// public get usersForRender(): IUser[] {
-	// 	if(!this.department?.id) return this.rootStore.usersStore.users;
-	// 	const { from, to } = this.calendarRange || { from: moment().startOf('day'), to: moment().endOf('day') };
-	// 	const users = this.rootStore.usersStore.users || [];
-	// 	const us = [...users].filter((u) => {
-	// 		if(!this.department || this.department.value === 'COMPANY') return true;
-	// 		return u?.department?.value === this.department.value;
-	// 	});
-	// 	return us.map((user) => {
-	// 			const value = user.activity.reduce((acc, { date, value: strR }) => {
-	// 				const d = Number(date);
-	// 				const isBetweenOrEq = moment(d).isBetween(from, to, null, '[]');
-	// 				if (!isBetweenOrEq) return acc;
-	// 				if(!strR) return acc;
-	// 				const r = Number(strR);
-	// 				if(!r) return 1;
-	// 				acc = (acc + r) / 2;
-	// 				return acc;
-	// 			}, 0);
-	// 			return {
-	// 				...user,
-	// 				activity: [
-	// 					{ date: moment(to).valueOf(), value },
-	// 				]
-	// 			};
-	// 		});
-	// }
-
-	private get usersForRenderByDepartment(): Array<{ rate: number, trend: number, user: IUser }> {
+	private get usersForRenderByDepartment(): Array<{
+		companyActivity?: number,
+		prevCompanyActivity?: number,
+		subActivity?: number,
+		activityDiff?: number,
+		rate?: number,
+		subRate?: number,
+		trend?: number,
+		trendCompany?: number,
+		user: IUser
+	}> {
 		const users = this.department?.users || [];
 		if(!users) return [];
 		const { from, to } = this.calendarRange;
+		const diff = Math.abs(moment(from).diff(to, 'day'));
 		const trendFrom = moment(from)
 			.startOf('day')
-			.subtract(1, 'year')
+			.subtract(diff, 'day')
 			.valueOf();
-		const trendTo = moment(to)
-			.endOf('day')
-			.subtract(1, 'year')
-			.valueOf();
+		const trendTo = from;
 		const companyActivity = this.rootStore.departmentsStore.getCompanyActivity(from, to);
+		const prevCompanyActivity = this.rootStore.departmentsStore.getCompanyActivity(trendFrom, trendTo);
 		return users.map((user) => {
 			let userCurrentPeriodActivity = 0;
 			let userBeforePeriodActivity = 0;
@@ -99,44 +86,122 @@ export class PeopleDynamicStore extends CalendarRangeBase implements IPeopleDyna
 			for (const activity of (user.activity || [])) {
 				const { date, value } = activity;
 				const isIncludeCurrentPeriod = DateTime.isBetweenOrEquals(date, from, to);
-				const isIncludeBeforePeroid = DateTime.isBetweenOrEquals(date, trendFrom, trendTo);
+				const isIncludeBeforePeriod = DateTime.isBetweenOrEquals(date, trendFrom, trendTo);
+
 				if(isIncludeCurrentPeriod) {
 					userCurrentPeriodActivity += Number(value);
 				}
-				if(isIncludeBeforePeroid) {
+				if(isIncludeBeforePeriod) {
 					userBeforePeriodActivity += Number(value);
 				}
 			}
 
-			let res = {
-				rate: 0,
-				trend: 0,
+			const res = {
+				companyActivity,
+				prevCompanyActivity,
+				activity: undefined,
+				prevActivity: undefined,
+				activityDiff: undefined,
+				rate: undefined,
+				prevRate: undefined,
+				trend: undefined,
+				trendCompany: undefined,
 				user,
+			} as {
+				companyActivity: number;
+				prevCompanyActivity: number;
+				activity?: number;
+				prevActivity?: number;
+				activityDiff?: number;
+				rate?: number;
+				prevRate?: number;
+				trend?: number;
+				trendCompany?: number;
+				user: IUser;
 			};
 
 			if(userCurrentPeriodActivity && companyActivity) {
-				res = {
-					...res,
-					rate: Number((userCurrentPeriodActivity / companyActivity) * 100),
-				};
+				res.activity = userCurrentPeriodActivity;
+				res.rate = Number((userCurrentPeriodActivity / companyActivity) * 100);
+
+				res.prevActivity = userBeforePeriodActivity;
+				res.prevRate = Number((userBeforePeriodActivity / prevCompanyActivity) * 100);
+
+				res.trendCompany = res.rate - res.prevRate;
+				res.activityDiff = res.activity - res.prevActivity;
 			}
 
 			if(userCurrentPeriodActivity && userBeforePeriodActivity) {
-				res = {
-					...res,
-					trend: userBeforePeriodActivity - userCurrentPeriodActivity,
-				};
+				const cA = Math.max(Number(res.activity), 1);
+				const pA = Math.max(Number(res.prevActivity), 1);
+				const diffAbsolute = cA / pA;
+				res.trend = userCurrentPeriodActivity >= userBeforePeriodActivity
+					? diffAbsolute * 100
+					: (1 - diffAbsolute) * -100;
 			}
 			return res;
 		});
 	}
 
 	public get hexbinUsersData(): IPeopleDynamicHexbinData {
-		console.log('this.usersForRenderByDepartment', this.usersForRenderByDepartment);
 		return this.usersForRenderByDepartment.map(({ rate, user }) => ({
-			value: rate,
+			value: rate || 0,
 			data: user,
 		}));
+	}
+
+	public get tableUsersData(): IPeopleDynamicTableData[] {
+		return this.usersForRenderByDepartment.map(({ rate = 0, trend = 0, user }) => ({
+			rate,
+			trend,
+			fill: getColorByActivity(rate, { zero: 'unset' }),
+			user,
+		}));
+	}
+
+	// eslint-disable-next-line max-len
+	private getDepartmentActivityDataByValue(departmentValue?: string): { rate: number, trend: number, activity: IActivity[] } {
+		if(!departmentValue) {
+			return { rate: 0, trend: 0, activity: [] };
+		}
+		const { from, to } = this.calendarRange;
+		const diff = this.getCalendarRangeDiff();
+		const trendFrom = moment(from).startOf('day').subtract(diff, 'day').valueOf();
+		const trendTo = from;
+		const { getActivityByDepartmentValue } = this.rootStore.departmentsStore;
+
+		const companyActivity = this.rootStore.departmentsStore.getCompanyActivity(from, to);
+		const currentDepartmentActivity = getActivityByDepartmentValue(departmentValue, from, to);
+		const prevDepartmentActivity = getActivityByDepartmentValue(departmentValue, trendFrom, trendTo);
+
+		const cA = Math.max(Number(currentDepartmentActivity), 1);
+		const pA = Math.max(Number(prevDepartmentActivity), 1);
+		const diffAbsolute = cA / pA;
+		const trend = currentDepartmentActivity >= prevDepartmentActivity
+			? diffAbsolute * 100
+			: (1 - diffAbsolute) * -100;
+		return {
+			rate: !(currentDepartmentActivity && companyActivity) ? 0 : (currentDepartmentActivity/ companyActivity) * 100,
+			trend,
+			activity: [],
+		};
+	}
+
+	public get departmentActivityData(): { rate: number, trend: number } {
+		return this.getDepartmentActivityDataByValue(this.department?.value);
+	}
+
+	public get absoluteActivityData(): { rate: number, trend: number, activities: IActivity[] } {
+		const { from, to } = this.calendarRange;
+		if(!(from && to)) {
+			return { rate: 0, trend: 0, activities: [] };
+		}
+		const baseData = this.getDepartmentActivityDataByValue('COMPANY');
+		const activities = this.rootStore.departmentsStore.getActivitiesByDepartmentValue('COMPANY', from, to);
+		return {
+			...baseData,
+			activities,
+		};
 	}
 
 	public get absoluteDtaActivities(): IActivity[] {
@@ -151,37 +216,6 @@ export class PeopleDynamicStore extends CalendarRangeBase implements IPeopleDyna
 				if (!isBetweenOrEq) return acc;
 				return [...acc, { date, value: Number(value) }];
 			}, [] as IActivity[]);
-	}
-
-	public get departmentActivityData() {
-		return generateActivityData({
-			// activities: this.department?.activity,
-			// activities: this.usersForRender.flatMap(u => u.activity),
-			activities: [],
-			calendarRange: this.calendarRange
-		});
-	}
-
-	public get absoluteActivityData() {
-		return [];
-		// TODO: refactor stating/ 0 - ID for all company;
-		const data = this.rootStore.departmentsStore.departmentsMap.get(0);
-		if(!data?.activity) {
-			throw new Error('Unexpected exception! No all company activity data!');
-		}
-		const { activity } = data;
-		if(!this.calendarRange) {
-			return [];
-		}
-		[...activity]
-			.sort((a, b) => b.date - a.date)
-			.forEach(({ date, rate }) => {
-			const d = moment(date).format('DD.MM.YYYY');
-		});
-		return generateActivityData({
-			activities: this.absoluteDtaActivities,
-			calendarRange: this.calendarRange
-		});
 	}
 
 	public onToggleView() {
