@@ -6,6 +6,11 @@ import { FC, ReactNode, useMemo, useRef, useState } from "react";
 import Typography, { TTypographyColorType } from "@/components/Typography";
 import { ArrowDownIcon, ArrowUpIcon, ISvgIcon } from "@/icons";
 
+interface ITooltipParam {
+    value?: string | number;
+    label?: string;
+}
+
 interface IRateTrandViewProps {
     title?: string;
     children?: ReactNode;
@@ -14,7 +19,7 @@ interface IRateTrandViewProps {
     trend?: number;
     hideRate?: boolean;
     hideTrend?: boolean;
-    tooltips?: Array<{ value?: string, label?: string | number } | null>;
+    tooltips?: Array<ITooltipParam | null>;
 }
 
 const getColorByTrend = (trend = 0): TTypographyColorType => {
@@ -50,11 +55,11 @@ export const RateTrendView: FC<IRateTrandViewProps> = (props) => {
         return res;
     }, [trend, rate, hideTrend, hideRate]);
 
-    const renderTooltips = useMemo(() => {
+    const renderTooltips: ITooltipParam[][] = useMemo(() => {
         let j = 0;
         return tooltips.reduce((acc, t = {}) => {
             const hasData = [t?.value, t?.label].some(v => typeof v !== 'undefined');
-            if(!hasData) {
+            if(!t || !hasData) {
                 j++;
                 return acc;
             }
@@ -62,7 +67,7 @@ export const RateTrendView: FC<IRateTrandViewProps> = (props) => {
             ts.push(t);
             acc[j] = ts;
             return acc;
-        }, [] as typeof tooltips[]);
+        }, [] as ITooltipParam[][]);
     }, [tooltips]);
 
     return (
@@ -104,7 +109,7 @@ export const RateTrendView: FC<IRateTrandViewProps> = (props) => {
                 {Boolean(trend) && (!hideTrend || !hideRate) && <IndexIcon color={color as ISvgIcon['color']}/>}
                 <Stack spacing={0}>
                     {renderValues.map(({ value = 0, label = '' }, i, arr) => {
-                        const digFormat = Math.abs(Math.floor(value)).toLocaleString('en-US', {
+                        const digFormat = Math.abs(Math.round(value)).toLocaleString('en-US', {
                             minimumIntegerDigits: 2,
                             useGrouping: false,
                         });
@@ -144,7 +149,8 @@ export const RateTrendView: FC<IRateTrandViewProps> = (props) => {
                             <Stack spacing={2} width='100%'>
                                 {renderTooltips.map((list, index) => (
                                     <Stack key={index} spacing={0}>
-                                        {list.map(({ label, value }, listIndex) => {
+                                        {list.map((el, listIndex) => {
+                                            const { label, value } = el || {};
                                             const textProps = {
                                                 variant: 'text',
                                                 fontSize: 14,
@@ -166,24 +172,11 @@ export const RateTrendView: FC<IRateTrandViewProps> = (props) => {
                                                             {v}
                                                         </Typography>
                                                     ))}
-                                                    {/*<Typography>{label}</Typography>*/}
-                                                    {/*<Typography variant='text'>{value}</Typography>*/}
                                                 </Stack>
                                             );
                                         })}
                                     </Stack>
                                 ))}
-                                {/*{renderTooltips.map(({ value, label }, index) => (*/}
-                                {/*    <Stack*/}
-                                {/*        key={`${value}-${index}`}*/}
-                                {/*        direction='row'*/}
-                                {/*        justifyContent='space-between'*/}
-                                {/*        spacing={1}*/}
-                                {/*    >*/}
-                                {/*        <Typography variant='text'>{label}</Typography>*/}
-                                {/*        <Typography variant='text'>{value}</Typography>*/}
-                                {/*    </Stack>*/}
-                                {/*))}*/}
                             </Stack>
                         </MenuItem>
                     </Menu>

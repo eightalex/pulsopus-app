@@ -1,8 +1,9 @@
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
+import moment from "moment/moment";
 import api from "@/api";
 import { IAutocompleteOption } from '@/components/Autocomplete';
 import { generateAutocompleteOption } from "@/helpers/generateAutocompleteOption.ts";
-import { IActivity, IDepartment, IDepartmentsStore, IRootStore } from '@/interfaces';
+import { IActivity, IComputedDepartmentActivity, IDepartment, IDepartmentsStore, IRootStore } from '@/interfaces';
 import { DateTime } from "@/utils";
 import { BaseStore } from './BaseStore';
 
@@ -29,6 +30,7 @@ export class DepartmentsStore extends BaseStore implements IDepartmentsStore {
 			getCompanyActivity: action.bound,
 			getActivityByDepartmentValue: action.bound,
 			getActivitiesByDepartmentValue: action.bound,
+			getDepartmentActivityDataByValue: action.bound,
 		});
 	}
 
@@ -109,6 +111,51 @@ export class DepartmentsStore extends BaseStore implements IDepartmentsStore {
 
 	public getCompanyActivity(from?: number, to?: number): number {
 		return this.getActivityByDepartmentValue('COMPANY', from, to);
+	}
+
+	public getDepartmentActivityDataByValue(
+		departmentValue?: string,
+		from?: number,
+		to?: number
+	): IComputedDepartmentActivity {
+		if(!departmentValue || !(from && to)) {
+			return {
+				currentDepartmentActivity: 0,
+				prevDepartmentActivity: 0,
+				currentCompanyActivity: 0,
+				prevCompanyActivity: 0,
+				rate: 0,
+				trend: 0,
+				activities: [],
+			};
+		}
+		const diff = Math.abs(moment(from).diff(to, 'day'));
+		const trendFrom = moment(from).startOf('day').subtract(diff, 'day').valueOf();
+		const trendTo = from;
+		const { getActivityByDepartmentValue, getActivitiesByDepartmentValue } = this.rootStore.departmentsStore;
+
+		const activities = getActivitiesByDepartmentValue(departmentValue, from, to);
+
+		const companyActivity = this.rootStore.departmentsStore.getCompanyActivity(from, to);
+		const prevCompanyActivity = this.rootStore.departmentsStore.getCompanyActivity(trendFrom, trendTo);
+		const currentDepartmentActivity = getActivityByDepartmentValue(departmentValue, from, to);
+		const prevDepartmentActivity = getActivityByDepartmentValue(departmentValue, trendFrom, trendTo);
+
+		const cA = Math.max(Number(currentDepartmentActivity), 1);
+		const pA = Math.max(Number(prevDepartmentActivity), 1);
+		const diffAbsolute = cA / pA;
+		const trend = cA >= pA
+			? (diffAbsolute - 1) * 100
+			: (1 - diffAbsolute) * -100;
+		return {
+			currentDepartmentActivity: cA,
+			prevDepartmentActivity: pA,
+			currentCompanyActivity: companyActivity,
+			prevCompanyActivity: prevCompanyActivity,
+			rate: !(currentDepartmentActivity && companyActivity) ? 0 : (currentDepartmentActivity/ companyActivity) * 100,
+			trend,
+			activities,
+		};
 	}
 }
 

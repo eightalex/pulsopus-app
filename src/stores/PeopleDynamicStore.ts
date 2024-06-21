@@ -11,7 +11,6 @@ import {
 	IRootStore,
 	IUser
 } from '@/interfaces';
-import { IActivity } from "@/interfaces/IActivity.ts";
 import { CalendarRangeBase } from "@/stores/CalendarRangeBase.ts";
 import { DateTime } from "@/utils";
 
@@ -160,55 +159,17 @@ export class PeopleDynamicStore extends CalendarRangeBase implements IPeopleDyna
 		}));
 	}
 
-	// eslint-disable-next-line max-len
-	private getDepartmentActivityDataByValue(departmentValue?: string): IComputedDepartmentActivity {
-		const { from, to } = this.calendarRange;
-		if(!departmentValue || !(from && to)) {
-			return {
-				currentDepartmentActivity: 0,
-				prevDepartmentActivity: 0,
-				currentCompanyActivity: 0,
-				prevCompanyActivity: 0,
-				rate: 0,
-				trend: 0,
-				activities: [],
-			};
-		}
-		const diff = this.getCalendarRangeDiff();
-		const trendFrom = moment(from).startOf('day').subtract(diff, 'day').valueOf();
-		const trendTo = from;
-		const { getActivityByDepartmentValue, getActivitiesByDepartmentValue } = this.rootStore.departmentsStore;
-
-		const activities = getActivitiesByDepartmentValue(departmentValue, from, to);
-
-		const companyActivity = this.rootStore.departmentsStore.getCompanyActivity(from, to);
-		const prevCompanyActivity = this.rootStore.departmentsStore.getCompanyActivity(trendFrom, trendTo);
-		const currentDepartmentActivity = getActivityByDepartmentValue(departmentValue, from, to);
-		const prevDepartmentActivity = getActivityByDepartmentValue(departmentValue, trendFrom, trendTo);
-
-		const cA = Math.max(Number(currentDepartmentActivity), 1);
-		const pA = Math.max(Number(prevDepartmentActivity), 1);
-		const diffAbsolute = cA / pA;
-		const trend = cA >= pA
-			? (diffAbsolute - 1) * 100
-			: (1 - diffAbsolute) * -100;
-		return {
-			currentDepartmentActivity: cA,
-			prevDepartmentActivity: pA,
-			currentCompanyActivity: companyActivity,
-			prevCompanyActivity: prevCompanyActivity,
-			rate: !(currentDepartmentActivity && companyActivity) ? 0 : (currentDepartmentActivity/ companyActivity) * 100,
-			trend,
-			activities,
-		};
-	}
-
 	public get departmentActivityData(): IComputedDepartmentActivity {
-		return this.getDepartmentActivityDataByValue(this.department?.value);
+		const { from, to } = this.calendarRange;
+		const depValue = this.department?.value || 'COMPANY';
+		return this.rootStore.departmentsStore
+			.getDepartmentActivityDataByValue(depValue, from, to);
 	}
 
 	public get absoluteActivityData(): IComputedDepartmentActivity {
-		return this.getDepartmentActivityDataByValue('COMPANY');
+		const { from, to } = this.calendarRange;
+		return this.rootStore.departmentsStore
+			.getDepartmentActivityDataByValue('COMPANY', from, to);
 	}
 
 	public onToggleView() {
