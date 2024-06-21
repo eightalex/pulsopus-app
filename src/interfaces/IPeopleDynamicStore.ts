@@ -14,6 +14,16 @@ export interface IPeopleDynamicTableData {
 	user: IUser;
 }
 
+export interface IComputedDepartmentActivity {
+	currentDepartmentActivity: number;
+	prevDepartmentActivity: number;
+	currentCompanyActivity: number;
+	prevCompanyActivity: number;
+	rate: number;
+	trend: number;
+	activities: IActivity[],
+}
+
 export interface IPeopleDynamicStore extends ICalendarRangeBase {
 	view: EPeopleDynamicView;
 	showAbsoluteData: boolean;
@@ -21,12 +31,8 @@ export interface IPeopleDynamicStore extends ICalendarRangeBase {
 	//
 	hexbinUsersData: IPeopleDynamicHexbinData;
 	tableUsersData: IPeopleDynamicTableData[];
-	//TODO: create return interface
-	departmentActivityData: { rate: number, trend: number };
-	//TODO: create return interface
-	absoluteActivityData: { rate: number, trend: number, activities: IActivity[] };
-	//
-	absoluteDtaActivities: IActivity[];
+	departmentActivityData: IComputedDepartmentActivity;
+	absoluteActivityData: IComputedDepartmentActivity;
 	//
 	isLoading: boolean;
 	isLoadingMounting: boolean;

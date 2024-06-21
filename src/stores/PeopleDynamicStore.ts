@@ -3,6 +3,7 @@ import moment from 'moment';
 import { EPeopleDynamicView } from '@/constants/EPeopleDynamic';
 import { getColorByActivity } from "@/helpers/getColorByActivity.ts";
 import {
+	IComputedDepartmentActivity,
 	IDepartment,
 	IPeopleDynamicHexbinData,
 	IPeopleDynamicStore,
@@ -160,62 +161,54 @@ export class PeopleDynamicStore extends CalendarRangeBase implements IPeopleDyna
 	}
 
 	// eslint-disable-next-line max-len
-	private getDepartmentActivityDataByValue(departmentValue?: string): { rate: number, trend: number, activity: IActivity[] } {
-		if(!departmentValue) {
-			return { rate: 0, trend: 0, activity: [] };
-		}
+	private getDepartmentActivityDataByValue(departmentValue?: string): IComputedDepartmentActivity {
 		const { from, to } = this.calendarRange;
+		if(!departmentValue || !(from && to)) {
+			return {
+				currentDepartmentActivity: 0,
+				prevDepartmentActivity: 0,
+				currentCompanyActivity: 0,
+				prevCompanyActivity: 0,
+				rate: 0,
+				trend: 0,
+				activities: [],
+			};
+		}
 		const diff = this.getCalendarRangeDiff();
 		const trendFrom = moment(from).startOf('day').subtract(diff, 'day').valueOf();
 		const trendTo = from;
-		const { getActivityByDepartmentValue } = this.rootStore.departmentsStore;
+		const { getActivityByDepartmentValue, getActivitiesByDepartmentValue } = this.rootStore.departmentsStore;
+
+		const activities = getActivitiesByDepartmentValue(departmentValue, from, to);
 
 		const companyActivity = this.rootStore.departmentsStore.getCompanyActivity(from, to);
+		const prevCompanyActivity = this.rootStore.departmentsStore.getCompanyActivity(trendFrom, trendTo);
 		const currentDepartmentActivity = getActivityByDepartmentValue(departmentValue, from, to);
 		const prevDepartmentActivity = getActivityByDepartmentValue(departmentValue, trendFrom, trendTo);
 
 		const cA = Math.max(Number(currentDepartmentActivity), 1);
 		const pA = Math.max(Number(prevDepartmentActivity), 1);
 		const diffAbsolute = cA / pA;
-		const trend = currentDepartmentActivity >= prevDepartmentActivity
-			? diffAbsolute * 100
+		const trend = cA >= pA
+			? (diffAbsolute - 1) * 100
 			: (1 - diffAbsolute) * -100;
 		return {
+			currentDepartmentActivity: cA,
+			prevDepartmentActivity: pA,
+			currentCompanyActivity: companyActivity,
+			prevCompanyActivity: prevCompanyActivity,
 			rate: !(currentDepartmentActivity && companyActivity) ? 0 : (currentDepartmentActivity/ companyActivity) * 100,
 			trend,
-			activity: [],
-		};
-	}
-
-	public get departmentActivityData(): { rate: number, trend: number } {
-		return this.getDepartmentActivityDataByValue(this.department?.value);
-	}
-
-	public get absoluteActivityData(): { rate: number, trend: number, activities: IActivity[] } {
-		const { from, to } = this.calendarRange;
-		if(!(from && to)) {
-			return { rate: 0, trend: 0, activities: [] };
-		}
-		const baseData = this.getDepartmentActivityDataByValue('COMPANY');
-		const activities = this.rootStore.departmentsStore.getActivitiesByDepartmentValue('COMPANY', from, to);
-		return {
-			...baseData,
 			activities,
 		};
 	}
 
-	public get absoluteDtaActivities(): IActivity[] {
-		const { from, to } = this.calendarRange || { from: moment().startOf('day'), to: moment().endOf('day') };
-		//TODO: refactor next find line
-		const department = this.rootStore.departmentsStore.departments.find(({ name }) => name === 'COMPANY');
-		const activities = department?.activity || [];
-		return activities
-			.reduce((acc, { date, value }) => {
-				const d = Number(date);
-				const isBetweenOrEq = moment(d).isBetween(from, to, null, '[]');
-				if (!isBetweenOrEq) return acc;
-				return [...acc, { date, value: Number(value) }];
-			}, [] as IActivity[]);
+	public get departmentActivityData(): IComputedDepartmentActivity {
+		return this.getDepartmentActivityDataByValue(this.department?.value);
+	}
+
+	public get absoluteActivityData(): IComputedDepartmentActivity {
+		return this.getDepartmentActivityDataByValue('COMPANY');
 	}
 
 	public onToggleView() {

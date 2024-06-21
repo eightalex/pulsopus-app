@@ -19,6 +19,8 @@ import { PeopleDynamicViewDiagramUserTooltip } from "./PeopleDynamicViewDiagramU
 
 const tooltipTitleDefault = 'Your contribution graph and Achievements show activity from public repositories. You can choose to show activity from both public and private, with specific details of your activity in private repositories anonymized.  A viewer can only see information in the activity overview about repositories they have read access to. Get more information.';
 
+const renderUserTooltip = ({ data, value }) => <PeopleDynamicViewDiagramUserTooltip user={data} rate={value}/>;
+
 export const PeopleDynamicViewDiagram = observer(() => {
     const {
         rootStore: {
@@ -68,9 +70,7 @@ export const PeopleDynamicViewDiagram = observer(() => {
                     <HexbinWidget<IUser>
                         data={hexbinUsersData}
                         onClick={handleHexClick}
-                        renderTooltip={({ data, value }) => {
-                            return <PeopleDynamicViewDiagramUserTooltip user={data} rate={value}/>;
-                        }}
+                        renderTooltip={renderUserTooltip}
                     />
                     <Collapse
                         onEntered={scrollToAbsolute}
@@ -93,6 +93,18 @@ export const PeopleDynamicViewDiagram = observer(() => {
                                 trend={departmentActivityData.trend}
                                 hideRate={department?.value === 'COMPANY'}
                                 hideTrend={department?.value === 'COMPANY'}
+                                tooltips={[
+                                    { label: 'Company', value: '' },
+                                    { label: 'curr period', value: absoluteActivityData.currentDepartmentActivity },
+                                    { label: 'prev period', value: absoluteActivityData.prevDepartmentActivity },
+                                    { label: 'trend', value: absoluteActivityData.trend },
+                                    null,
+                                    { label: 'Department', value: '' },
+                                    { label: 'curr period', value: departmentActivityData.currentDepartmentActivity },
+                                    { label: 'prev period', value: departmentActivityData.prevDepartmentActivity },
+                                    { label: 'trend', value: departmentActivityData.trend },
+                                    { label: 'rate', value: departmentActivityData.rate },
+                                ]}
                             />
                         )}
                         <RateTrendView
@@ -110,7 +122,7 @@ export const PeopleDynamicViewDiagram = observer(() => {
                                     textTransform="uppercase"
                                     color={department?.value == 'COMPANY'
                                         ? 'success'
-                                        : absoluteActivityData.trend > 0
+                                        : absoluteActivityData.trend >= 0
                                             ? 'success'
                                             : 'primary'
                                     }

@@ -28,7 +28,15 @@ export class CalendarRangeBase extends BaseStore implements ICalendarRangeBase {
 			.endOf('day')
 			.valueOf();
 
-		return { from, to };
+		// return { from, to };
+
+		const [testFrom, testTo] = ['01.09.2023', '01.12.2023']
+			.map((d, i) => {
+				const m =  moment(d, 'DD.MM.YYYY');
+				const v = !i ? m.startOf('day') : m.endOf('day');
+				return v.valueOf();
+			});
+		return { from: testFrom, to: testTo };
 	}
 
 	public setCalendarRange(range: ICalendarRange) {

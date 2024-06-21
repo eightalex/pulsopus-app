@@ -18,13 +18,13 @@ export const PeopleDynamicViewTable = observer(() => {
             header: 'Title',
             accessorFn: (row) => row.user.username,
             cell: info => info.getValue(),
-            size: 250,
+            size: 260,
         },
         {
             header: 'Department',
             accessorFn: (row) => row.user.department?.label,
             cell: info => info.getValue(),
-            size: 240,
+            size: 130,
             meta: {
                 filterVariant: ETableFilterVariant.SELECT,
             },
@@ -37,7 +37,7 @@ export const PeopleDynamicViewTable = observer(() => {
                 const v = info.getValue();
                 return v ? Math.round(Number(v)) : '';
             },
-            size: 160,
+            size: 120,
         },
         {
             header: 'index',
