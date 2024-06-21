@@ -1,5 +1,6 @@
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import moment from 'moment';
+import { useLayoutEffect } from "react";
 import { EPeopleDynamicView } from '@/constants/EPeopleDynamic';
 import { getColorByActivity } from "@/helpers/getColorByActivity.ts";
 import {
@@ -198,19 +199,9 @@ export class PeopleDynamicStore extends CalendarRangeBase implements IPeopleDyna
 	}
 
 	public async mountStore() {
-		const key = this.asyncStatuses.mounting;
-		try {
-			this.setLoading(key);
-			await this.rootStore.usersStore.getUsers();
-			await this.rootStore.departmentsStore.getDepartments();
-			runInAction(() => {
-				this.setDepartment(this.department || this.rootStore.departmentsStore.departments[0]);
-				this.setSuccess(key);
-			});
-		} catch (err) {
-			console.error(err);
-			this.setError(key);
-		}
+		runInAction(() => {
+			this.setDepartment(this.department || this.rootStore.departmentsStore.departments[0]);
+		});
 	}
 
 	public unmountStore() {

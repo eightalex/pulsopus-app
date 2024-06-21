@@ -5,11 +5,11 @@ import { ICalendarRange } from '@/components/CalendarRangePicker';
 import { IChartDataPoint } from '@/components/Chart';
 import { generateActivityData } from '@/helpers/generateActivityData';
 import { IDepartment, IRootStore, IUser, IUserDiagramStore } from '@/interfaces';
-import { BaseStore } from './BaseStore';
+import { CalendarRangeBase } from "@/stores/CalendarRangeBase.ts";
 
-export class UserDiagramStore extends BaseStore implements IUserDiagramStore {
+export class UserDiagramStore extends CalendarRangeBase implements IUserDiagramStore {
+	public targetId: IUser['id'] = undefined;
 	public user: IUser | null = null;
-	public calendarRange: ICalendarRange;
 	public isCompare: boolean = false;
 	public compareValue: IUser | IDepartment | null = null;
 	public compareOption: IAutocompleteOption | null = null;
@@ -21,8 +21,8 @@ export class UserDiagramStore extends BaseStore implements IUserDiagramStore {
 	constructor(rootStore: IRootStore) {
 		super(rootStore);
 		makeObservable(this, {
+			targetId: observable,
 			user: observable,
-			calendarRange: observable,
 			isCompare: observable,
 			compareValue: observable,
 			compareOption: observable,
@@ -37,7 +37,6 @@ export class UserDiagramStore extends BaseStore implements IUserDiagramStore {
 			// actions
 			onToggleCompare: action.bound,
 			setCompareValueByOption: action.bound,
-			setCalendarRange: action.bound,
 			setUser: action.bound,
 			mountStore: action.bound,
 			unmountStore: action.bound,
@@ -160,6 +159,7 @@ export class UserDiagramStore extends BaseStore implements IUserDiagramStore {
 
 	public resetStore() {
 		runInAction(() => {
+			this.targetId = null;
 			this.user = null;
 			this.compareValue = null;
 			this.isCompare = false;
@@ -174,6 +174,7 @@ export class UserDiagramStore extends BaseStore implements IUserDiagramStore {
 		try {
 			const user = await this.rootStore.usersStore.getUser(userId);
 			runInAction(() => {
+				this.targetId = userId;
 				this.setUser(user);
 				this.setSuccess(key);
 			});

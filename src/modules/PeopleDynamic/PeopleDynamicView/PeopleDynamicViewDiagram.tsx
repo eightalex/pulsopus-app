@@ -2,7 +2,7 @@ import { Collapse } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import { observer } from 'mobx-react';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
 import { RateTrendView } from "src/components/RateTrendView";
 

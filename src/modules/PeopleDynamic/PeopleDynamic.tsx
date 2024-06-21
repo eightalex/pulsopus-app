@@ -1,6 +1,6 @@
 import Stack from "@mui/material/Stack";
 import { observer } from 'mobx-react';
-import { memo, useEffect } from 'react';
+import { memo, useEffect, useMemo } from 'react';
 
 import { ContentContainer } from "@/components/ContentContainer";
 import { Loader } from '@/components/Loader';
@@ -13,14 +13,18 @@ import { PeopleDynamicActions } from './PeopleDynamicActions';
 const PeopleDynamic = observer(() => {
 	const {
 		rootStore: {
-			usersStore: { usersMap },
+			usersStore: { usersMap, isLoadingUsers },
+			departmentsStore: { isLoadingDepartments },
 			peopleDynamicStore: {
 				mountStore,
 				unmountStore,
-				isLoadingMounting: isLoading,
 			}
 		}
 	} = useStores();
+
+	const isLoading = useMemo(
+		() => isLoadingUsers || isLoadingDepartments
+		,  [isLoadingDepartments, isLoadingUsers]);
 
 	useEffect(() => {
 		mountStore();

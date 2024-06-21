@@ -1,14 +1,14 @@
 import { DurationInputArg2 } from 'moment';
 import { IAutocompleteOption } from '@/components/Autocomplete';
-import { ICalendarRange } from '@/components/CalendarRangePicker';
 import { IChartDataPoint } from '@/components/Chart';
 import { IGenerateActivityData } from '@/helpers/generateActivityData';
+import { ICalendarRangeBase } from "@/interfaces/ICalendarRangeBase.ts";
 import { IDepartment } from '@/interfaces/IDepartment';
 import { IUser } from '@/interfaces/IUser';
 
-export interface IUserDiagramStore {
+export interface IUserDiagramStore extends ICalendarRangeBase {
+	targetId?: IUser["id"];
 	user: IUser | null;
-	calendarRange: ICalendarRange;
 	isCompare: boolean;
 	compareValue: IUser | IDepartment | null;
 	compareOption: IAutocompleteOption | null;
@@ -23,7 +23,6 @@ export interface IUserDiagramStore {
 	//
 	onToggleCompare: () => void;
 	setCompareValueByOption: (option?: IAutocompleteOption) => void;
-	setCalendarRange: (range: ICalendarRange) => void;
 	setUser: (user: IUser | null) => void;
 	mountStore: (userId?: IUser['id']) => void;
 	unmountStore: () => void;

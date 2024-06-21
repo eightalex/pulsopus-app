@@ -18,6 +18,7 @@ import {
     ROOT_ROUTE,
     ROUTE_DEFAULT,
 } from '@/constants/routes';
+import { InitialRequester } from "@/modules/Root/InitialRequester.tsx";
 import { RequireRoleRoute } from "@/routes/RequireRoleRoute.tsx";
 
 import { ProtectedRoute } from './ProtectedRoute.tsx';
@@ -46,7 +47,9 @@ export const routes: RouteObject[] = [
             <ProtectedRoute>
                 <Layout>
                     <LayoutSideBar>
-                        <Outlet/>
+                        <InitialRequester>
+                            <Outlet/>
+                        </InitialRequester>
                     </LayoutSideBar>
                 </Layout>
             </ProtectedRoute>
