@@ -1,8 +1,10 @@
-import { action, makeObservable, observable, runInAction } from 'mobx';
+import { action, computed,makeObservable, observable, runInAction } from 'mobx';
 import moment, { unitOfTime } from 'moment';
 import { ICalendarRange } from '@/components/CalendarRangePicker';
+import { CHART_SELECT_MIN_LENGTH } from "@/constants/chart.ts";
 import { ICalendarRangeBase, IRootStore } from '@/interfaces';
 import { BaseStore } from "@/stores/BaseStore.ts";
+import { DateTime } from "@/utils";
 
 export class CalendarRangeBase extends BaseStore implements ICalendarRangeBase {
 	public calendarRange: Required<ICalendarRange>;
@@ -11,6 +13,9 @@ export class CalendarRangeBase extends BaseStore implements ICalendarRangeBase {
 		super(rootStore);
 		makeObservable(this, {
 			calendarRange: observable,
+			//
+			rangeFrom: computed,
+			rangeTo: computed,
 			//
 			getCalendarRangeDiff: action.bound,
 			setCalendarRange: action.bound,
@@ -39,10 +44,28 @@ export class CalendarRangeBase extends BaseStore implements ICalendarRangeBase {
 		return { from: testFrom, to: testTo };
 	}
 
-	public setCalendarRange(range: ICalendarRange) {
-		if(!range || !range.from || !range.to) return;
+	public get rangeFrom(): number {
+		return this.calendarRange.from || moment('01.01.2000', 'DD.MM.YYYY').startOf('day').valueOf();
+	}
+	public get rangeTo(): number {
+		return this.calendarRange.to || moment().endOf('day').valueOf();
+	}
+
+	public setCalendarRange(range: ICalendarRange, minDiffInDays: number = CHART_SELECT_MIN_LENGTH) {
+		const { from, to } = range || {};
+		if(!range || !from || !to) return;
+		const diff = Math.abs(DateTime.getDaysDiff(range.from, range.to));
+		const nextRange = range as Required<ICalendarRange>;
+		if(diff < minDiffInDays) {
+			const delta = Math.floor((minDiffInDays - diff) / 2);
+			const deltaUnit = 'day';
+			const mF = moment(from);
+			const mT = moment(to);
+			nextRange.from = mF.subtract(delta, deltaUnit).startOf(deltaUnit).valueOf();
+			nextRange.to = mT.add(delta, deltaUnit).endOf(deltaUnit).valueOf();
+		}
 		runInAction(() => {
-			this.calendarRange = range as Required<ICalendarRange>;
+			this.calendarRange = nextRange;
 		});
 	}
 

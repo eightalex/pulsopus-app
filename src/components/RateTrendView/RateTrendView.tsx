@@ -14,7 +14,7 @@ interface ITooltipParam {
 interface IRateTrandViewProps {
     title?: string;
     children?: ReactNode;
-    subTitles?: string[];
+    subtitles?: string[];
     rate?: number;
     trend?: number;
     hideRate?: boolean;
@@ -33,7 +33,7 @@ export const RateTrendView: FC<IRateTrandViewProps> = (props) => {
     const {
         title = '',
         children,
-        subTitles = [],
+        subtitles = [],
         rate = 0,
         trend = 0,
         hideRate = false,
@@ -88,7 +88,7 @@ export const RateTrendView: FC<IRateTrandViewProps> = (props) => {
                 )}
                 {Boolean(children) && children}
                 <Stack spacing={0.5}>
-                    {subTitles.map((subtitle = '', i) => (
+                    {subtitles.map((subtitle = '', i) => (
                         <Typography
                             key={`${i}-${subtitle}`}
                             variant="body2"
@@ -162,7 +162,7 @@ export const RateTrendView: FC<IRateTrandViewProps> = (props) => {
                                                     direction='row'
                                                     justifyContent='space-between'
                                                     flexGrow={1}
-                                                    spacing={1}
+                                                    spacing={2}
                                                 >
                                                     {[label, value].map((v, infoIndex) => (
                                                         <Typography
@@ -170,6 +170,7 @@ export const RateTrendView: FC<IRateTrandViewProps> = (props) => {
                                                             {...textProps}
                                                         >
                                                             {v}
+                                                            {!infoIndex && 	<>&#58;</>}
                                                         </Typography>
                                                     ))}
                                                 </Stack>

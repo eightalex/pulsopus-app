@@ -2,7 +2,8 @@ import { action, computed, makeObservable, observable, runInAction } from 'mobx'
 import api from "@/api";
 import { IAutocompleteOption } from '@/components/Autocomplete';
 import { generateAutocompleteOption } from "@/helpers/generateAutocompleteOption.ts";
-import { IDepartment, IRootStore, IUser, IUsersStore } from '@/interfaces';
+import { IDepartment, IRootStore, IUser, IUsersStore, IUserTrendRate } from '@/interfaces';
+import { DateTime } from "@/utils";
 import { BaseStore } from './BaseStore';
 
 export class UsersStore extends BaseStore implements IUsersStore {
@@ -31,6 +32,7 @@ export class UsersStore extends BaseStore implements IUsersStore {
 			getUsers: action.bound,
 			getUser: action.bound,
 			getUsersByDepartmentId: action.bound,
+			calcUserTrendRateData: action.bound,
 			setUserStatusById: action.bound,
 			setUserRoleById: action.bound,
 		});
@@ -116,6 +118,62 @@ export class UsersStore extends BaseStore implements IUsersStore {
 				label: 'username',
 			}
 		});
+	}
+
+	public calcUserTrendRateData(id: IUser['id'], from: number, to: number): IUserTrendRate {
+		const defaultResult = {
+			trend: 0,
+			rate: 0,
+			activity: [],
+			currentCompanyActivity: 0,
+			prevCompanyActivity: 0,
+			currentUserActivity: 0,
+			prevUserActivity: 0,
+		};
+		if(!from || !to) return defaultResult;
+		const user = this.usersMap.get(id);
+		if(!user) return defaultResult;
+		const [prevFrom, prevTo] = DateTime.getPrevPeriod(from, to);
+		const currentCompanyActivity = this.rootStore.departmentsStore.getCompanyActivity(from, to);
+		const prevCompanyActivity = this.rootStore.departmentsStore.getCompanyActivity(prevFrom, prevTo);
+		const currentActivities = [];
+		let currentActivitiesSum = 0;
+		const prevActivities = [];
+		let prevActivitiesSum = 0;
+		const currDateTime = DateTime.of(from, to);
+		const prevDateTime = DateTime.of(prevFrom, prevTo);
+		for (const activity of (user.activity || [])) {
+			const { date } = activity;
+			if(!Number(date)) continue;
+			if(currDateTime.isBetweenOrEquals(Number(date))) {
+				currentActivities.push(activity);
+				currentActivitiesSum += activity.value;
+			}
+			if(prevDateTime.isBetweenOrEquals(Number(date))) {
+				prevActivities.push(activity);
+				prevActivitiesSum += activity.value;
+			}
+		}
+		const cA = Math.max(Number(currentActivitiesSum), 1);
+		const pA = Math.max(Number(prevActivitiesSum), 1);
+		const diffAbsolute = cA / pA;
+		const trend = cA >= pA
+			? (diffAbsolute - 1) * 100
+			: (1 - diffAbsolute) * -100;
+
+		const rate =  !(currentCompanyActivity && currentActivitiesSum)
+			? 0
+			: (currentActivitiesSum / currentCompanyActivity) * 100;
+		return {
+			...defaultResult,
+			activity: currentActivities,
+			trend,
+			rate,
+			currentCompanyActivity: currentCompanyActivity,
+			prevCompanyActivity: prevCompanyActivity,
+			currentUserActivity: currentActivitiesSum,
+			prevUserActivity: prevActivitiesSum,
+		};
 	}
 
 	public async setUserStatusById(id: IUser["id"], status: IUser["status"]) {

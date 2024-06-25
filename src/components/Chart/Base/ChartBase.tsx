@@ -33,7 +33,7 @@ export const ChartBase: FC<IChartBaseProps> = (props) => {
 		disableTooltip,
 		renderTooltip,
 		minYValue = 0,
-		maxYValue = 0,
+		maxYValue = 100,
 		...restProps
 	} = props;
 	const wrapperRef = useRef<HTMLDivElement | null>(null);

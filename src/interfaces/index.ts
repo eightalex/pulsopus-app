@@ -14,6 +14,6 @@ export type * from './IPeopleDynamicStore';
 export type { IRequestError } from './IRequestError';
 export type { IRootStore } from './IRootStore';
 export type * from './IUser';
-export type { IUserDiagramStore } from './IUserDiagramStore';
-export type { IUsersStore } from './IUsersStore';
+export type * from './IUserDiagramStore';
+export type * from './IUsersStore';
 export type { IWindowEntity } from './IWindowEntity.ts';

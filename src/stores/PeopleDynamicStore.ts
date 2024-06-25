@@ -1,6 +1,5 @@
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import moment from 'moment';
-import { useLayoutEffect } from "react";
 import { EPeopleDynamicView } from '@/constants/EPeopleDynamic';
 import { getColorByActivity } from "@/helpers/getColorByActivity.ts";
 import {

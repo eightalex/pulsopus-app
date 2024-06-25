@@ -1,6 +1,17 @@
 import { IAutocompleteOption } from '@/components/Autocomplete';
+import { IActivity } from "@/interfaces/IActivity.ts";
 import { IDepartment } from '@/interfaces/IDepartment';
 import { IUser } from '@/interfaces/IUser';
+
+export interface IUserTrendRate {
+	currentCompanyActivity: number;
+	prevCompanyActivity: number;
+	currentUserActivity: number;
+	prevUserActivity: number;
+	trend: number;
+	rate: number;
+	activity: IActivity[];
+}
 
 export interface IUsersStore {
 	usersMap: Map<IUser['id'], IUser>;
@@ -16,6 +27,8 @@ export interface IUsersStore {
 	getUsers: () => void;
 	getUser: (id: IUser['id']) => Promise<IUser>;
 	getUsersByDepartmentId: (departmentId: IDepartment['id']) => IUser[];
+
+	calcUserTrendRateData: (id: IUser["id"], from: number, to: number) => IUserTrendRate;
 
 	setUserStatusById: (id: IUser["id"], status: IUser["status"]) => Promise<void>;
 	setUserRoleById: (id: IUser["id"], role: IUser["role"]) => Promise<void>;
