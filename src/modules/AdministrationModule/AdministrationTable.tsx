@@ -1,38 +1,19 @@
 import Stack from "@mui/material/Stack";
 import { CellContext, ColumnDef, TableMeta } from '@tanstack/react-table';
 import { observer } from "mobx-react";
-import React, { HTMLProps, useMemo, useRef } from 'react';
+import moment from "moment";
+import React, { useMemo, useRef } from 'react';
 
-import Table, { COLORS, ETableColumnType, ETableFilterVariant, ROW_SELECT_COL_KEY, TTable } from "@/components/Table";
+import Table, { COLORS, ETableFilterVariant, TTable } from "@/components/Table";
 import { TableSelect } from "@/components/Table/TableSelect/TableSelect.tsx";
 import { EUserRole, EUserStatus } from "@/constants/EUser.ts";
 import { useStores } from "@/hooks";
 import { IUser } from "@/interfaces";
 
-import { filterDepartmentFn, filterStatusFn, sortStatusFn } from "./col.helper.tsx";
-
-function IndeterminateCheckbox({
-                                   indeterminate,
-                                   className = '',
-                                   ...rest
-                               }: { indeterminate?: boolean } & HTMLProps<HTMLInputElement>) {
-    const ref = React.useRef<HTMLInputElement>(null!);
-
-    React.useEffect(() => {
-        if (typeof indeterminate === 'boolean') {
-            ref.current.indeterminate = !rest.checked && indeterminate;
-        }
-    }, [ref, indeterminate]);
-
-    return (
-        <input
-            type="checkbox"
-            ref={ref}
-            className={className + ' cursor-pointer'}
-            {...rest}
-        />
-    );
-}
+import { calcMaxColSize, filterDepartmentFn, filterStatusFn, sortStatusFn } from "./col.helper.tsx";
+import {
+    AdministrationTableHeadSelectAction
+} from "./components/AdministrationTableHeadSelectAction.tsx";
 
 export const AdministrationTable = observer(() => {
     const {
@@ -53,21 +34,30 @@ export const AdministrationTable = observer(() => {
     const tableRef = useRef<TTable<IUser>>();
     const tableDataRef = useRef<IUser[]>();
 
+    console.log('tableRef.current', tableRef.current);
+
+    const maxTitleSize = useMemo(() => {
+        const maxTitleLength = data.reduce((acc, { username }) => {
+            const unLength = username.length;
+            return unLength > acc ? unLength : acc;
+        }, 0);
+        return calcMaxColSize(maxTitleLength, 190, 240);
+    }, [data]);
 
     const columns = useMemo<ColumnDef<IUser>[]>(() => {
-        const base = [
+        return [
             {
                 accessorKey: 'username',
                 header: 'Title',
                 cell: (info: CellContext<IUser, unknown>) => info.getValue(),
-                size: 230,
+                size: maxTitleSize,
             },
             {
                 accessorKey: 'department',
                 header: 'Department',
                 accessorFn: (row: IUser) => row.department?.label,
                 cell: (info: CellContext<IUser, unknown>) => info.getValue(),
-                size: 180,
+                size: 200,
                 meta: {
                     filterVariant: ETableFilterVariant.SELECT,
                 },
@@ -75,7 +65,8 @@ export const AdministrationTable = observer(() => {
             },
             {
                 header: 'Date',
-                cell: () => '25.07.2023',
+                accessorFn: (row: IUser) => row.createdAt,
+                cell: (info: CellContext<IUser, unknown>) => moment(Number(info.getValue())).format('DD.MM.YYYY'),
                 size: 140,
             },
             {
@@ -165,22 +156,22 @@ export const AdministrationTable = observer(() => {
                 filterFn: filterStatusFn,
                 sortingFn: sortStatusFn,
             },
+            {
+                id: 'row-select-action',
+                accessorKey: 'row-select-action',
+                header: ({ table }: { table: Table<IUser> }) => <AdministrationTableHeadSelectAction table={table}/>,
+                cell: (info) => info.getValue(),
+                size: 86,
+                enableSorting: false,
+            },
         ];
-        if(isAdmin) {
-            base.push({
-                accessorKey: ROW_SELECT_COL_KEY,
-                meta: {
-                    type: ETableColumnType.ROW_SELECT,
-                }
-            });
-        }
-        return base;
-    }, [isAdmin, usersRoles, currentUser?.id, setUserRoleById, usersStatuses, setUserStatusById]);
+    }, [maxTitleSize, isAdmin, usersRoles, currentUser?.id, setUserRoleById, usersStatuses, setUserStatusById]);
 
     return (
         <Stack
             direction='row'
-            maxWidth='1000px'
+            // maxWidth='1000px'
+            maxWidth='1200px'
             width='100%'
             flexGrow={1}
             overflow='hidden'
@@ -191,7 +182,6 @@ export const AdministrationTable = observer(() => {
                     tableDataRef.current = d;
                 }}
                 globalFilter={''}
-                // data={[...data, ...data, ...data]}
                 data={data}
                 columns={columns}
                 numCol

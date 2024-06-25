@@ -1,14 +1,14 @@
-import {TIcon} from '@/icons';
-import MuiIconButton, {IconButtonProps} from '@mui/material/IconButton';
-import {SvgIconProps} from '@mui/material/SvgIcon';
-import MuiTooltip, {TooltipProps} from '@mui/material/Tooltip';
-import {FC, memo, ReactElement, useMemo} from 'react';
+import MuiIconButton, { IconButtonProps } from '@mui/material/IconButton';
+import { SvgIconProps } from '@mui/material/SvgIcon';
+import MuiTooltip, { TooltipProps } from '@mui/material/Tooltip';
+import { FC, memo, ReactElement, useMemo } from 'react';
 
-export interface IButtonIconProps extends IconButtonProps {
+import { TIcon } from '@/icons';
+
+export interface IButtonIconProps extends IconButtonProps, Pick<TooltipProps, 'title'> {
     icon: ReactElement | TIcon;
     tooltipProps?: Partial<TooltipProps>;
     iconProps?: Partial<SvgIconProps>;
-    title?: TooltipProps['title'];
     disabledActive?: boolean;
 }
 
@@ -29,7 +29,7 @@ const ButtonIcon: FC<IButtonIconProps> = (props) => {
         if ('$$typeof' in icon.type) {
             return icon;
         }
-        const {icon: Icon} = props;
+        const { icon: Icon } = props;
         return <Icon {...iconProps} />;
     }, [icon, props, iconProps]);
 

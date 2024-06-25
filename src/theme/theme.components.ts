@@ -332,6 +332,7 @@ export const components: ThemeOptions['components'] = {
 	MuiIconButton: {
 		defaultProps: {
 			disableRipple: true,
+			variant: 'outlined',
 		},
 		styleOverrides: {
 			root: {
@@ -342,24 +343,44 @@ export const components: ThemeOptions['components'] = {
 				justifyContent: 'center',
 				borderRadius: 4,
 				backgroundColor: extendPalette.iconButtonDefaultSurfaceDefault,
-				border: `1px solid ${extendPalette.iconButtonDefaultBorderDefault}`,
-				outline: 'none',
-				transition: 'opacity .2s ease',
-				['&:hover']: {
-					borderColor: extendPalette.iconButtonDefaultBorderHover,
-				},
-				['&:active']: {
-					backgroundColor: extendPalette.iconButtonDefaultSurfaceHover,
-					borderColor: extendPalette.iconButtonDefaultBorderHover,
-				},
-				['&:focus']: {
-					outline: `1px solid ${extendPalette.iconButtonDefaultSurfacePressed}`,
-				},
 				'&.Mui-disabled': {
 					opacity: 0.5,
 				},
 			},
 		},
+		variants: [
+			{
+				props: { variant: 'outlined' },
+				style: {
+					border: `1px solid ${extendPalette.iconButtonDefaultBorderDefault}`,
+					outline: 'none',
+					transition: 'opacity .2s ease',
+					['&:hover']: {
+						borderColor: extendPalette.iconButtonDefaultBorderHover,
+					},
+					['&:active']: {
+						backgroundColor: extendPalette.iconButtonDefaultSurfaceHover,
+						borderColor: extendPalette.iconButtonDefaultBorderHover,
+					},
+					['&:focus']: {
+						outline: `1px solid ${extendPalette.iconButtonDefaultSurfacePressed}`,
+					},
+				},
+			},
+			{
+				props: { variant: 'text' },
+				style: {
+					height: 'auto',
+					border: 'none',
+				},
+			},
+			{
+				props: { size: 'small' },
+				style: {
+					padding: '0'
+				},
+			},
+		]
 	},
 	MuiFormControlLabel: {
 		defaultProps: {

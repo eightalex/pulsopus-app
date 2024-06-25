@@ -5,6 +5,11 @@ import { IUser } from "@/interfaces";
 
 export const ROLES_SEPARATOR = '/';
 
+export const calcMaxColSize = (size = 0, min = 190, max = 250) => {
+    const spacing = 4;
+    return Math.max(min, Math.min(size + spacing, max));
+};
+
 export const sortStatusFn: SortingFn<IUser> = (rowA, rowB, _columnId) => {
     const statusA = rowA.original.status;
     const statusB = rowB.original.status;

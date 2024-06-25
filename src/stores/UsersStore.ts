@@ -2,7 +2,7 @@ import { action, computed, makeObservable, observable, runInAction } from 'mobx'
 import api from "@/api";
 import { IAutocompleteOption } from '@/components/Autocomplete';
 import { generateAutocompleteOption } from "@/helpers/generateAutocompleteOption.ts";
-import { IDepartment, IRootStore, IUser, IUsersStore, IUserTrendRate } from '@/interfaces';
+import { IRootStore, IUser, IUsersStore, IUserTrendRate } from '@/interfaces';
 import { DateTime } from "@/utils";
 import { BaseStore } from './BaseStore';
 
@@ -31,7 +31,6 @@ export class UsersStore extends BaseStore implements IUsersStore {
 			// actions
 			getUsers: action.bound,
 			getUser: action.bound,
-			getUsersByDepartmentId: action.bound,
 			calcUserTrendRateData: action.bound,
 			setUserStatusById: action.bound,
 			setUserRoleById: action.bound,
@@ -101,13 +100,6 @@ export class UsersStore extends BaseStore implements IUsersStore {
 
 	public get users(): IUser[] {
 		return [...this.usersMap.values()];
-	}
-
-	public getUsersByDepartmentId(departmentId: IDepartment['id']): IUser[] {
-		if(departmentId === 0) {
-			return this.users;
-		}
-		return this.users.filter(({ department }) => department.id === departmentId);
 	}
 
 	public get usersAutocompleteOptions(): IAutocompleteOption[] {

@@ -64,7 +64,7 @@ export const UserDiagramChartTooltip: FC<IUserDiagramChartTooltipProps> = observ
 						['Activity', value],
 						['Rate', rate],
 						['Trend', trend]
-					].map(([k, v]) => [k, v.toFixed(2)]);
+					].map(([k, v]) => [k, Number(v).toFixed(2)]);
                     return (
                         <Stack spacing={0} key={title} sx={{ color }}>
                             <Typography

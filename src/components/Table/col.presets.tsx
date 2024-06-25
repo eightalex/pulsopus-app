@@ -33,28 +33,6 @@ export const rowSelectCol: ColumnDef<unknown> = {
     id: ROW_SELECT_COL_KEY,
     accessorKey: ROW_SELECT_COL_KEY,
     header: ROW_SELECT_COL_KEY,
-    // header: ({ table }) => (
-    //     <Checkbox
-    //         disabled={false}
-    //         checked={table.getIsAllPageRowsSelected()}
-    //         indeterminate={table.getIsAllPageRowsSelected()
-    //             ? table.getIsSomePageRowsSelected()
-    //             : table.getIsSomeRowsSelected()
-    //         }
-    //         onClick={() => {
-    //             const isChecked = table.getIsAllPageRowsSelected();
-    //             const isIndeterminate = table.getIsSomePageRowsSelected();
-    //             const state = isChecked || isIndeterminate;
-    //             table.toggleAllPageRowsSelected(!state);
-    //         }}
-    //         sx={{
-    //             padding: 0,
-    //         }}
-    //         inputProps={{
-    //             'aria-label': 'select all rows',
-    //         }}
-    //     />
-    // ),
     cell: ({ row }) => (
         <Stack
             sx={({ spacing }) => ({
