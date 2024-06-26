@@ -1,5 +1,5 @@
-import {DialogProps as MUIDialogProps} from "@mui/material/Dialog/Dialog";
-import {ReactNode} from "react";
+import { ReactNode } from "react";
+import { DialogProps as MUIDialogProps } from "@mui/material/Dialog/Dialog";
 
 export interface IDialogProps extends Omit<MUIDialogProps, 'onClose' | 'title'> {
     onClose?: () => void;

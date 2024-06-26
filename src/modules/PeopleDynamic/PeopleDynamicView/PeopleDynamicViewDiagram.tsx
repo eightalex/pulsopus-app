@@ -31,6 +31,10 @@ export const PeopleDynamicViewDiagram = observer(() => {
                 hexbinUsersData,
                 departmentActivityData,
                 absoluteActivityData,
+                calendarRange,
+            },
+            userDiagramStore: {
+                setCalendarRange: setUserDiagramCalendarRange,
             },
         }
     } = useStores();
@@ -46,9 +50,10 @@ export const PeopleDynamicViewDiagram = observer(() => {
     }, [showAbsoluteData]);
 
     const handleHexClick = useCallback(async (user: IUser) => {
+        setUserDiagramCalendarRange(calendarRange);
         if (!user?.id) return;
         navigate(`/${DIAGRAM_ROUTE}`, { state: { id: user.id }, relative: 'route' });
-    }, [navigate]);
+    }, [setUserDiagramCalendarRange, calendarRange, navigate]);
 
     useEffect(() => {
         scrollToAbsolute();

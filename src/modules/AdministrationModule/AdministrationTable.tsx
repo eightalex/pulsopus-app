@@ -2,7 +2,7 @@ import Stack from "@mui/material/Stack";
 import { CellContext, ColumnDef, TableMeta } from '@tanstack/react-table';
 import { observer } from "mobx-react";
 import moment from "moment";
-import React, { useMemo, useRef } from 'react';
+import { useMemo, useRef, useState } from 'react';
 
 import Table, { COLORS, ETableFilterVariant, TTable } from "@/components/Table";
 import { TableSelect } from "@/components/Table/TableSelect/TableSelect.tsx";
@@ -12,8 +12,9 @@ import { IUser } from "@/interfaces";
 
 import { calcMaxColSize, filterDepartmentFn, filterStatusFn, sortStatusFn } from "./col.helper.tsx";
 import {
-    AdministrationTableHeadSelectAction
-} from "./components/AdministrationTableHeadSelectAction.tsx";
+    AdministrationTableSelectAction
+} from "./components/AdministrationTableSelectAction";
+import { ConfirmDeleteDialog } from "./components/ConfirmDialog";
 
 export const AdministrationTable = observer(() => {
     const {
@@ -33,15 +34,14 @@ export const AdministrationTable = observer(() => {
     } = useStores();
     const tableRef = useRef<TTable<IUser>>();
     const tableDataRef = useRef<IUser[]>();
-
-    console.log('tableRef.current', tableRef.current);
+    const [usersToDelete, setUsersToDelete] = useState<IUser[]>([]);
 
     const maxTitleSize = useMemo(() => {
         const maxTitleLength = data.reduce((acc, { username }) => {
             const unLength = username.length;
             return unLength > acc ? unLength : acc;
         }, 0);
-        return calcMaxColSize(maxTitleLength, 190, 240);
+        return calcMaxColSize(maxTitleLength, 190, 240, 10);
     }, [data]);
 
     const columns = useMemo<ColumnDef<IUser>[]>(() => {
@@ -57,7 +57,7 @@ export const AdministrationTable = observer(() => {
                 header: 'Department',
                 accessorFn: (row: IUser) => row.department?.label,
                 cell: (info: CellContext<IUser, unknown>) => info.getValue(),
-                size: 200,
+                size: 168,
                 meta: {
                     filterVariant: ETableFilterVariant.SELECT,
                 },
@@ -67,7 +67,7 @@ export const AdministrationTable = observer(() => {
                 header: 'Date',
                 accessorFn: (row: IUser) => row.createdAt,
                 cell: (info: CellContext<IUser, unknown>) => moment(Number(info.getValue())).format('DD.MM.YYYY'),
-                size: 140,
+                size: 100,
             },
             {
                 accessorKey: 'role',
@@ -159,8 +159,63 @@ export const AdministrationTable = observer(() => {
             {
                 id: 'row-select-action',
                 accessorKey: 'row-select-action',
-                header: ({ table }: { table: Table<IUser> }) => <AdministrationTableHeadSelectAction table={table}/>,
-                cell: (info) => info.getValue(),
+                header: ({ table }) => {
+                    const isChecked = table.getIsAllPageRowsSelected();
+                    const isIndeterminate= table.getIsAllPageRowsSelected()
+                        ? table.getIsSomePageRowsSelected()
+                        : table.getIsSomeRowsSelected();
+
+                    const onSelect = () => {
+                        const isIndeterminate = table.getIsSomePageRowsSelected();
+                        const state = isChecked || isIndeterminate;
+                        table.toggleAllPageRowsSelected(!state);
+                    };
+
+                    const onDelete = () => {
+                        const rows = table.getSelectedRowModel().rows;
+                        const usersToDelete = rows.map(r => r.original);
+                        setUsersToDelete(usersToDelete);
+                    };
+
+                    return (
+                        <AdministrationTableSelectAction
+                            isChecked={isChecked}
+                            isIndeterminate={isIndeterminate}
+                            disabledDelete={!table.getIsSomeRowsSelected()}
+                            onSelect={onSelect}
+                            onDelete={onDelete}
+                        />
+                    );
+                },
+                cell: (info: CellContext<IUser, unknown>) => {
+                    const { table, row } = info;
+
+                    const onSelect = () => {
+                        row.toggleSelected(!row.getIsSelected());
+                    };
+
+                    const onDelete = () => {
+                        const rows = table.getSelectedRowModel().rows;
+                        const usersToDelete = rows.map(r => r.original);
+                        setUsersToDelete(usersToDelete);
+                    };
+
+                    return (
+                        <Stack
+                            sx={({ spacing }) => ({
+                                padding: spacing(0, 2.5)
+                            })}
+                        >
+                            <AdministrationTableSelectAction
+                                disabledSelect={!row.getCanSelect()}
+                                isChecked={row.getIsSelected()}
+                                isIndeterminate={row.getIsSomeSelected()}
+                                onSelect={onSelect}
+                                onDelete={onDelete}
+                            />
+                        </Stack>
+                    );
+                },
                 size: 86,
                 enableSorting: false,
             },
@@ -195,14 +250,10 @@ export const AdministrationTable = observer(() => {
                         color,
                     };
                 }}
-                // initialState={{
-                //     sorting: [
-                //         {
-                //             id: 'status',
-                //             desc: false,
-                //         }
-                //     ]
-                // }}
+            />
+            <ConfirmDeleteDialog
+                usersToDelete={usersToDelete}
+                onClose={() => setUsersToDelete([])}
             />
         </Stack>
     );

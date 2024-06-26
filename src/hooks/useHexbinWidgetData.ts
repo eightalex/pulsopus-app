@@ -12,7 +12,7 @@ export const useHexbinWidgetData = <TData>(data: IHexbinWidgetProps<TData>["data
 		.sort((p, n) => Number(n.value) - Number(p.value))
 		.map(({ data, value }) => {
 			return {
-				fill: getColorByActivity(value || 0),
+				fill: getColorByActivity(Math.floor(value) || 0),
 				value,
 				data,
 			};

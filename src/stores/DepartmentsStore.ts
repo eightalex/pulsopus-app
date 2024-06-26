@@ -80,7 +80,7 @@ export class DepartmentsStore extends BaseStore implements IDepartmentsStore {
 			type: 'department',
 			keys: {
 				value: 'id',
-				label: 'value',
+				label: 'label',
 			}
 		})
 			.sort((p, n) => this.sortComparator(p.label, n.label));
@@ -144,12 +144,14 @@ export class DepartmentsStore extends BaseStore implements IDepartmentsStore {
 		const cA = Math.max(Number(currentDepartmentActivity), 1);
 		const pA = Math.max(Number(prevDepartmentActivity), 1);
 		const diffAbsolute = cA / pA;
-		const trend = cA >= pA
+		let trend = cA >= pA
 			? (diffAbsolute - 1) * 100
 			: (1 - diffAbsolute) * -100;
+		if(!prevDepartmentActivity) trend = 100;
+		if(!currentDepartmentActivity) trend = 0;
 		return {
-			currentDepartmentActivity: cA,
-			prevDepartmentActivity: pA,
+			currentDepartmentActivity: currentDepartmentActivity,
+			prevDepartmentActivity: prevDepartmentActivity,
 			currentCompanyActivity: companyActivity,
 			prevCompanyActivity: prevCompanyActivity,
 			rate: !(currentDepartmentActivity && companyActivity) ? 0 : (currentDepartmentActivity/ companyActivity) * 100,

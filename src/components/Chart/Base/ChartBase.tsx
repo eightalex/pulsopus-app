@@ -61,7 +61,7 @@ export const ChartBase: FC<IChartBaseProps> = (props) => {
 	const [yMin, yMax] = d3.extent(data, (d) => d.y);
 	const yScale = useMemo(() => {
 		const dMax = maxYValue || Math.min(Math.floor(Number(yMax || 100) * 1.2), 100);
-		const dMin = Math.min(Number(yMin), minYValue);
+		const dMin = Math.min(Number(yMin || 0), minYValue);
 		return d3
 			.scaleLinear()
 			.domain([dMin, dMax])

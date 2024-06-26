@@ -1,0 +1,1 @@
+export { AdministrationTableSelectAction } from './AdministrationTableSelectAction.tsx';

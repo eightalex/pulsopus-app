@@ -5,8 +5,7 @@ import { IUser } from "@/interfaces";
 
 export const ROLES_SEPARATOR = '/';
 
-export const calcMaxColSize = (size = 0, min = 190, max = 250) => {
-    const spacing = 4;
+export const calcMaxColSize = (size = 0, min = 190, max = 250, spacing = 4) => {
     return Math.max(min, Math.min(size + spacing, max));
 };
 
