@@ -177,6 +177,7 @@ export class UsersStore extends BaseStore implements IUsersStore {
 				requestId,
 				resolve
 			);
+			this.usersMap.delete(id);
 			await this.getUser(id);
 		} catch (err) {
 			console.error(err);
