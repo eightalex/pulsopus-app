@@ -1,32 +1,33 @@
-import { DurationInputArg2 } from 'moment';
 import { IAutocompleteOption } from '@/components/Autocomplete';
-import { ICalendarRange } from '@/components/CalendarRangePicker';
-import { IChartDataPoint } from '@/components/Chart';
-import { IGenerateActivityData } from '@/helpers/generateActivityData';
-import { IDepartment } from '@/interfaces/IDepartment';
-import { IUser } from '@/interfaces/IUser';
+import { IActivity, ICalendarRangeBase, IDepartment, IUser } from '@/interfaces';
 
-export interface IUserDiagramStore {
+export interface IUserDiagramChartData {
+	activity: IActivity[];
+	trend: number;
+	rate: number;
+	currentRateValue: number;
+	prevRateValue: number;
+	title: string;
+	subtitles: string[];
+}
+
+export interface IUserDiagramStore extends ICalendarRangeBase {
+	targetId?: IUser["id"];
 	user: IUser | null;
-	calendarRange: ICalendarRange;
 	isCompare: boolean;
 	compareValue: IUser | IDepartment | null;
 	compareOption: IAutocompleteOption | null;
-	compareAutocompleteOptions: IAutocompleteOption[];
 	//
-	chartData: IChartDataPoint[][];
-	compareActivityData: IGenerateActivityData;
-	userActivityData: IGenerateActivityData;
+	compareAutocompleteOptions: IAutocompleteOption[];
+	chartData: IUserDiagramChartData[];
 	//
 	isLoadingMount: boolean;
 	isLoading: boolean;
 	//
 	onToggleCompare: () => void;
 	setCompareValueByOption: (option?: IAutocompleteOption) => void;
-	setCalendarRange: (range: ICalendarRange) => void;
 	setUser: (user: IUser | null) => void;
 	mountStore: (userId?: IUser['id']) => void;
 	unmountStore: () => void;
-	getRangeDifference: () => { type: DurationInputArg2, diff: number };
 	setCompareValue: (compareValue: IUser | IDepartment | null) => void;
 }

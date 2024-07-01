@@ -1,148 +1,136 @@
 import Stack from "@mui/material/Stack";
-import { ColumnDef, TableMeta } from '@tanstack/react-table';
+import { CellContext, ColumnDef, TableMeta } from '@tanstack/react-table';
 import { observer } from "mobx-react";
-import React, { HTMLProps, useMemo, useRef } from 'react';
+import moment from "moment";
+import { useMemo, useRef, useState } from 'react';
 
-import Table, { COLORS, ETableColumnType, ETableFilterVariant, ROW_SELECT_COL_KEY, TTable } from "@/components/Table";
+import Table, { COLORS, ETableFilterVariant, TTable } from "@/components/Table";
 import { TableSelect } from "@/components/Table/TableSelect/TableSelect.tsx";
-import { EUserRole, EUserStatus } from "@/constants/EUser.ts";
+import { EUserRole, EUserStatus, EUserStatusPendingResolve } from "@/constants/EUser.ts";
 import { useStores } from "@/hooks";
 import { IUser } from "@/interfaces";
 
-import { filterRolesFn, filterStatusFn, sortStatusFn } from "./col.helper.tsx";
-
-function IndeterminateCheckbox({
-                                   indeterminate,
-                                   className = '',
-                                   ...rest
-                               }: { indeterminate?: boolean } & HTMLProps<HTMLInputElement>) {
-    const ref = React.useRef<HTMLInputElement>(null!);
-
-    React.useEffect(() => {
-        if (typeof indeterminate === 'boolean') {
-            ref.current.indeterminate = !rest.checked && indeterminate;
-        }
-    }, [ref, indeterminate]);
-
-    return (
-        <input
-            type="checkbox"
-            ref={ref}
-            className={className + ' cursor-pointer'}
-            {...rest}
-        />
-    );
-}
+import { calcMaxColSize, filterDepartmentFn, filterStatusFn, sortStatusFn } from "./col.helper.tsx";
+import { AdministrationTableSelectAction } from "./components/AdministrationTableSelectAction";
+import { ConfirmDeleteDialog } from "./components/ConfirmDialog";
 
 export const AdministrationTable = observer(() => {
     const {
         rootStore: {
             usersStore: {
-                users: data,
-                setUserStatusById,
-                usersStatuses,
-                usersRoles,
+                setUserAccessRequestDecision,
+                setUserRoleById,
             },
             authStore: {
-                isAdmin,
                 user: currentUser,
             },
+            administrationStore: {
+                users: data,
+                globalFilter,
+            }
         }
     } = useStores();
     const tableRef = useRef<TTable<IUser>>();
     const tableDataRef = useRef<IUser[]>();
+    const [usersToDelete, setUsersToDelete] = useState<IUser[]>([]);
 
+    const maxTitleSize = useMemo(() => {
+        const maxTitleLength = data.reduce((acc, { username }) => {
+            const unLength = username.length;
+            return unLength > acc ? unLength : acc;
+        }, 0);
+        return calcMaxColSize(maxTitleLength, 190, 240, 10);
+    }, [data]);
 
     const columns = useMemo<ColumnDef<IUser>[]>(() => {
-        const base = [
+        return [
             {
                 accessorKey: 'username',
                 header: 'Title',
-                cell: info => info.getValue(),
-                size: 230,
+                cell: (info: CellContext<IUser, unknown>) => info.getValue(),
+                size: maxTitleSize,
             },
             {
                 accessorKey: 'department',
                 header: 'Department',
-                accessorFn: (row) => row.department.label,
-                cell: info => info.getValue(),
-                size: 180,
+                accessorFn: (row: IUser) => row.department?.label,
+                cell: (info: CellContext<IUser, unknown>) => info.getValue(),
+                size: 168,
                 meta: {
                     filterVariant: ETableFilterVariant.SELECT,
                 },
+                filterFn: filterDepartmentFn,
             },
             {
                 header: 'Date',
-                cell: () => '25.07.2023',
-                size: 140,
+                accessorFn: (row: IUser) => row.createdAt,
+                cell: (info: CellContext<IUser, unknown>) => moment(Number(info.getValue())).format('DD.MM.YYYY'),
+                size: 100,
             },
             {
                 accessorKey: 'role',
                 header: 'Role',
-                cell: info => {
+                cell: (info: CellContext<IUser, unknown>) => {
                     const { getValue, table: infoTable, row, column } = info;
+                    const user = row.original;
+                    const isAdmin = user.isAdmin;
                     const initialValue = getValue() as string;
-                    const opts = usersRoles.reduce((acc, s) => {
-                        if(!s.canSetted) return acc;
-                        return [...acc, s.value];
-                    }, [] as string[]);
+                    const opts = Object.values(EUserRole);
 
                     const meta = (infoTable.options.meta) as TableMeta<IUser>;
-                    const rowUserId = row.original.id;
+                    const rowUserId = user.id;
 
                     const loading = meta.getLoading(row.index, column.id);
-
+                    const disabled = Boolean(currentUser?.id === rowUserId || !currentUser?.isAdmin || isAdmin);
                     const onChange = async (newValue?: string) => {
-                        if(!newValue) return;
-
-                        meta.setLoading(row.index, column.id);
-                        meta.updateData(row.index, column.id, newValue);
+                        if (!newValue) return;
                         try {
+                            meta.setLoading(row.index, column.id);
                             await setUserRoleById(rowUserId, EUserRole[newValue as keyof typeof EUserRole]);
+                            meta.updateData(row.index, column.id, newValue);
                         } finally {
                             meta.setLoading(row.index, column.id, false);
                         }
                     };
 
-
                     return (
                         <TableSelect
                             loading={loading}
-                            disabled={currentUser?.id === rowUserId || !isAdmin}
+                            disabled={disabled}
                             value={initialValue}
                             onChange={(v) => onChange(v as string)}
                             options={opts}
                         />
                     );
                 },
-                filterFn: filterRolesFn,
                 meta: {
                     filterVariant: ETableFilterVariant.SELECT,
                 },
+                size: 120,
             },
             {
                 accessorKey: 'status',
                 header: 'Status',
-                cell: (info) => {
+                cell: (info: CellContext<IUser, unknown>) => {
                     const { getValue, table: infoTable, row, column } = info;
                     const initialValue = getValue() as string;
-                    const opts = usersStatuses.reduce((acc, s) => {
-                        if(!s.canSetted) return acc;
-                        return [...acc, s.value];
-                    }, [] as string[]);
+                    const user = row.original;
+                    const isPending = user.status === EUserStatus.PENDING;
+                    const opts = Object.values(EUserStatusPendingResolve);
 
                     const meta = (infoTable.options.meta) as TableMeta<IUser>;
-                    const rowUserId = row.original.id;
 
                     const loading = meta.getLoading(row.index, column.id);
 
-                    const onChange = async (newValue?: string) => {
-                        if(!newValue) return;
-
-                        meta.setLoading(row.index, column.id);
-                        meta.updateData(row.index, column.id, newValue);
+                    const onChange = async (value?: EUserStatusPendingResolve) => {
+                        if (!value) return;
                         try {
-                            await setUserStatusById(rowUserId, EUserStatus[newValue as keyof typeof EUserStatus]);
+                            meta.setLoading(row.index, column.id);
+                            await setUserAccessRequestDecision(user.id, user.accessRequestId, value);
+                            const nextValue = EUserStatusPendingResolve.ACCEPT
+                                ? EUserStatus.ACTIVE
+                                : EUserStatus.INACTIVE;
+                            meta.updateData(row.index, column.id, nextValue);
                         } finally {
                             meta.setLoading(row.index, column.id, false);
                         }
@@ -151,9 +139,9 @@ export const AdministrationTable = observer(() => {
                     return (
                         <TableSelect
                             loading={loading}
-                            disabled={currentUser?.id === rowUserId || !isAdmin}
+                            disabled={!isPending}
                             value={initialValue}
-                            onChange={(v) => onChange(v as string)}
+                            onChange={(v) => onChange(v as EUserStatusPendingResolve)}
                             options={opts}
                         />
                     );
@@ -163,23 +151,83 @@ export const AdministrationTable = observer(() => {
                 },
                 filterFn: filterStatusFn,
                 sortingFn: sortStatusFn,
+                size: 120,
+            },
+            {
+                id: 'row-select-action',
+                accessorKey: 'row-select-action',
+                header: ({ table }) => {
+                    const isChecked = table.getIsAllPageRowsSelected();
+                    const isIndeterminate = table.getIsAllPageRowsSelected()
+                        ? table.getIsSomePageRowsSelected()
+                        : table.getIsSomeRowsSelected();
+
+                    const onSelect = () => {
+                        const isIndeterminate = table.getIsSomePageRowsSelected();
+                        const state = isChecked || isIndeterminate;
+                        table.toggleAllPageRowsSelected(!state);
+                    };
+
+                    const onDelete = () => {
+                        const rows = table.getSelectedRowModel().rows;
+                        const usersToDelete = rows.map(r => r.original);
+                        setUsersToDelete(usersToDelete);
+                    };
+
+                    return (
+                        <AdministrationTableSelectAction
+                            isChecked={isChecked}
+                            isIndeterminate={isIndeterminate}
+                            disabledDelete={!table.getIsSomeRowsSelected()}
+                            onSelect={onSelect}
+                            onDelete={onDelete}
+                        />
+                    );
+                },
+                cell: (info: CellContext<IUser, unknown>) => {
+                    const { table, row } = info;
+
+                    const onSelect = () => {
+                        row.toggleSelected(!row.getIsSelected());
+                    };
+
+                    const onDelete = () => {
+                        const rows = table.getSelectedRowModel().rows;
+                        const usersToDelete = rows.map(r => r.original);
+                        setUsersToDelete([...new Set([...usersToDelete, row.original])]);
+                    };
+
+                    const disabledSelect = !row.getCanSelect();
+                    const disabledDelete = disabledSelect || row.original.id === currentUser?.id;
+
+                    return (
+                        <Stack
+                            sx={({ spacing }) => ({
+                                padding: spacing(0, 2.5)
+                            })}
+                        >
+                            <AdministrationTableSelectAction
+                                disabledSelect={!row.getCanSelect()}
+                                disabledDelete={disabledDelete}
+                                isChecked={row.getIsSelected()}
+                                isIndeterminate={row.getIsSomeSelected()}
+                                onSelect={onSelect}
+                                onDelete={onDelete}
+                            />
+                        </Stack>
+                    );
+                },
+                size: 72,
+                enableSorting: false,
             },
         ];
-        if(isAdmin) {
-            base.push( {
-                accessorKey: ROW_SELECT_COL_KEY,
-                meta: {
-                    type: ETableColumnType.ROW_SELECT
-                }
-            });
-        }
-        return base;
-    }, [isAdmin, currentUser, setUserStatusById]);
+    }, [maxTitleSize, currentUser, setUserAccessRequestDecision, setUserRoleById]);
 
     return (
         <Stack
             direction='row'
-            maxWidth='1000px'
+            // maxWidth='1000px'
+            maxWidth='1200px'
             width='100%'
             flexGrow={1}
             overflow='hidden'
@@ -189,23 +237,25 @@ export const AdministrationTable = observer(() => {
                     tableRef.current = t;
                     tableDataRef.current = d;
                 }}
-                data={[...data, ...data, ...data]}
+                globalFilter={globalFilter}
+                data={data}
                 columns={columns}
                 numCol
                 showPagination
                 rowStyleOverrides={(row) => {
+                    const isPending = row.original.status === EUserStatus.PENDING;
+                    const color = isPending ? COLORS.ACTIVE : 'unset';
                     return {
-                        color: row.original?.isPending ? COLORS.ACTIVE : 'unset',
+                        color,
                     };
                 }}
-                // initialState={{
-                //     sorting: [
-                //         {
-                //             id: 'status',
-                //             desc: false,
-                //         }
-                //     ]
-                // }}
+                tableOptions={{
+                    enableRowSelection: row => row.original.id !== currentUser?.id
+                }}
+            />
+            <ConfirmDeleteDialog
+                usersToDelete={usersToDelete}
+                onClose={() => setUsersToDelete([])}
             />
         </Stack>
     );

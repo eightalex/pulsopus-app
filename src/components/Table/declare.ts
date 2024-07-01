@@ -1,5 +1,9 @@
+import { FilterFn } from "@tanstack/react-table";
 import { RowData } from "@tanstack/table-core";
 import { ETableColumnType, ETableFilterVariant } from "@/components/Table/constants.ts";
+
+class RankingInfo {
+}
 
 declare module '@tanstack/react-table' {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -15,5 +19,12 @@ declare module '@tanstack/react-table' {
     interface ColumnMeta<TData extends RowData, TValue> {
         filterVariant?: ETableFilterVariant;
         type?: ETableColumnType;
+    }
+
+    interface FilterFns {
+        fuzzy: FilterFn<unknown>
+    }
+    interface FilterMeta {
+        itemRank: RankingInfo
     }
 }

@@ -1,7 +1,8 @@
+import { FC, memo } from 'react';
+import { ThreeDots } from 'react-loader-spinner';
+
 import { ILoader } from '@/components/Loader/types';
 import { extendPalette } from '@/theme';
-import React, { FC, memo } from 'react';
-import { ThreeDots } from 'react-loader-spinner';
 
 const LineLoader: FC<ILoader> = (props) => {
 	return (

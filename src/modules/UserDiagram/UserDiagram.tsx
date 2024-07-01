@@ -25,7 +25,7 @@ export const UserDiagram = observer(() => {
 		return () => {
 			unmountStore();
 		};
-	}, [mountStore, unmountStore]);
+	}, [userId, mountStore, unmountStore]);
 
 	return (
 		<Stack flexGrow={1}>

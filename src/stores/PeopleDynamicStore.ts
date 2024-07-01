@@ -1,17 +1,24 @@
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import moment from 'moment';
-import { ICalendarRange } from '@/components/CalendarRangePicker';
 import { EPeopleDynamicView } from '@/constants/EPeopleDynamic';
-import { generateActivityData } from '@/helpers/generateActivityData';
-import { IDepartment, IPeopleDynamicStore, IRootStore, IUser } from '@/interfaces';
-import { IActivity } from "@/interfaces/IActivity.ts";
-import { BaseStore } from './BaseStore';
+import { getColorByActivity } from "@/helpers/getColorByActivity.ts";
+import {
+	IComputedDepartmentActivity,
+	IDepartment,
+	IPeopleDynamicHexbinData,
+	IPeopleDynamicStore,
+	IPeopleDynamicTableData,
+	IRootStore,
+	IUser
+} from '@/interfaces';
+import { CalendarRangeBase } from "@/stores/CalendarRangeBase.ts";
+import { DateTime } from "@/utils";
 
-export class PeopleDynamicStore extends BaseStore implements IPeopleDynamicStore {
+export class PeopleDynamicStore extends CalendarRangeBase implements IPeopleDynamicStore {
 	public view: EPeopleDynamicView = EPeopleDynamicView.CHART;
-	public calendarRange: ICalendarRange;
 	public showAbsoluteData: boolean = false;
 	public department: IDepartment | null = null;
+	private prevDepartment: IDepartment | null = null;
 
 	private asyncStatuses = {
 		mounting: this.createKey('mounting'),
@@ -21,19 +28,18 @@ export class PeopleDynamicStore extends BaseStore implements IPeopleDynamicStore
 		super(rootStore);
 		makeObservable(this, {
 			view: observable,
-			calendarRange: observable,
 			showAbsoluteData: observable,
 			department: observable,
 			//
-			usersForRender: computed,
+			hexbinUsersData: computed,
 			departmentActivityData: computed,
 			absoluteActivityData: computed,
 			// loading
 			isLoading: computed,
+			isLoadingMounting: computed,
 			// actions
 			onToggleView: action.bound,
 			onToggleShowAbsoluteData: action.bound,
-			setCalendarRange: action.bound,
 			setDepartment: action.bound,
 			//
 			mountStore: action.bound,
@@ -41,91 +47,140 @@ export class PeopleDynamicStore extends BaseStore implements IPeopleDynamicStore
 		});
 	}
 
+	public get isLoadingMounting() {
+		return this.getAsyncStatus(this.asyncStatuses.mounting).loading;
+	}
+
 	public get isLoading() {
 		const { isLoadingUsers } = this.rootStore.usersStore;
 		const { isLoadingDepartments } = this.rootStore.departmentsStore;
-		return isLoadingUsers || isLoadingDepartments;
+		return this.isLoadingMounting || isLoadingUsers || isLoadingDepartments;
 	}
 
-	public get usersForRender(): IUser[] {
-		if(!this.department?.id) return this.rootStore.usersStore.users;
-		const { from, to } = this.calendarRange || { from: moment().startOf('day'), to: moment().endOf('day') };
-		const users = this.rootStore.usersStore.users || [];
-		const us = [...users].filter((u) => {
-			if(!this.department || this.department.value === 'COMPANY') return true;
-			return u.department.value === this.department.value;
+	private get usersForRenderByDepartment(): Array<{
+		companyActivity?: number,
+		prevCompanyActivity?: number,
+		subActivity?: number,
+		activityDiff?: number,
+		rate?: number,
+		subRate?: number,
+		trend?: number,
+		trendCompany?: number,
+		user: IUser
+	}> {
+		const users = this.department?.users || [];
+		if(!users) return [];
+		const { from, to } = this.calendarRange;
+		const diff = Math.abs(moment(from).diff(to, 'day'));
+		const trendFrom = moment(from)
+			.startOf('day')
+			.subtract(diff, 'day')
+			.valueOf();
+		const trendTo = from;
+		const companyActivity = this.rootStore.departmentsStore.getCompanyActivity(from, to);
+		const prevCompanyActivity = this.rootStore.departmentsStore.getCompanyActivity(trendFrom, trendTo);
+		return users.map((user) => {
+			let userCurrentPeriodActivity = 0;
+			let userBeforePeriodActivity = 0;
+
+			for (const activity of (user.activity || [])) {
+				const { date, value } = activity;
+				const isIncludeCurrentPeriod = DateTime.isBetweenOrEquals(date, from, to);
+				const isIncludeBeforePeriod = DateTime.isBetweenOrEquals(date, trendFrom, trendTo);
+
+				if(isIncludeCurrentPeriod) {
+					userCurrentPeriodActivity += Number(value);
+				}
+				if(isIncludeBeforePeriod) {
+					userBeforePeriodActivity += Number(value);
+				}
+			}
+
+			const res = {
+				companyActivity,
+				prevCompanyActivity,
+				activity: undefined,
+				prevActivity: undefined,
+				activityDiff: undefined,
+				rate: undefined,
+				prevRate: undefined,
+				trend: undefined,
+				trendCompany: undefined,
+				user,
+			} as {
+				companyActivity: number;
+				prevCompanyActivity: number;
+				activity?: number;
+				prevActivity?: number;
+				activityDiff?: number;
+				rate?: number;
+				prevRate?: number;
+				trend?: number;
+				trendCompany?: number;
+				user: IUser;
+			};
+
+			if(userCurrentPeriodActivity && companyActivity) {
+				res.activity = userCurrentPeriodActivity;
+				res.rate = Number((userCurrentPeriodActivity / companyActivity) * 100);
+
+				res.prevActivity = userBeforePeriodActivity;
+				res.prevRate = Number((userBeforePeriodActivity / prevCompanyActivity) * 100);
+
+				res.trendCompany = res.rate - res.prevRate;
+				res.activityDiff = res.activity - res.prevActivity;
+			}
+
+			if(userCurrentPeriodActivity && userBeforePeriodActivity) {
+				const cA = Math.max(Number(res.activity), 1);
+				const pA = Math.max(Number(res.prevActivity), 1);
+				const diffAbsolute = cA / pA;
+				res.trend = userCurrentPeriodActivity >= userBeforePeriodActivity
+					? diffAbsolute * 100
+					: (1 - diffAbsolute) * -100;
+			}
+			return res;
 		});
-		return us
-			.map((user) => {
-				const value = user.activity.reduce((acc, { date, value: strR }) => {
-					const d = Number(date);
-					const isBetweenOrEq = moment(d).isBetween(from, to, null, '[]');
-					if (!isBetweenOrEq) return acc;
-					if(!strR) return acc;
-					const r = Number(strR);
-					if(!r) return 1;
-					acc = (acc + r) / 2;
-					return acc;
-				}, 0);
-				return {
-					...user,
-					activity: [
-						{ date: moment(to).valueOf(), value },
-					]
-				};
-			});
 	}
 
-	public get absoluteDtaActivities(): IActivity[] {
-		const { from, to } = this.calendarRange || { from: moment().startOf('day'), to: moment().endOf('day') };
-		//TODO: refactor next find line
-		const department = this.rootStore.departmentsStore.departments.find(({ name }) => name === 'COMPANY');
-		const activities = department?.activity || [];
-		return activities
-			.reduce((acc, { date, value }) => {
-				const d = Number(date);
-				const isBetweenOrEq = moment(d).isBetween(from, to, null, '[]');
-				if (!isBetweenOrEq) return acc;
-				return [...acc, { date, value: Number(value) }];
-			}, [] as IActivity[]);
+	public get hexbinUsersData(): IPeopleDynamicHexbinData {
+		return this.usersForRenderByDepartment.map(({ rate, user }) => ({
+			value: rate || 0,
+			data: user,
+		}));
 	}
 
-	public get departmentActivityData() {
-		return generateActivityData({
-			// activities: this.department?.activity,
-			activities: this.usersForRender.flatMap(u => u.activity),
-			calendarRange: this.calendarRange
-		});
+	public get tableUsersData(): IPeopleDynamicTableData[] {
+		return this.usersForRenderByDepartment.map(({ rate = 0, trend = 0, user }) => ({
+			rate,
+			trend,
+			fill: getColorByActivity(rate, { zero: 'unset' }),
+			user,
+		}));
 	}
 
-	public get absoluteActivityData() {
-		return [];
-		// TODO: refactor stating/ 0 - ID for all company;
-		const data = this.rootStore.departmentsStore.departmentsMap.get(0);
-		if(!data?.activity) {
-			throw new Error('Unexpected exception! No all company activity data!');
-		}
-		const { activity } = data;
-		if(!this.calendarRange) {
-			return [];
-		}
-		[...activity]
-			.sort((a, b) => b.date - a.date)
-			.forEach(({ date, rate }) => {
-			const d = moment(date).format('DD.MM.YYYY');
-		});
-		return generateActivityData({
-			activities: this.absoluteDtaActivities,
-			calendarRange: this.calendarRange
-		});
+	public get departmentActivityData(): IComputedDepartmentActivity {
+		const { from, to } = this.calendarRange;
+		const depValue = this.department?.value || 'COMPANY';
+		return this.rootStore.departmentsStore
+			.getDepartmentActivityDataByValue(depValue, from, to);
+	}
+
+	public get absoluteActivityData(): IComputedDepartmentActivity {
+		const { from, to } = this.calendarRange;
+		return this.rootStore.departmentsStore
+			.getDepartmentActivityDataByValue('COMPANY', from, to);
 	}
 
 	public onToggleView() {
-		const setedView = this.view === EPeopleDynamicView.CHART
-			? EPeopleDynamicView.TABLE
-			: EPeopleDynamicView.CHART;
 		runInAction(() => {
-			this.view = setedView;
+			if(this.view === EPeopleDynamicView.CHART) {
+				this.view = EPeopleDynamicView.TABLE;
+				this.setDepartment(this.rootStore.departmentsStore.departments[0]);
+				return;
+			}
+			this.view = EPeopleDynamicView.CHART;
+			this.setDepartment(this.prevDepartment);
 		});
 	}
 
@@ -135,21 +190,16 @@ export class PeopleDynamicStore extends BaseStore implements IPeopleDynamicStore
 		});
 	}
 
-	public setCalendarRange(range: ICalendarRange) {
-		runInAction(() => {
-			this.calendarRange = range;
-		});
-	}
-
 	public setDepartment(department: IDepartment | null) {
 		runInAction(() => {
-			this.department = department || this.rootStore.departmentsStore.departments[0];
+			this.prevDepartment = this.department || department;
+			this.department = department || this.prevDepartment || this.rootStore.departmentsStore.departments[0];
 		});
 	}
 
 	public async mountStore() {
 		runInAction(() => {
-			this.department = this.department || this.rootStore.departmentsStore.departments[0];
+			this.setDepartment(this.department || this.rootStore.departmentsStore.departments[0]);
 		});
 	}
 

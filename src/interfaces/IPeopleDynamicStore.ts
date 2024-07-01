@@ -1,26 +1,31 @@
-import { ICalendarRange } from '@/components/CalendarRangePicker';
+import { IHexbinWidgetData } from "@/components/HexbinWidget";
 import { EPeopleDynamicView } from '@/constants/EPeopleDynamic';
-import { IGenerateActivityData } from '@/helpers/generateActivityData';
-import { IActivity } from "@/interfaces/IActivity.ts";
-import { IDepartment } from '@/interfaces/IDepartment';
-import { IUser } from '@/interfaces/IUser';
+import { ICalendarRangeBase, IComputedDepartmentActivity, IDepartment, IUser } from "@/interfaces";
 
-export interface IPeopleDynamicStore {
+export interface IPeopleDynamicHexbinData extends Array<IHexbinWidgetData<IUser>> {}
+
+export interface IPeopleDynamicTableData {
+	rate: number;
+	trend: number;
+	fill: string;
+	user: IUser;
+}
+
+export interface IPeopleDynamicStore extends ICalendarRangeBase {
 	view: EPeopleDynamicView;
-	calendarRange: ICalendarRange;
 	showAbsoluteData: boolean;
 	department: IDepartment | null;
 	//
-	usersForRender: IUser[];
-	absoluteDtaActivities: IActivity[];
-	departmentActivityData: IGenerateActivityData;
-	absoluteActivityData: IGenerateActivityData;
+	hexbinUsersData: IPeopleDynamicHexbinData;
+	tableUsersData: IPeopleDynamicTableData[];
+	departmentActivityData: IComputedDepartmentActivity;
+	absoluteActivityData: IComputedDepartmentActivity;
 	//
 	isLoading: boolean;
+	isLoadingMounting: boolean;
 	//
 	onToggleView: (view?: EPeopleDynamicView) => void;
 	onToggleShowAbsoluteData: () => void;
-	setCalendarRange: (range: ICalendarRange) => void;
 	setDepartment: (department: IDepartment | null) => void;
 	//
 	mountStore: () => void;

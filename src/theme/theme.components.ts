@@ -47,6 +47,10 @@ export const components: ThemeOptions['components'] = {
 				alignItems: 'center',
 				justifyContent: 'center',
 			},
+			colorInherit: {
+				color: 'inherit',
+				stroke: 'inherit',
+			},
 			colorPrimary: {
 				color: extendPalette.iconColorPrimary,
 			},
@@ -328,6 +332,7 @@ export const components: ThemeOptions['components'] = {
 	MuiIconButton: {
 		defaultProps: {
 			disableRipple: true,
+			variant: 'outlined',
 		},
 		styleOverrides: {
 			root: {
@@ -338,24 +343,44 @@ export const components: ThemeOptions['components'] = {
 				justifyContent: 'center',
 				borderRadius: 4,
 				backgroundColor: extendPalette.iconButtonDefaultSurfaceDefault,
-				border: `1px solid ${extendPalette.iconButtonDefaultBorderDefault}`,
-				outline: 'none',
-				transition: 'opacity .2s ease',
-				['&:hover']: {
-					borderColor: extendPalette.iconButtonDefaultBorderHover,
-				},
-				['&:active']: {
-					backgroundColor: extendPalette.iconButtonDefaultSurfaceHover,
-					borderColor: extendPalette.iconButtonDefaultBorderHover,
-				},
-				['&:focus']: {
-					outline: `1px solid ${extendPalette.iconButtonDefaultSurfacePressed}`,
-				},
 				'&.Mui-disabled': {
 					opacity: 0.5,
 				},
 			},
 		},
+		variants: [
+			{
+				props: { variant: 'outlined' },
+				style: {
+					border: `1px solid ${extendPalette.iconButtonDefaultBorderDefault}`,
+					outline: 'none',
+					transition: 'opacity .2s ease',
+					['&:hover']: {
+						borderColor: extendPalette.iconButtonDefaultBorderHover,
+					},
+					['&:active']: {
+						backgroundColor: extendPalette.iconButtonDefaultSurfaceHover,
+						borderColor: extendPalette.iconButtonDefaultBorderHover,
+					},
+					['&:focus']: {
+						outline: `1px solid ${extendPalette.iconButtonDefaultSurfacePressed}`,
+					},
+				},
+			},
+			{
+				props: { variant: 'text' },
+				style: {
+					height: 'auto',
+					border: 'none',
+				},
+			},
+			{
+				props: { size: 'small' },
+				style: {
+					padding: '0'
+				},
+			},
+		]
 	},
 	MuiFormControlLabel: {
 		defaultProps: {
@@ -608,6 +633,9 @@ export const components: ThemeOptions['components'] = {
 					WebkitTextFillColor: extendPalette.inputOnSurfacePlaceholder,
 					opacity: 1,
 				},
+				'&.Mui-disabled': {
+					WebkitTextFillColor: extendPalette.inputOnSurfacePlaceholder,
+				}
 			},
 			adornedEnd: {
 				right: 10,
@@ -661,9 +689,9 @@ export const components: ThemeOptions['components'] = {
 				'& .MuiOutlinedInput-root': {
 					paddingLeft: 10,
 				},
-				'&:hover': {
+				'&:hover:not(.Mui-disabled))': {
 					backgroundColor: extendPalette.inputSurfaceHover,
-				}
+				},
 			},
 			endAdornment: {
 				'& > button:last-child': {
@@ -676,6 +704,13 @@ export const components: ThemeOptions['components'] = {
 				minWidth: 350,
 				height: 36,
 				right: 'unset',
+				'&.Mui-disabled': {
+					border: `1px solid ${extendPalette.inputBorderDefault}`,
+					'&:hover': {
+						background: 'transparent',
+						border: 'none',
+					}
+				},
 			},
 			paper: {
 				transform: 'translateY(6px)',

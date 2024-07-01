@@ -48,6 +48,8 @@ export interface IChartBaseProps {
 	disableSelect?: boolean;
 	disableTooltip?: boolean;
 	renderTooltip?: (point: IInteractionData<IChartDataPoint>['data']) => ReactNode;
+	minYValue?: number;
+	maxYValue?: number;
 }
 
 interface IExtenderChartBaseProps extends Pick<IChartBaseProps, 'width' | 'height'> {
@@ -60,5 +62,6 @@ export interface ILineChartProps extends IExtenderChartBaseProps {
 export interface IInteractionData<T> {
 	xPos: number;
 	yPos: number;
+	value: number;
 	data?: T;
 }

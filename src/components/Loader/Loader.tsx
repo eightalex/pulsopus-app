@@ -1,62 +1,25 @@
-import { Stack } from '@mui/material';
-import { FC, memo, useMemo } from 'react';
+import { FC, memo } from 'react';
 import { Triangle } from 'react-loader-spinner';
 
-import { ILoader } from '@/components/Loader/types';
-import { extendPalette } from '@/theme';
+import { BASE_COLOR, loaderSizes } from "@/components/Loader/constsants.ts";
+import { LoaderWrapper } from "@/components/Loader/LoaderWrapper.tsx";
 
-const sizes: Record<ILoader['size'], { width: number, height: number }> = {
-	small: {
-		height: 24,
-		width: 24,
-	},
-	medium: {
-		height: 50,
-		width: 50,
-	},
-};
+import { ILoader } from './types.ts';
 
-const Loader: FC<ILoader> = ({ fullSize = false, size = 'medium', ...restProps }) => {
-
-	const wrapperStyled = useMemo(() => {
-		if (fullSize) {
-			return {
-				position: 'absolute',
-				top: 0,
-				left: 0,
-				right: 0,
-				bottom: 0,
-				width: '100%',
-				height: '100%',
-			};
-		}
-
-		return {
-			width: 'auto',
-			height: 'auto',
-		};
-	}, [fullSize]);
+const Loader: FC<ILoader> = (props) => {
+	const { size = 'medium', ...restProps } = props;
 	return (
-		<Stack
-			sx={{
-				...wrapperStyled,
-				alignItems: 'center',
-				justifyContent: 'center',
-				pointerEvents: 'none',
-			}}
-		>
+		<LoaderWrapper {...props}>
 			<Triangle
 				visible
-				height="50"
-				width="50"
-				color={extendPalette.loaderSurfaceDefault}
+				color={BASE_COLOR}
 				ariaLabel="triangle-loading"
 				wrapperStyle={{}}
 				wrapperClass=""
-				{...sizes[size]}
+				{...loaderSizes[size]}
 				{...restProps}
 			/>
-		</Stack>
+		</LoaderWrapper>
 	);
 };
 

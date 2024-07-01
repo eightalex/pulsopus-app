@@ -17,6 +17,7 @@ export const TableHeadCellTitleStyled = styled(
                spacing={1}
         />
 )(({ theme: { spacing } }) => ({
+    position: 'relative',
     boxSizing: 'border-box',
     padding: spacing(3, 2.5),
     alignItems: 'center',
@@ -29,6 +30,8 @@ export const TableHeadCellStyled = styled(
         shouldForwardProp: prop => !['canAction', 'isFiltered'].includes(prop as string)
     }
 )<ITableHeadCellStyledProps>(({ canAction = false, isFiltered = false, theme: { palette } }) => ({
+    position: 'relative',
+    overflowX: 'hidden',
     height: DEFAULT_ROW_HEAD_HEIGHT,
     boxSizing: 'border-box',
     padding: 0,

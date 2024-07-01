@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { ICalendarRange } from '@/components/Calendar';
 import { getActivityRate } from '@/helpers/getActivityRate';
-import { IDepartmentActivity, IUserActivity } from '@/interfaces';
+import { IActivity } from "@/interfaces";
 
 export interface IGenerateActivityData {
 	diff: number,
@@ -9,7 +9,7 @@ export interface IGenerateActivityData {
 	rate: number
 }
 
-type TActivity = { date: number; rate: number } | IUserActivity | IDepartmentActivity;
+type TActivity = { date: number; rate: number } | IActivity;
 
 interface IGenerateActivityDataParams {
 	activities?: TActivity[],

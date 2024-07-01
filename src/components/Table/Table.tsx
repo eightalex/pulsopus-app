@@ -20,6 +20,7 @@ import {
     DEFAULT_COLUMN_MIN_SIZE,
     DEFAULT_COLUMN_SIZE,
 } from "@/components/Table/constants.ts";
+import { fuzzyFilter } from "@/components/Table/fuzzy.helper.ts";
 import { ITableProps } from "@/components/Table/types.ts";
 import { useSkipper } from "@/hooks";
 
@@ -43,6 +44,7 @@ export function Table<Data>(props: ITableProps<Data>) {
         rowStyleOverrides,
         getTable,
         initialState = {},
+        globalFilter: initialGlobalFilter = '',
     } = props;
 
     const containerRef = useRef<HTMLDivElement | null>();
@@ -63,6 +65,7 @@ export function Table<Data>(props: ITableProps<Data>) {
         pageIndex: 0,
         pageSize,
     });
+    const [globalFilter, setGlobalFilter] = useState(initialGlobalFilter);
 
     const cols = useMemo<ColumnDef<Data>[]>(() => {
         let result = [...columns];
@@ -78,12 +81,16 @@ export function Table<Data>(props: ITableProps<Data>) {
     const table = useReactTable({
         columns: cols,
         data,
+        filterFns: {
+            fuzzy: fuzzyFilter
+        },
         state: {
             ...initialState,
             sorting,
             rowSelection,
             columnFilters,
             pagination,
+            globalFilter,
         },
         autoResetPageIndex,
         onStateChange: onChange,
@@ -98,6 +105,8 @@ export function Table<Data>(props: ITableProps<Data>) {
         getFilteredRowModel: getFilteredRowModel(), //client-side filtering
         getFacetedMinMaxValues: getFacetedMinMaxValues(), // generate min/max values for range filter
         getPaginationRowModel: getPaginationRowModel(),
+        onGlobalFilterChange: setGlobalFilter,
+        globalFilterFn: 'fuzzy',
         onPaginationChange: setPagination,
         defaultColumn: {
             size: DEFAULT_COLUMN_SIZE,
@@ -142,11 +151,6 @@ export function Table<Data>(props: ITableProps<Data>) {
         debugTable: true,
         debugHeaders: true,
         debugColumns: true,
-        // isMultiSortEvent: (e) => true, //Make all clicks multi-sort - default requires `shift` key
-        // autoResetPageIndex: false, // turn off page index reset when sorting or filtering - default on/true
-        // enableMultiSort: false, //Don't allow shift key to sort multiple columns - default on/true
-        // enableSorting: false, // - default on/true
-        // enableSortingRemoval: false, //Don't allow - default on/true
     });
 
     const calculatePageSize = useCallback(() => {
@@ -186,6 +190,15 @@ export function Table<Data>(props: ITableProps<Data>) {
     useEffect(() => {
         getTable?.(table, data);
     }, [getTable, table, data]);
+
+    useEffect(() => {
+        skipAutoResetPageIndex();
+        setData(initialData);
+    }, [initialData, skipAutoResetPageIndex]);
+
+    useEffect(() => {
+        setGlobalFilter(initialGlobalFilter);
+    }, [initialGlobalFilter]);
 
     return (
         <Stack

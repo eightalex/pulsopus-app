@@ -1,4 +1,5 @@
 import {
+	IAdministrationStore,
 	IAuthStore,
 	IDepartmentsStore,
 	INotifyStore,
@@ -7,6 +8,7 @@ import {
 	IUsersStore
 } from '@/interfaces';
 import { IRootStore } from '@/interfaces/IRootStore';
+import { AdministrationStore } from "@/stores/AdministrationStore.ts";
 import { AuthStore } from '@/stores/AuthStore';
 import { DepartmentsStore } from '@/stores/DepartmentsStore';
 import { NotifyStore } from '@/stores/NotifyStore';
@@ -25,6 +27,7 @@ export class RootStore implements IRootStore {
 	public readonly departmentsStore: IDepartmentsStore;
 	public readonly userDiagramStore: IUserDiagramStore;
 	public readonly peopleDynamicStore: IPeopleDynamicStore;
+	public readonly administrationStore: IAdministrationStore;
 
 	constructor() {
 		this.routeStore = new RouteStore(this);
@@ -35,6 +38,7 @@ export class RootStore implements IRootStore {
 		this.departmentsStore = new DepartmentsStore(this);
 		this.userDiagramStore = new UserDiagramStore(this);
 		this.peopleDynamicStore = new PeopleDynamicStore(this);
+		this.administrationStore = new AdministrationStore(this);
 	}
 
 }

@@ -6,6 +6,7 @@ export const PeopleDynamicViewWrapperStyled = styled(({ ...props }: StackProps) 
 		spacing={1}
 	/>
 )(({ theme: { breakpoints } }) => ({
+	paddingTop: 6,
 	display: 'flex',
 	flexDirection: 'row',
 	flex: 1,

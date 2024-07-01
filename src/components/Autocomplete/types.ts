@@ -9,8 +9,10 @@ export interface IAutocompleteOption {
 }
 
 export interface IAutocompleteProps {
+	value: IAutocompleteOption;
 	options: IAutocompleteOption[];
 	onChange: (option?: IAutocompleteOption) => void;
 	placeholder?: string;
 	renderGroupHeader?: (params: AutocompleteRenderGroupParams) => JSX.Element;
+	disabled?: boolean;
 }

@@ -37,7 +37,7 @@ export function TableHeadCell(props: ITableHeadCellProps) {
         <TableHeadCellStyled
             scope='col'
             {...restProps}
-            onMouseEnter={() => setRowHovered(true)}
+            onMouseEnter={() => setRowHovered( true)}
             onMouseLeave={() => setRowHovered(false)}
             canAction={!disabledSortView}
             isFiltered={filtered}

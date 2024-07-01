@@ -1,0 +1,1 @@
+export { RateTrendView as default, RateTrendView } from './RateTrendView.tsx';

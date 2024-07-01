@@ -27,4 +27,5 @@ export interface ITableProps<Data> {
     rowStyleOverrides?: ITableBodyProps<Data>["styleOverrides"];
     getTable?: (table: TTable<Data>, data?: Data[]) => void;
     initialState?: Partial<InitialTableState>;
+    globalFilter?: string;
 }

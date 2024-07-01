@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { isEqual, uniqWith } from 'lodash';
 import { FC, Fragment, MouseEvent, MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { AxisBottom, AxisLeft, IChartBaseProps, IChartDataPoint, IInteractionData } from '@/components/Chart';
+import { AxisLeft, IChartBaseProps, IChartDataPoint, IInteractionData } from '@/components/Chart';
 import { ChartCursor } from '@/components/Chart/Base/ChartCursor';
 import { ChartSelectArea } from '@/components/Chart/Base/ChartSelectArea';
 import { TooltipChartLine } from '@/components/Chart/Base/TooltipChartLine';
@@ -32,6 +32,8 @@ export const ChartBase: FC<IChartBaseProps> = (props) => {
 		disableSelect: initDisableSelect,
 		disableTooltip,
 		renderTooltip,
+		minYValue = 0,
+		maxYValue = 100,
 		...restProps
 	} = props;
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
@@ -58,13 +60,13 @@ export const ChartBase: FC<IChartBaseProps> = (props) => {
 	// Y axis
 	const [yMin, yMax] = d3.extent(data, (d) => d.y);
 	const yScale = useMemo(() => {
-		// const dMax = Math.min(Math.floor((yMax || 100) * 1.2), 100);
-		const dMax = Math.floor((yMax || 100) * 1.1);
+		const dMax = maxYValue || Math.min(Math.floor(Number(yMax || 100) * 1.2), 100);
+		const dMin = Math.min(Number(yMin || 0), minYValue);
 		return d3
 			.scaleLinear()
-			.domain([0, dMax])
+			.domain([dMin, dMax])
 			.range([boundsHeight, 0]);
-	}, [boundsHeight, yMax]);
+	}, [boundsHeight, yMin, yMax, minYValue, maxYValue]);
 
 	// X axis
 	const xValues = useMemo(() => data.map(d => d.x), [data]);

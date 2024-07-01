@@ -12,10 +12,20 @@ import { isMatrix } from '@/helpers/isMatrix';
 interface ILineChartInnerProps extends IChartChildrenParams {
     data: ILineChartProps['data'];
     points?: ILineChartProps['data'];
+    chartColors?: string[];
 }
 
 const LineChartInner: FC<ILineChartInnerProps> = memo((props) => {
-    const { xScale, yScale, data: initData = [], points, height, boundsWidth, boundsHeight } = props;
+    const {
+        xScale,
+        yScale,
+        data: initData = [],
+        points,
+        height,
+        boundsWidth,
+        boundsHeight,
+        chartColors = CHART_COLORS,
+    } = props;
     const [hovered, setHovered] = useState<IInteractionData<unknown> | null>(null);
 
     const data = useMemo(() => (isMatrix(initData) ? initData : [initData]) as IChartDataPoint[][], [initData]);
@@ -32,10 +42,10 @@ const LineChartInner: FC<ILineChartInnerProps> = memo((props) => {
             <LineChartItem
                 key={i}
                 path={path}
-                color={CHART_COLORS[i]}
+                color={chartColors[i]}
             />
         );
-    }), [data, lineBuilder]);
+    }), [chartColors, data, lineBuilder]);
 
     const circles = useMemo(() => {
         return data
@@ -43,7 +53,7 @@ const LineChartInner: FC<ILineChartInnerProps> = memo((props) => {
                 return d.map((item, pointIndex) => (
                     <LineChartCircle
                         key={`line-chart-${lineIndex}-${pointIndex}`}
-                        color={CHART_COLORS[lineIndex]}
+                        color={chartColors[lineIndex]}
                         cx={xScale(item.x)}
                         cy={yScale(item.y)}
                         onMouseEnter={() =>
@@ -57,7 +67,7 @@ const LineChartInner: FC<ILineChartInnerProps> = memo((props) => {
                     />
                 ));
             }).flat();
-    }, [data, xScale, yScale]);
+    }, [chartColors, data, xScale, yScale]);
 
     return (
         <g>

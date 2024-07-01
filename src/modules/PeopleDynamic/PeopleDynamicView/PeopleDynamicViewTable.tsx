@@ -1,70 +1,85 @@
 import { Stack } from '@mui/material';
 import { ColumnDef } from "@tanstack/react-table";
-import * as d3 from "d3";
 import { observer } from 'mobx-react';
 import { useMemo } from "react";
 
 import Table, { ETableFilterVariant } from "@/components/Table";
+import { DEFAULT_BLANK_KEY } from "@/components/Table/TableSelect";
 import { CONTENT_ACTION_WIDTH } from "@/constants/size.ts";
-import { useHexbinWidgetData, useStores } from '@/hooks';
-import { IUser } from "@/interfaces";
+import { useStores } from '@/hooks';
+import { ArrowSlimDownIcon, ArrowSlimUpIcon } from "@/icons";
+import { IPeopleDynamicTableData } from "@/interfaces";
 
 export const PeopleDynamicViewTable = observer(() => {
-    const { rootStore: { peopleDynamicStore: { usersForRender } } } = useStores();
-    const data = useHexbinWidgetData(usersForRender);
-    const d = data
-        .flatMap(d => d)
-        .filter(d => !!d)
-        .sort((a, b) => a.data.activity[0].value - b.data.activity[0].value);
+    const { rootStore: { peopleDynamicStore: { tableUsersData: data } } } = useStores();
 
-    const [vMin, vMax] = d3.extent(d, (r) => r.data.activity[0].value);
-    const half = (Number(vMax) - Number(vMin)) / 2;
-
-    const columns = useMemo<ColumnDef<{ fill: string, data: IUser }>[]>(() => [
+    const columns = useMemo<ColumnDef<IPeopleDynamicTableData>[]>(() => [
         {
             header: 'Title',
-            accessorFn: (row) => row.data.username,
+            accessorFn: (row) => row.user.username,
             cell: info => info.getValue(),
             size: 250,
         },
         {
             header: 'Department',
-            accessorFn: (row) => row.data.department.label,
+            accessorFn: (row) => row.user.department?.label,
             cell: info => info.getValue(),
-            size: 240,
+            size: 160,
             meta: {
                 filterVariant: ETableFilterVariant.SELECT,
             },
+            filterFn: (row, columnId, filterValue) => (row.getValue(columnId) || DEFAULT_BLANK_KEY) === filterValue,
         },
         {
-            header: '% activity',
-            accessorFn: (row) => row.data.activity[0].value,
+            header: 'Activity',
+            accessorFn: (row) => row.rate,
             cell: info => {
                 const v = info.getValue();
-                return Math.round(Number(v));
+                return Number(v) ? `${Number(v).toFixed(3)} %` : '';
             },
-            size: 160,
+            size: 98,
         },
         {
             header: 'index',
-            accessorFn: (row) => row.data.activity[0].value,
+            accessorFn: (row) => row.trend,
             cell: info => {
-                const v = Number(info.getValue());
-                return v < half ? '-' : '+';
+                const v = info.getValue();
+                if(!v) return '';
+                const Icon = Number(v) > 0 ? ArrowSlimUpIcon : ArrowSlimDownIcon;
+                return (
+                    <Stack
+                        sx={{
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
+                    >
+                       <Icon
+                           color='inherit'
+                           fontSize='small'
+                           sx={{
+                               stroke: 'inherit'
+                       }}
+                       />
+                    </Stack>
+                );
             },
-            size: 68,
+            enableSorting: false,
+            size: 46,
         },
-    ], [half]);
+    ], []);
 
     return (
         <Stack maxWidth={CONTENT_ACTION_WIDTH}>
-            <Table<{ fill: string, data: IUser }>
-                data={d}
+            <Table<IPeopleDynamicTableData>
+                data={data}
                 columns={columns}
                 numCol
                 showPagination
                 rowStyleOverrides={(row) => ({
                     color: row.original?.fill,
+                    '* > svg': {
+                        stroke: row.original?.fill,
+                    }
                 })}
             />
         </Stack>

@@ -2,13 +2,13 @@ import MuiAutocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import { FC, memo, useCallback, useEffect } from 'react';
 
-import { IAutocompleteProps } from '@/components/Autocomplete/types';
+import { IAutocompleteOption, IAutocompleteProps } from '@/components/Autocomplete/types';
 
 import { GroupHeaderStyled, GroupItemsStyled } from './styled';
 
 const Autocomplete: FC<IAutocompleteProps> = ({ options, onChange, placeholder = '', renderGroupHeader, ...rest }) => {
-	const handleChange = useCallback((e, option) => {
-		onChange?.(option);
+	const handleChange = useCallback((option: IAutocompleteOption | null) => {
+		onChange?.(option || undefined);
 	}, [onChange]);
 
 	useEffect(() => {
@@ -38,7 +38,7 @@ const Autocomplete: FC<IAutocompleteProps> = ({ options, onChange, placeholder =
 					placeholder={placeholder}
 				/>
 			}
-			onChange={handleChange}
+			onChange={(_, value) => handleChange(value)}
 			renderGroup={(params) => (
 				<li key={params.key}>
 					<GroupHeaderStyled>{renderGroupHeader ? renderGroupHeader(params) : params.group}</GroupHeaderStyled>

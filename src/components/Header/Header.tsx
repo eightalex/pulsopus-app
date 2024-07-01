@@ -29,9 +29,17 @@ const getPageLabel = (path = '') => {
 const Header = observer(() => {
 	const location: Location<ILocationState> = useLocation();
 	const navigate = useNavigate();
-	const { rootStore: { authStore: { user, onLogout }, routeStore: { goBack } } } = useStores();
+	const {
+		rootStore: {
+			authStore: { user, onLogout },
+			routeStore: { goBack },
+			userDiagramStore: {
+				targetId: selectedDiagramUserId,
+			}
+		}
+	} = useStores();
 
-	const userId = useMemo(() => location?.state?.id, [location]);
+	const userId = useMemo(() => location?.state?.id || selectedDiagramUserId, [location, selectedDiagramUserId]);
 
 	const pageLabel = useMemo(() => getPageLabel(location?.pathname), [location]);
 
