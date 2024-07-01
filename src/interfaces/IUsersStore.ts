@@ -1,6 +1,6 @@
 import { IAutocompleteOption } from '@/components/Autocomplete';
+import { EUserStatusPendingResolve } from "@/constants/EUser.ts";
 import { IActivity } from "@/interfaces/IActivity.ts";
-import { IDepartment } from '@/interfaces/IDepartment';
 import { IUser } from '@/interfaces/IUser';
 
 export interface IUserTrendRate {
@@ -15,8 +15,6 @@ export interface IUserTrendRate {
 
 export interface IUsersStore {
 	usersMap: Map<IUser['id'], IUser>;
-	usersStatuses: { value: string, canSetted: boolean }[];
-	usersRoles: { value: string, canSetted: boolean }[];
 
 	users: IUser[];
 	usersAutocompleteOptions: IAutocompleteOption[];
@@ -24,11 +22,14 @@ export interface IUsersStore {
 	isLoadingUsers: boolean;
 	isLoadingUser: boolean;
 
+	requestUsers: () => Promise<IUser[]>;
 	getUsers: () => void;
-	getUser: (id: IUser['id']) => Promise<IUser>;
+	getUser: (id: IUser['id']) => Promise<IUser | undefined>;
 
 	calcUserTrendRateData: (id: IUser["id"], from: number, to: number) => IUserTrendRate;
 
-	setUserStatusById: (id: IUser["id"], status: IUser["status"]) => Promise<void>;
 	setUserRoleById: (id: IUser["id"], role: IUser["role"]) => Promise<void>;
+
+	setUserAccessRequestDecision: (id: IUser["id"], requestId: IUser["accessRequestId"], resolve: EUserStatusPendingResolve) => Promise<void>;
+	deleteUsers: (ids: IUser["id"][]) => Promise<void>;
 }

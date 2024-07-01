@@ -67,7 +67,7 @@ export class UserDiagramStore extends CalendarRangeBase implements IUserDiagramS
 				prevUserActivity
 			} = this.rootStore.usersStore.calcUserTrendRateData(id, this.rangeFrom, this.rangeTo);
 			return  {
-				subtitles: [department?.label, position?.label].filter(v => Boolean(v)) as string[],
+				subtitles: [department?.label, position].filter(v => Boolean(v)) as string[],
 				activity,
 				rate,
 				currentRateValue: currentUserActivity,
@@ -101,14 +101,15 @@ export class UserDiagramStore extends CalendarRangeBase implements IUserDiagramS
 			renderDataList.push(this.compareValue);
 		}
 		return renderDataList
-			.filter(d => Boolean(d))
-			.map(d => {
-				if(!d) return null;
+			.reduce((acc, d) => {
+				if(!d) return acc;
 				if('username' in d) {
-					return generateDataForUser(d as IUser);
+					acc.push(generateDataForUser(d as IUser));
+				} else {
+					acc.push(generateDataForDepartment(d as IDepartment));
 				}
-				return generateDataForDepartment(d as IDepartment);
-			});
+				return acc;
+			}, [] as IUserDiagramChartData[]);
 	}
 
 	public onToggleCompare() {

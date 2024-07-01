@@ -151,11 +151,6 @@ export function Table<Data>(props: ITableProps<Data>) {
         debugTable: true,
         debugHeaders: true,
         debugColumns: true,
-        // isMultiSortEvent: (e) => true, //Make all clicks multi-sort - default requires `shift` key
-        // autoResetPageIndex: false, // turn off page index reset when sorting or filtering - default on/true
-        // enableMultiSort: false, //Don't allow shift key to sort multiple columns - default on/true
-        // enableSorting: false, // - default on/true
-        // enableSortingRemoval: false, //Don't allow - default on/true
     });
 
     const calculatePageSize = useCallback(() => {
@@ -197,8 +192,9 @@ export function Table<Data>(props: ITableProps<Data>) {
     }, [getTable, table, data]);
 
     useEffect(() => {
+        skipAutoResetPageIndex();
         setData(initialData);
-    }, [initialData]);
+    }, [initialData, skipAutoResetPageIndex]);
 
     useEffect(() => {
         setGlobalFilter(initialGlobalFilter);

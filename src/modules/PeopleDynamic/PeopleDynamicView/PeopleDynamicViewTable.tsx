@@ -18,26 +18,26 @@ export const PeopleDynamicViewTable = observer(() => {
             header: 'Title',
             accessorFn: (row) => row.user.username,
             cell: info => info.getValue(),
-            size: 260,
+            size: 250,
         },
         {
             header: 'Department',
             accessorFn: (row) => row.user.department?.label,
             cell: info => info.getValue(),
-            size: 130,
+            size: 160,
             meta: {
                 filterVariant: ETableFilterVariant.SELECT,
             },
             filterFn: (row, columnId, filterValue) => (row.getValue(columnId) || DEFAULT_BLANK_KEY) === filterValue,
         },
         {
-            header: '% Activity',
+            header: 'Activity',
             accessorFn: (row) => row.rate,
             cell: info => {
                 const v = info.getValue();
-                return v ? Math.round(Number(v)) : '';
+                return Number(v) ? `${Number(v).toFixed(3)} %` : '';
             },
-            size: 120,
+            size: 98,
         },
         {
             header: 'index',
@@ -63,7 +63,8 @@ export const PeopleDynamicViewTable = observer(() => {
                     </Stack>
                 );
             },
-            size: 58,
+            enableSorting: false,
+            size: 46,
         },
     ], []);
 

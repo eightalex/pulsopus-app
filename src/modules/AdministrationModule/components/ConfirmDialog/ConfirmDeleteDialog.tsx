@@ -1,37 +1,45 @@
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
+import { observer } from "mobx-react";
 import { FC, useCallback, useMemo } from "react";
 
 import { Dialog, IDialogProps } from "@/components/Dialog";
 import Typography from "@/components/Typography";
+import { useStores } from "@/hooks";
 import { IUser } from "@/interfaces";
 
 interface IConfirmDeleteDialogProps extends Partial<IDialogProps> {
     usersToDelete?: IUser[];
 }
 
-export const ConfirmDeleteDialog: FC<IConfirmDeleteDialogProps> = (props) => {
+export const ConfirmDeleteDialog: FC<IConfirmDeleteDialogProps> = observer((props) => {
     const {
         onClose,
         usersToDelete = [],
         ...restProps
     } = props;
+    const {
+        rootStore: {
+            usersStore: {
+                deleteUsers,
+            },
+        },
+    } = useStores();
 
     const dialogHeadTitle = useMemo(() => {
-        if(!usersToDelete.length) return '';
-        if(usersToDelete.length === 1) {
+        if (!usersToDelete.length) return '';
+        if (usersToDelete.length === 1) {
             const username = usersToDelete[0].username;
             return `A u sure u want to delete ${username}?`;
         }
         return `A u sure u want to delete ${usersToDelete.length} users?`;
-    },  [usersToDelete]);
+    }, [usersToDelete]);
 
-    const handleDelete = useCallback(() => {
-        const rowsIds = usersToDelete.map((u) => u.id);
-        alert(JSON.stringify(rowsIds, null, 2));
-        console.log('usersToDelete', usersToDelete);
+    const handleDelete = useCallback(async () => {
+        const usersIds = usersToDelete.map((u) => u.id);
+        await deleteUsers(usersIds);
         onClose?.();
-    }, [onClose, usersToDelete]);
+    }, [onClose, usersToDelete, deleteUsers]);
 
     return (
         <Dialog
@@ -82,7 +90,12 @@ export const ConfirmDeleteDialog: FC<IConfirmDeleteDialogProps> = (props) => {
                                             {index + 1}.
                                         </Typography>
                                     </Stack>
-                                    <Stack flexGrow={1} direction='row' sapcing={2} width='100%'>
+                                    <Stack
+                                        direction='row'
+                                        sapcing={2}
+                                        flexGrow={1}
+                                        width='100%'
+                                    >
                                         <Typography variant='body2'>
                                             {username}
                                         </Typography>
@@ -95,4 +108,4 @@ export const ConfirmDeleteDialog: FC<IConfirmDeleteDialogProps> = (props) => {
             </Stack>
         </Dialog>
     );
-};
+});

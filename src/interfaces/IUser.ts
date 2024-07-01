@@ -23,5 +23,6 @@ export interface IUser extends IUserBase {
 	position?: IUserPosition;
 	status: EUserStatus;
 	isPending?: boolean;
+	accessRequestId?: string;
 	isAdmin?: boolean;
 }

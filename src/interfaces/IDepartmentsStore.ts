@@ -20,6 +20,7 @@ export interface IDepartmentsStore {
 
 	isLoadingDepartments: boolean;
 
+	requestDepartments(): Promise<IDepartment[]>;
 	getDepartments(): void;
 	findDepartment(value?: string): IDepartment | null;
 

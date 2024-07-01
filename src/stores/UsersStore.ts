@@ -1,6 +1,7 @@
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import api from "@/api";
 import { IAutocompleteOption } from '@/components/Autocomplete';
+import { EUserStatusPendingResolve } from "@/constants/EUser.ts";
 import { generateAutocompleteOption } from "@/helpers/generateAutocompleteOption.ts";
 import { IRootStore, IUser, IUsersStore, IUserTrendRate } from '@/interfaces';
 import { DateTime } from "@/utils";
@@ -8,8 +9,6 @@ import { BaseStore } from './BaseStore';
 
 export class UsersStore extends BaseStore implements IUsersStore {
 	public usersMap: Map<IUser['id'], IUser> = new Map();
-	public usersStatuses: { value: string, canSetted: boolean }[] = [];
-	public usersRoles: { value: string, canSetted: boolean }[] = [];
 
 	private asyncStatuses = {
 		getUsers: this.createKey('getUsers'),
@@ -20,8 +19,6 @@ export class UsersStore extends BaseStore implements IUsersStore {
 		super(rootStore);
 		makeObservable(this, {
 			usersMap: observable,
-			usersStatuses: observable,
-			usersRoles: observable,
 			//
 			users: computed,
 			usersAutocompleteOptions: computed,
@@ -29,11 +26,13 @@ export class UsersStore extends BaseStore implements IUsersStore {
 			isLoadingUsers: computed,
 			isLoadingUser: computed,
 			// actions
+			requestUsers: action.bound,
 			getUsers: action.bound,
 			getUser: action.bound,
 			calcUserTrendRateData: action.bound,
-			setUserStatusById: action.bound,
 			setUserRoleById: action.bound,
+			setUserAccessRequestDecision: action.bound,
+			deleteUsers: action.bound,
 		});
 	}
 
@@ -51,29 +50,23 @@ export class UsersStore extends BaseStore implements IUsersStore {
 		});
 	}
 
-	private async getStatuses() {
-		this.usersStatuses =  await api.usersService.getUserStatuses();
-	}
-
-	private async getRoles() {
-		this.usersRoles = await api.usersService.getUserRoles();
-	}
-
-	private async getSubUsersInfo() {
-		await this.getStatuses();
-		await this.getRoles();
+	public async requestUsers(): Promise<IUser[]> {
+		const users =  await api.usersService.getAll();
+		this.usersMap = new Map<IUser["id"], IUser>();
+		runInAction(() => {
+			for (const user of users) {
+				this.setUser(user);
+			}
+		});
+		return users;
 	}
 
 	public async getUsers(): Promise<void> {
 		const key = this.asyncStatuses.getUsers;
 		this.setLoading(key);
 		try {
-			await this.getSubUsersInfo();
-			const users =  await api.usersService.getAll();
+			await this.requestUsers();
 			runInAction(() => {
-				for (const user of users) {
-					this.setUser(user);
-				}
 				this.setSuccess(key);
 			});
 		} catch (err) {
@@ -168,21 +161,36 @@ export class UsersStore extends BaseStore implements IUsersStore {
 		};
 	}
 
-	public async setUserStatusById(id: IUser["id"], status: IUser["status"]) {
+	public async setUserRoleById(id: IUser["id"], role: IUser["role"]) {
 		try {
-			const user = await api.usersService.updateById(id, {
-				status,
-			});
+			const user = await api.usersService.updateById(id, { role });
 			this.setUser(user);
 		} catch (err) {
 			console.error(err);
 		}
 	}
 
-	public async setUserRoleById(id: IUser["id"], role: IUser["role"]) {
+	public async setUserAccessRequestDecision(id: IUser["id"], requestId: IUser["accessRequestId"], resolve: EUserStatusPendingResolve): Promise<void> {
 		try {
-			const user = await api.usersService.updateById(id, { role });
-			this.setUser(user);
+			await api.usersService.setUserAccessRequest(
+				id,
+				requestId,
+				resolve
+			);
+			await this.getUser(id);
+		} catch (err) {
+			console.error(err);
+		}
+	}
+
+	public async deleteUsers(ids: IUser["id"][] = []) {
+		if(!ids || !ids.length) return;
+		try {
+			await api.usersService.deleteUsers(ids);
+			for (const id of ids) {
+				this.usersMap.delete(id);
+			}
+			await this.rootStore.departmentsStore.getDepartments();
 		} catch (err) {
 			console.error(err);
 		}

@@ -17,7 +17,7 @@ export const UserDiagramChart = observer(() => {
     const chartDataPoints = useMemo(
         (): IChartDataPoint[][] =>
             chartData.map(({ activity = [] }) => activity
-                .map((act) => ({ x: Number(act.date), y: act.rate } as IChartDataPoint)))
+                .map((act) => ({ x: Number(act.date), y: act.rate || 0 } as IChartDataPoint)))
         , [chartData]);
 
     const handleSelectRange = useCallback((d: IInteractionData<unknown>[] = []) => {

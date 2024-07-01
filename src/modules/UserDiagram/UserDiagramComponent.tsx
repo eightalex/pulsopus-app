@@ -26,7 +26,15 @@ export const UserDiagramComponent = observer(() => {
 				content={<UserDiagramChart/>}
 				side={
 					<Stack spacing={6}>
-						{Boolean(chartData.length) && chartData.map(({ title, rate, trend, currentRateValue, prevRateValue, subtitles = [] }, idx) => {
+						{Boolean(chartData.length) && chartData.map((data, idx) => {
+							const {
+								title,
+								rate,
+								trend,
+								currentRateValue,
+								prevRateValue,
+								subtitles = []
+							} = data;
 							const tooltips = [
 								{ label: 'curr period', value: currentRateValue },
 								{ label: 'prev period', value: prevRateValue },

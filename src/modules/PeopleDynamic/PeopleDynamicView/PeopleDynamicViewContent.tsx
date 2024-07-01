@@ -13,7 +13,8 @@ interface IPeopleDynamicViewContentProps {
 	tooltipTitle?: string;
 }
 
-export const PeopleDynamicViewContent: FC<IPeopleDynamicViewContentProps> = ({ children, content, side, tooltipTitle }) => {
+export const PeopleDynamicViewContent: FC<IPeopleDynamicViewContentProps> = (props) => {
+	const { children, content, side, tooltipTitle } = props;
 	return (
 		<PeopleDynamicViewWrapperStyled>
 			<PeopleDynamicViewContentStyled>

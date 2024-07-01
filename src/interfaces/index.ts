@@ -1,4 +1,5 @@
 export type * from './IActivity.ts';
+export type * from './IAdministrationStore';
 export type { IAPIRequester } from './IAPIRequester';
 export type { IAsyncStatus } from './IAsyncStatus';
 export type { IAsyncKey,IAsyncStore } from './IAsyncStore';

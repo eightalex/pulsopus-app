@@ -25,6 +25,7 @@ export class DepartmentsStore extends BaseStore implements IDepartmentsStore {
 			// loading
 			isLoadingDepartments: computed,
 			// actions
+			requestDepartments: action.bound,
 			getDepartments: action.bound,
 			findDepartment: action.bound,
 			getCompanyActivity: action.bound,
@@ -47,15 +48,23 @@ export class DepartmentsStore extends BaseStore implements IDepartmentsStore {
 		});
 	}
 
+	public async requestDepartments(): Promise<IDepartment[]> {
+		const deps = await api.departmentsService.getAll();
+		this.departmentsMap = new Map();
+		runInAction(() => {
+			for (const dep of deps) {
+				this.setDepartment(dep);
+			}
+		});
+		return deps;
+	}
+
 	public async getDepartments(): Promise<void> {
 		const key = this.asyncStatuses.getDepartments;
 		this.setLoading(key);
 		try {
-			const deps = await api.departmentsService.getAll();
+			await this.requestDepartments();
 			runInAction(() => {
-				for (const dep of deps) {
-					this.setDepartment(dep);
-				}
 				this.setSuccess(key);
 			});
 		} catch (err) {
