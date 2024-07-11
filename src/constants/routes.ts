@@ -38,5 +38,13 @@ export const DOCUMENTS_TITLES = [
 	return acc;
 }, {} as { [k: string]: string });
 
+export const DOCUMENTS_DESCRIPTIONS = {
+	[ROOT_ROUTE]: DEFAULT_ROUTE_TITLE,
+	[PEOPLE_DYNAMIC_ROUTE]: `${DEFAULT_ROUTE_TITLE} team`,
+	[DIAGRAM_ROUTE]: `${DEFAULT_ROUTE_TITLE} person`,
+	[ADMINISTRATION_ROUTE]: `${DEFAULT_ROUTE_TITLE} user management`,
+	[EVENTS_ROUTE]: `${DEFAULT_ROUTE_TITLE} events`,
+};
+
 export const QUERY_TOKEN = 'token';
 export const QUERY_REDIRECT = 'target';

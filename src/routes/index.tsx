@@ -6,7 +6,7 @@ import { LazyLoader } from "@/components/LazyLoader";
 import { EUserRole } from "@/constants/EUser.ts";
 import {
     ADMINISTRATION_ROUTE,
-    DIAGRAM_ROUTE, DOCUMENTS_TITLES,
+    DIAGRAM_ROUTE, DOCUMENTS_DESCRIPTIONS, DOCUMENTS_TITLES,
     EVENTS_ROUTE,
     PEOPLE_DYNAMIC_ROUTE,
     PROFILE_ROUTE,
@@ -60,7 +60,7 @@ export const routes: RouteObject[] = [
                         allowedRoles={[EUserRole.VIEWER]}
                         title={DOCUMENTS_TITLES[PEOPLE_DYNAMIC_ROUTE]}
                         canonical={PEOPLE_DYNAMIC_ROUTE}
-                        description='Pulsopus team'
+                        description={DOCUMENTS_DESCRIPTIONS[PEOPLE_DYNAMIC_ROUTE]}
                     >
                         <PeopleDynamic/>
                     </RequireRoleRoute>
@@ -73,7 +73,7 @@ export const routes: RouteObject[] = [
                         allowedRoles={[EUserRole.VIEWER]}
                         title={DOCUMENTS_TITLES[DIAGRAM_ROUTE]}
                         canonical={DIAGRAM_ROUTE}
-                        description='Pulsopus person'
+                        description={DOCUMENTS_DESCRIPTIONS[DIAGRAM_ROUTE]}
                     >
                         <UserDiagram/>
                     </RequireRoleRoute>
@@ -85,7 +85,7 @@ export const routes: RouteObject[] = [
                         allowedRoles={[EUserRole.ADMIN]}
                         title={DOCUMENTS_TITLES[ADMINISTRATION_ROUTE]}
                         canonical={ADMINISTRATION_ROUTE}
-                        description='Pulsopus administration'
+                        description={DOCUMENTS_DESCRIPTIONS[ADMINISTRATION_ROUTE]}
                     >
                         <AdministrationModule/>
                     </RequireRoleRoute>
@@ -97,7 +97,7 @@ export const routes: RouteObject[] = [
                         allowedRoles={[EUserRole.ADMIN]}
                         title={DOCUMENTS_TITLES[EVENTS_ROUTE]}
                         canonical={EVENTS_ROUTE}
-                        description='Pulsopus events'
+                        description={DOCUMENTS_DESCRIPTIONS[EVENTS_ROUTE]}
                     >
                         <EventsModule/>
                     </RequireRoleRoute>
