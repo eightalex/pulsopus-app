@@ -33,6 +33,13 @@ export interface IExtendPalette {
 	buttonContainedPrimaryOnSurfaceDefault: string;
 	buttonContainedPrimaryOnSurfaceDisabled: string;
 	//
+	buttonContainedErrorDefault: string;
+	buttonContainedErrorHovered: string;
+	buttonContainedErrorPressed: string;
+	buttonContainedErrorDisabled: string;
+	buttonContainedErrorOnSurfaceDefault: string;
+	buttonContainedErrorOnSurfaceDisabled: string;
+	//
 	buttonOutlineDefault: string;
 	buttonOutlinedPrimaryDefault: string;
 	buttonOutlinedPrimaryHovered: string;
@@ -121,6 +128,7 @@ export interface IExtendPalette {
 	loaderSurfaceDefault: string;
 	loaderSurfaceSecondary: string;
 	loaderSurfaceAlternative: string;
+	loaderSurfaceError: string;
 	//
 	tableHeadBackgroundDefault: string;
 	tableBodyBackgroundDefault: string;

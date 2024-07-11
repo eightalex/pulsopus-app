@@ -1,6 +1,6 @@
 import Checkbox from "@mui/material/Checkbox";
 import { observer } from "mobx-react";
-import { FC, MouseEvent, useCallback, useMemo } from "react";
+import { FC, MouseEvent, useCallback } from "react";
 
 import { ButtonIcon } from "@/components/ButtonIcon";
 import { TrashIcon } from '@/icons';

@@ -33,7 +33,14 @@ export const SideNavBarLink: FC<ISideNavBarLinkProps> = memo((props) => {
 					isActive={isActive}
 					isDefaultActive={Boolean(defaultActive)}
 					isMinimize={isMinimize}
-					onClick={() => restProps.onClick?.()}
+					onClick={(e) => {
+						if(restProps.onClick) {
+							e?.preventDefault();
+							e?.stopPropagation();
+							e?.nativeEvent?.stopImmediatePropagation();
+							restProps.onClick?.();
+						}
+					}}
 				>
 					{Boolean(Icon) && (
 						<Icon color="inherit" fontSize={iconFontSize}/>

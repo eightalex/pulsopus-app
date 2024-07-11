@@ -1,5 +1,5 @@
 import Stack from '@mui/material/Stack';
-import { FC, memo, ReactNode, useMemo } from 'react';
+import { FC, memo, ReactNode, useCallback,useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import Typography from '@/components/Typography';
@@ -53,7 +53,7 @@ export const variantSizes = {
 	overline: 18,
 };
 
-const NavLink: FC<INavLinkProps> = (props) => {
+const NavLink: FC<INavLinkProps> = memo((props) => {
 	const {
 		to,
 		isActive,
@@ -62,10 +62,19 @@ const NavLink: FC<INavLinkProps> = (props) => {
 		label,
 		children,
 		textVariant = 'body1',
-		textSize
+		textSize,
+		onClick,
 	} = props;
 	const location = useLocation();
 	const active = useMemo(() => isActive || location.pathname.includes(to), [to, location, isActive]);
+
+	const handleClick = useCallback((e) => {
+		if(!onClick) return;
+		e?.preventDefault();
+		e?.stopPropagation();
+		e?.nativeEvent?.stopImmediatePropagation();
+		onClick?.();
+	}, [onClick]);
 
 	return (
 		<NavLinkStyled
@@ -76,7 +85,7 @@ const NavLink: FC<INavLinkProps> = (props) => {
 				<Stack
 					spacing={3}
 					direction="row"
-					onClick={() => props.onClick?.()}
+					onClick={handleClick}
 				>
 					{Boolean(icon) && <Icon color="inherit"/>}
 					<Typography
@@ -90,6 +99,6 @@ const NavLink: FC<INavLinkProps> = (props) => {
 			)}
 		</NavLinkStyled>
 	);
-};
+});
 
-export default memo(NavLink);
+export default NavLink;

@@ -64,6 +64,7 @@ export const TableHeadSelectStyled = styled(
     '&:hover': {
         backgroundColor: 'transparent',
         borderColor: 'transparent',
+        WebkitTextFillColor: 'initial',
     },
 
     '& .MuiSelect-select': {
@@ -75,6 +76,9 @@ export const TableHeadSelectStyled = styled(
         color: 'unset',
         "& .MuiSelect-icon": {
             opacity: 0,
-        }
+        },
+        '& .MuiSelect-select': {
+            WebkitTextFillColor: 'unset',
+        },
     },
 }));

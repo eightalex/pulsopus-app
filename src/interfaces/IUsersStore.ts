@@ -21,6 +21,7 @@ export interface IUsersStore {
 
 	isLoadingUsers: boolean;
 	isLoadingUser: boolean;
+	isLoadingDeleteUser: boolean;
 
 	requestUsers: () => Promise<IUser[]>;
 	getUsers: () => void;

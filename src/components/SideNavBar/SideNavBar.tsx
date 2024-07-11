@@ -3,8 +3,15 @@ import { observer } from "mobx-react";
 import { FC, useCallback, useMemo } from 'react';
 
 import { SideNavBarLink } from "@/components/SideNavBar/SideNavBarLink.tsx";
+import { EUserRole } from "@/constants/EUser.ts";
+import {
+	SIDEBAR_LOGO_HEIGHT,
+	SIDEBAR_LOGO_HEIGHT_MIN,
+	SIDEBAR_LOGO_WIDTH,
+	SIDEBAR_LOGO_WIDTH_MIN
+} from "@/constants/navBar.ts";
 import { getSidebarNavLinksByRoles } from "@/helpers/getSidebarNavLinksByRoles.ts";
-import { useStores,useWindowSize } from '@/hooks';
+import { useStores, useWindowSize } from '@/hooks';
 import { ExitOutlinedIcon, LogoIcon } from '@/icons';
 
 import { SideNavBarList } from './SideNavBarList';
@@ -22,11 +29,11 @@ export const SideNavBar: FC<ISideNavBarProps> = observer((props) => {
 	const isMinimize = useMemo(() => width <= breakpointSizes.xl, [width, breakpointSizes]);
 
 	const logoSxParams = useMemo(() => ({
-		width: isMinimize ? 134 : 134,
-		height: isMinimize ? 15 : 18,
+		width: isMinimize ? SIDEBAR_LOGO_WIDTH_MIN : SIDEBAR_LOGO_WIDTH,
+		height: isMinimize ? SIDEBAR_LOGO_HEIGHT_MIN : SIDEBAR_LOGO_HEIGHT,
 	}), [isMinimize]);
 
-	const options = getSidebarNavLinksByRoles(user?.role);
+	const options = getSidebarNavLinksByRoles(user?.role || EUserRole.VIEWER);
 
 	const handleLogout = useCallback(() => {
 		onLogout();

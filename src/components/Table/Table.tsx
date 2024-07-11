@@ -22,6 +22,7 @@ import {
 } from "@/components/Table/constants.ts";
 import { fuzzyFilter } from "@/components/Table/fuzzy.helper.ts";
 import { ITableProps } from "@/components/Table/types.ts";
+import { IS_DEV } from "@/config";
 import { useSkipper } from "@/hooks";
 
 import { headerColPersistFormatter } from "./col.helpers.ts";
@@ -148,9 +149,9 @@ export function Table<Data>(props: ITableProps<Data>) {
             },
         },
         ...tableOptions,
-        debugTable: true,
-        debugHeaders: true,
-        debugColumns: true,
+        debugTable: IS_DEV,
+        debugHeaders: IS_DEV,
+        debugColumns: IS_DEV,
     });
 
     const calculatePageSize = useCallback(() => {

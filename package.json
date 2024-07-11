@@ -1,7 +1,7 @@
 {
-  "name": "pulsopus-client",
+  "name": "pulsopus-app",
   "private": true,
-  "version": "0.0.69",
+  "version": "0.0.70",
   "author": "Bohdan Radchenko <radchenkobs@gmail.com>",
   "type": "module",
   "scripts": {
@@ -42,6 +42,7 @@
     "react-calendar": "^4.8.0",
     "react-dom": "^18.2.0",
     "react-error-boundary": "^4.0.12",
+    "react-helmet": "^6.1.0",
     "react-input-mask": "^2.0.4",
     "react-loader-spinner": "^6.1.6",
     "react-redux": "^9.1.2",
@@ -59,6 +60,7 @@
     "@types/node": "^20.11.30",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
+    "@types/react-helmet": "^6.1.11",
     "@types/react-table": "^7.7.20",
     "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^6.14.0",

@@ -31,6 +31,7 @@ export const TableHeadFilterSelect: FC<Required<ITableHeadFilterComponent>> = (p
 
     return (
         <TableSelect
+            disabled={sortedUniqueValues.length <= 1}
             title={header.id}
             value={columnFilterValue?.toString()}
             onChange={(v) => handleChange(v as string)}

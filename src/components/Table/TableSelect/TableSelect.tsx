@@ -54,7 +54,7 @@ export const TableSelect: FC<ITableSelect> = (props) =>  {
             }}
             variant={type}
         >
-            {type === ETableSelectType.HEAD && (
+            {!disabled && type === ETableSelectType.HEAD && (
                 <MenuItem disabled={!value} value=''>
                     <em>All</em>
                 </MenuItem>

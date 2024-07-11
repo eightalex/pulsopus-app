@@ -7,7 +7,7 @@ import { useMemo, useRef, useState } from 'react';
 import Table, { COLORS, ETableFilterVariant, TTable } from "@/components/Table";
 import { TableSelect } from "@/components/Table/TableSelect/TableSelect.tsx";
 import { EUserRole, EUserStatus, EUserStatusPendingResolve } from "@/constants/EUser.ts";
-import { useStores } from "@/hooks";
+import { useStores, useToggle } from "@/hooks";
 import { IUser } from "@/interfaces";
 
 import { calcMaxColSize, filterDepartmentFn, filterStatusFn, sortStatusFn } from "./col.helper.tsx";
@@ -32,7 +32,8 @@ export const AdministrationTable = observer(() => {
     } = useStores();
     const tableRef = useRef<TTable<IUser>>();
     const tableDataRef = useRef<IUser[]>();
-    const [usersToDelete, setUsersToDelete] = useState<IUser[]>([]);
+    const [usersToDelete, setUsersToDelete] = useState();
+    const [isOpenDeleteConfirm, toggleDeleteConfirm] = useToggle();
 
     const maxTitleSize = useMemo(() => {
         const maxTitleLength = data.reduce((acc, { username }) => {
@@ -106,7 +107,7 @@ export const AdministrationTable = observer(() => {
                 meta: {
                     filterVariant: ETableFilterVariant.SELECT,
                 },
-                size: 120,
+                size: 100,
             },
             {
                 accessorKey: 'status',
@@ -151,7 +152,7 @@ export const AdministrationTable = observer(() => {
                 },
                 filterFn: filterStatusFn,
                 sortingFn: sortStatusFn,
-                size: 120,
+                size: 100,
             },
             {
                 id: 'row-select-action',
@@ -172,6 +173,7 @@ export const AdministrationTable = observer(() => {
                         const rows = table.getSelectedRowModel().rows;
                         const usersToDelete = rows.map(r => r.original);
                         setUsersToDelete(usersToDelete);
+                        toggleDeleteConfirm();
                     };
 
                     return (
@@ -195,6 +197,7 @@ export const AdministrationTable = observer(() => {
                         const rows = table.getSelectedRowModel().rows;
                         const usersToDelete = rows.map(r => r.original);
                         setUsersToDelete([...new Set([...usersToDelete, row.original])]);
+                        toggleDeleteConfirm();
                     };
 
                     const disabledSelect = !row.getCanSelect();
@@ -217,7 +220,7 @@ export const AdministrationTable = observer(() => {
                         </Stack>
                     );
                 },
-                size: 72,
+                size: 62,
                 enableSorting: false,
             },
         ];
@@ -226,8 +229,8 @@ export const AdministrationTable = observer(() => {
     return (
         <Stack
             direction='row'
-            // maxWidth='1000px'
-            maxWidth='1200px'
+            maxWidth='1000px'
+            // maxWidth='1200px'
             width='100%'
             flexGrow={1}
             overflow='hidden'
@@ -254,8 +257,10 @@ export const AdministrationTable = observer(() => {
                 }}
             />
             <ConfirmDeleteDialog
+                table={tableRef.current}
+                open={isOpenDeleteConfirm}
                 usersToDelete={usersToDelete}
-                onClose={() => setUsersToDelete([])}
+                onClose={() => toggleDeleteConfirm()}
             />
         </Stack>
     );
