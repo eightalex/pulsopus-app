@@ -4,6 +4,7 @@ import { observer } from "mobx-react";
 import { FC, useCallback, useMemo } from "react";
 
 import { Dialog, IDialogProps } from "@/components/Dialog";
+import LoadingButton from "@/components/LoadingButton";
 import Typography from "@/components/Typography";
 import { useStores } from "@/hooks";
 import { IUser } from "@/interfaces";
@@ -22,9 +23,12 @@ export const ConfirmDeleteDialog: FC<IConfirmDeleteDialogProps> = observer((prop
         rootStore: {
             usersStore: {
                 deleteUsers,
+                isLoadingDeleteUser
             },
         },
     } = useStores();
+
+    const isOpen = useMemo(() => open && Boolean(usersToDelete.length), [open, usersToDelete]);
 
     const dialogHeadTitle = useMemo(() => {
         if (!usersToDelete.length) return '';
@@ -43,13 +47,17 @@ export const ConfirmDeleteDialog: FC<IConfirmDeleteDialogProps> = observer((prop
 
     return (
         <Dialog
-            open={Boolean(usersToDelete.length)}
+            open={isOpen}
             onClose={onClose}
             title='Confirm delete'
             maxWidth='lg'
             sx={{
                 position: 'fixed',
                 zIndex: 2,
+            }}
+            transitionDuration={{
+                enter: 225,
+                exit: 0,
             }}
             actions={[
                 <Stack
@@ -60,14 +68,20 @@ export const ConfirmDeleteDialog: FC<IConfirmDeleteDialogProps> = observer((prop
                         padding: spacing(4, 6)
                     })}
                 >
-                    <Button onClick={onClose}>Cancel</Button>
                     <Button
+                        onClick={onClose}
+                        disabled={isLoadingDeleteUser}
+                    >
+                        Cancel
+                    </Button>
+                    <LoadingButton
+                        loading={isLoadingDeleteUser}
                         color='error'
                         variant='contained'
                         onClick={handleDelete}
                     >
                         Delete
-                    </Button>
+                    </LoadingButton>
                 </Stack>
             ]}
             {...restProps}
@@ -92,9 +106,9 @@ export const ConfirmDeleteDialog: FC<IConfirmDeleteDialogProps> = observer((prop
                                     </Stack>
                                     <Stack
                                         direction='row'
-                                        sapcing={2}
+                                        spacing={2}
+                                        width={'100%'}
                                         flexGrow={1}
-                                        width='100%'
                                     >
                                         <Typography variant='body2'>
                                             {username}

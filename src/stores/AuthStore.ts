@@ -79,6 +79,7 @@ export class AuthStore extends BaseStore implements IAuthStore {
 		const key = this.asyncStatuses.logout;
 		this.setLoading(key);
 		try {
+			sessionManager.removeTokens();
 			await api.authService.onLogout();
 			runInAction(() => {
 				this.user = undefined;
@@ -88,7 +89,6 @@ export class AuthStore extends BaseStore implements IAuthStore {
 			console.error(err);
 			this.setError(key);
 		} finally {
-			sessionManager.removeTokens();
 			window.location.replace(CLIENT_URL);
 		}
 	}

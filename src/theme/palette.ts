@@ -21,3 +21,10 @@ export const allGray600 = '#303132';
 export const allGray700 = '#1C1C1C';
 export const AllStone750 = '#1B1B1B';
 export const allGray800 = '#0E0E0E';
+//
+export const allRed100 = '#FF7878';
+export const allRed200 = '#FF6666';
+export const allRed300 = '#F44F4F';
+export const allRed400 = '#ff4444';
+export const allRed700 = '#d32f2f';
+export const allRed800 = '#c62828';

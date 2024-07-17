@@ -1,18 +1,22 @@
 import { observer } from "mobx-react";
-import { FC, ReactNode, useMemo } from "react";
-import { Navigate, Outlet,useLocation } from "react-router-dom";
+import { FC, useMemo } from "react";
+import { Navigate, useLocation } from "react-router-dom";
 
 import { EUserRole } from "@/constants/EUser.ts";
 import { ROOT_ROUTE } from "@/constants/routes.ts";
 import { useStores } from "@/hooks";
+import Route, { IRouteProps } from "@/routes/Route.tsx";
 
-interface IProtectedAdminRouteProps {
-	children?: ReactNode;
+interface IRequireRoleRouteProps extends IRouteProps {
     allowedRoles: EUserRole[];
     fallbackPath?: string;
 }
-export const RequireRoleRoute:FC<IProtectedAdminRouteProps> = observer((props) => {
-    const { children, allowedRoles = [], fallbackPath = ROOT_ROUTE } = props;
+export const RequireRoleRoute:FC<IRequireRoleRouteProps> = observer((props) => {
+    const {
+        allowedRoles = [],
+        fallbackPath = ROOT_ROUTE,
+        ...restProps
+    } = props;
     const location = useLocation();
     const {
         rootStore: {
@@ -36,9 +40,10 @@ export const RequireRoleRoute:FC<IProtectedAdminRouteProps> = observer((props) =
             : `/${fallbackPath}`,
         [fallbackPath]);
 
+
     return (
         isExistRole
-            ? children ?? <Outlet/>
+            ? <Route {...restProps}/>
             : <Navigate to={fallbackNavigatePath} state={{ from: location }} replace />
     );
 });

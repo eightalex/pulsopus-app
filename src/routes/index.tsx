@@ -1,27 +1,23 @@
 import { lazy } from "react";
 import { createBrowserRouter, Navigate, Outlet, RouteObject } from 'react-router-dom';
+import { InitialRequester } from "src/root";
 
-import api from '@/api';
-import sessionManager from "@/api/SessionManager.ts";
-import { Layout, LayoutSideBar } from '@/components/Layout';
+import { LayoutSideBar } from '@/components/Layout';
 import { LazyLoader } from "@/components/LazyLoader";
-import { CLIENT_URL } from "@/config";
 import { EUserRole } from "@/constants/EUser.ts";
 import {
-    ADMINISTRATION_ROUTE,
-    DIAGRAM_ROUTE,
+    ADMINISTRATION_ROUTE, BASELINE,
+    DIAGRAM_ROUTE, DOCUMENTS_DESCRIPTIONS, DOCUMENTS_TITLES,
     EVENTS_ROUTE,
-    LOGOUT_ROUTE,
     PEOPLE_DYNAMIC_ROUTE,
     PROFILE_ROUTE,
     ROOT_ID,
     ROOT_ROUTE,
-    ROUTE_DEFAULT,
 } from '@/constants/routes';
-import { InitialRequester } from "@/modules/Root/InitialRequester.tsx";
-import { RequireRoleRoute } from "@/routes/RequireRoleRoute.tsx";
+import { RootRoleNavigate } from "@/routes/RootRoleNavigate.tsx";
 
-import { ProtectedRoute } from './ProtectedRoute.tsx';
+import { ProtectedRoute } from "./ProtectedRoute.tsx";
+import { RequireRoleRoute } from "./RequireRoleRoute.tsx";
 
 const AdministrationModule = LazyLoader(
     lazy(() => import(/* webpackChunkName: 'administration module' */ '../modules/AdministrationModule'))
@@ -45,53 +41,66 @@ export const routes: RouteObject[] = [
         path: ROOT_ROUTE,
         element: (
             <ProtectedRoute>
-                <Layout>
-                    <LayoutSideBar>
-                        <InitialRequester>
-                            <Outlet/>
-                        </InitialRequester>
-                    </LayoutSideBar>
-                </Layout>
+                <LayoutSideBar>
+                    <InitialRequester>
+                        <Outlet/>
+                    </InitialRequester>
+                </LayoutSideBar>
             </ProtectedRoute>
         ),
         children: [
             {
                 index: true,
-                element: <Navigate to={ROUTE_DEFAULT} replace/>,
+                element: <RootRoleNavigate/>,
             },
             {
                 path: PEOPLE_DYNAMIC_ROUTE,
-                element: <PeopleDynamic/>,
+                element:
+                    <RequireRoleRoute
+                        allowedRoles={[EUserRole.VIEWER]}
+                        title={DOCUMENTS_TITLES[PEOPLE_DYNAMIC_ROUTE]}
+                        canonical={PEOPLE_DYNAMIC_ROUTE}
+                        description={DOCUMENTS_DESCRIPTIONS[PEOPLE_DYNAMIC_ROUTE]}
+                    >
+                        <PeopleDynamic/>
+                    </RequireRoleRoute>
             },
             {
                 id: DIAGRAM_ROUTE,
                 path: DIAGRAM_ROUTE,
-                element: <UserDiagram/>,
+                element:
+                    <RequireRoleRoute
+                        allowedRoles={[EUserRole.VIEWER]}
+                        title={DOCUMENTS_TITLES[DIAGRAM_ROUTE]}
+                        canonical={DIAGRAM_ROUTE}
+                        description={DOCUMENTS_DESCRIPTIONS[DIAGRAM_ROUTE]}
+                    >
+                        <UserDiagram/>
+                    </RequireRoleRoute>
             },
             {
                 path: ADMINISTRATION_ROUTE,
                 element:
-                    <RequireRoleRoute allowedRoles={[EUserRole.ADMIN, EUserRole.MANAGER]}>
+                    <RequireRoleRoute
+                        allowedRoles={[EUserRole.ADMIN]}
+                        title={DOCUMENTS_TITLES[ADMINISTRATION_ROUTE]}
+                        canonical={ADMINISTRATION_ROUTE}
+                        description={DOCUMENTS_DESCRIPTIONS[ADMINISTRATION_ROUTE]}
+                    >
                         <AdministrationModule/>
                     </RequireRoleRoute>
             },
             {
                 path: EVENTS_ROUTE,
                 element:
-                    <RequireRoleRoute allowedRoles={[EUserRole.ADMIN, EUserRole.MANAGER]}>
+                    <RequireRoleRoute
+                        allowedRoles={[EUserRole.ADMIN]}
+                        title={DOCUMENTS_TITLES[EVENTS_ROUTE]}
+                        canonical={EVENTS_ROUTE}
+                        description={DOCUMENTS_DESCRIPTIONS[EVENTS_ROUTE]}
+                    >
                         <EventsModule/>
                     </RequireRoleRoute>
-            },
-            {
-                path: LOGOUT_ROUTE,
-                element: <span>{LOGOUT_ROUTE}</span>,
-                async loader() {
-                    return api.authService.onLogout();
-                },
-                async action() {
-                    sessionManager.removeTokens();
-                    window.location.replace(CLIENT_URL);
-                }
             },
             {
                 path: PROFILE_ROUTE,
@@ -99,7 +108,7 @@ export const routes: RouteObject[] = [
             },
             {
                 path: '*',
-                element: <Navigate to={ROOT_ROUTE} replace/>,
+                element: <RootRoleNavigate/>,
             }
         ],
     },
@@ -109,4 +118,4 @@ export const routes: RouteObject[] = [
     }
 ];
 
-export const router = createBrowserRouter(routes, { window, basename: '/' });
+export const router = createBrowserRouter(routes, { window, basename: BASELINE });

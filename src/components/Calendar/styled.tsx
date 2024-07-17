@@ -13,7 +13,7 @@ export const ContainerStyled = styled(({ ...props }: StackProps) =>
 	/>, {
 	shouldForwardProp: (prop) => prop !== 'fullLine',
 	}
-)<IContainerStyledProps>(({ theme: { spacing, breakpoints }, fullLine }) => ({
+)<IContainerStyledProps>(({ theme: { spacing }, fullLine }) => ({
 	position: 'relative',
 	width: 'auto',
 	minWidth: 36,
@@ -27,24 +27,3 @@ export const ContainerStyled = styled(({ ...props }: StackProps) =>
 	borderRadius: 4,
 	cursor: 'pointer',
 }));
-
-// export const AppActionContainerStyled = styled(({ ...props }: StackProps) => <Stack {...props} spacing={1}
-// 																																										direction="row"
-// />)(({ theme: { breakpoints } }) => ({
-// 	display: 'flex',
-// 	flexDirection: 'row',
-// 	justifyContent: 'space-between',
-// 	alignItems: 'center',
-// 	width: '100%',
-// 	height: 'auto',
-// 	maxWidth: '800px', // TODO: create constant in px or %
-// 	[breakpoints.down('xl')]: {
-// 		maxWidth: '100%',
-// 	},
-// 	[breakpoints.down('xl')]: {
-// 		padding: spacing(8, 5, 8, 10),
-// 	},
-// 	[breakpoints.down('xl')]: {
-// 		padding: spacing(8, 4, 8, 8),
-// 	},
-// }));

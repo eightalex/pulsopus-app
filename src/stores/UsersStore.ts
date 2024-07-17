@@ -13,6 +13,7 @@ export class UsersStore extends BaseStore implements IUsersStore {
 	private asyncStatuses = {
 		getUsers: this.createKey('getUsers'),
 		getUser: this.createKey('getUser'),
+		deleteUser: this.createKey('deleteUser'),
 	};
 
 	constructor(rootStore: IRootStore) {
@@ -25,6 +26,7 @@ export class UsersStore extends BaseStore implements IUsersStore {
 			// loading
 			isLoadingUsers: computed,
 			isLoadingUser: computed,
+			isLoadingDeleteUser: computed,
 			// actions
 			requestUsers: action.bound,
 			getUsers: action.bound,
@@ -42,6 +44,10 @@ export class UsersStore extends BaseStore implements IUsersStore {
 
 	public get isLoadingUser() {
 		return this.getAsyncStatus(this.asyncStatuses.getUser).loading;
+	}
+
+	public get isLoadingDeleteUser() {
+		return this.getAsyncStatus(this.asyncStatuses.deleteUser).loading;
 	}
 
 	private setUser(user: IUser) {
@@ -186,14 +192,18 @@ export class UsersStore extends BaseStore implements IUsersStore {
 
 	public async deleteUsers(ids: IUser["id"][] = []) {
 		if(!ids || !ids.length) return;
+		const key = this.asyncStatuses.deleteUser;
+		this.setLoading(key);
 		try {
 			await api.usersService.deleteUsers(ids);
 			for (const id of ids) {
 				this.usersMap.delete(id);
 			}
 			await this.rootStore.departmentsStore.getDepartments();
+			this.setSuccess(key);
 		} catch (err) {
 			console.error(err);
+			this.setError(key);
 		}
 	}
 }

@@ -11,6 +11,10 @@ import {
 	allGreen400,
 	allGreen500,
 	allGreen800,
+	allRed200,
+	allRed300,
+	allRed400,
+	allRed700,
 	allStone400,
 	allStone500,
 	allStone600,
@@ -54,13 +58,20 @@ const navLinkColorActive = allGreen500;
 const navLinkColorHover = allGreen400;
 const navLinkColorPressed = allGreen800;
 
-// button - contained
+// button - contained primary
 const buttonContainedPrimaryDefault = allGreen500;
 const buttonContainedPrimaryHovered = `${allGreen500}66`;
 const buttonContainedPrimaryPressed = buttonContainedPrimaryHovered;
-const buttonContainedPrimaryDisabled = allGreen200;
+const buttonContainedPrimaryDisabled = allRed200;
 const buttonContainedPrimaryOnSurfaceDefault = allStone400;
 const buttonContainedPrimaryOnSurfaceDisabled = allStone600;
+// button - contained error
+const buttonContainedErrorDefault = allRed400;
+const buttonContainedErrorHovered = allRed300;
+const buttonContainedErrorPressed = allRed700;
+const buttonContainedErrorDisabled = allRed200;
+const buttonContainedErrorOnSurfaceDefault = allStone400;
+const buttonContainedErrorOnSurfaceDisabled = allStone600;
 // button - outlined primary
 const buttonOutlineDefault = allGreen200;
 const buttonOutlinedPrimaryDefault = 'transparent';
@@ -161,6 +172,7 @@ const calendarSurfaceBorderDefault = allGray300;
 const loaderSurfaceDefault = allGreen500;
 const loaderSurfaceSecondary = typographyPrimary;
 const loaderSurfaceAlternative = allGray600;
+const loaderSurfaceError = allGray400;
 
 // table
 const tableHeadBackgroundDefault = '#F2F4F833';
@@ -209,6 +221,13 @@ export const extendPalette: IExtendPalette = {
 	buttonContainedPrimaryDisabled,
 	buttonContainedPrimaryOnSurfaceDefault,
 	buttonContainedPrimaryOnSurfaceDisabled,
+	//
+	buttonContainedErrorDefault,
+	buttonContainedErrorHovered,
+	buttonContainedErrorPressed,
+	buttonContainedErrorDisabled,
+	buttonContainedErrorOnSurfaceDefault,
+	buttonContainedErrorOnSurfaceDisabled,
 	//
 	buttonOutlineDefault,
 	buttonOutlinedPrimaryDefault,
@@ -298,6 +317,7 @@ export const extendPalette: IExtendPalette = {
 	loaderSurfaceDefault,
 	loaderSurfaceSecondary,
 	loaderSurfaceAlternative,
+	loaderSurfaceError,
 	//
 	tableHeadBackgroundDefault,
 	tableBodyBackgroundDefault,

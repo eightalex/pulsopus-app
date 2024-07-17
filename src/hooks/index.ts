@@ -5,4 +5,5 @@ export { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 export { useOnClickOutside } from './useOnClickOutside';
 export { useSkipper } from './useSkipper.ts';
 export { useStores } from './useStores';
+export { useToggle } from './useToggle.ts';
 export { useWindowSize } from './useWindowSize';

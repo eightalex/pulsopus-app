@@ -1,6 +1,6 @@
 import ReactDOM from 'react-dom/client';
 
-import Root from '@/modules/Root';
+import Root from '@/root';
 
 const rootId = 'root';
 
