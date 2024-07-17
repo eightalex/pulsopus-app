@@ -7,12 +7,11 @@ import { unstable_HistoryRouter as HistoryRouter } from 'react-router-dom';
 
 import Typography from "@/components/Typography";
 import { APP_VERSION, IS_DEV } from "@/config";
+import { BASELINE } from "@/constants/routes.ts";
 import { useStores } from "@/hooks";
-import { NotificationContainer } from '@/modules/root/NotificationContainer';
+import { NotificationContainer } from '@/root/NotificationContainer.tsx';
 import { RootRoutes } from "@/routes/RootRoutes.tsx";
 import Theme from '@/theme';
-
-const BASELINE = '/';
 
 const BuildVersion = () => {
     if (!IS_DEV) {

@@ -1,8 +1,10 @@
-import { AUTO_CLOSE_TIMEOUT } from '@/constants/toast';
-import { useWindowSize } from '@/hooks';
+import 'react-toastify/dist/ReactToastify.css';
+
 import { useMemo } from 'react';
 import { Bounce, ToastContainer, ToastContainerProps } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+
+import { AUTO_CLOSE_TIMEOUT } from '@/constants/toast.ts';
+import { useWindowSize } from '@/hooks';
 
 export const NotificationContainer = () => {
 	const { breakpoints } = useWindowSize();

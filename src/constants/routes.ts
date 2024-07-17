@@ -1,6 +1,8 @@
+export const BASELINE = '/';
+
 // ROOT
 export const ROOT_ID: string = 'root';
-export const ROOT_ROUTE: string = '/';
+export const ROOT_ROUTE: string = BASELINE;
 
 // PEOPLE DYNAMIC
 export const PEOPLE_DYNAMIC_ROUTE: string = 'team';

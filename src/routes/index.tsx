@@ -1,11 +1,12 @@
 import { lazy } from "react";
 import { createBrowserRouter, Navigate, Outlet, RouteObject } from 'react-router-dom';
+import { InitialRequester } from "src/root";
 
 import { LayoutSideBar } from '@/components/Layout';
 import { LazyLoader } from "@/components/LazyLoader";
 import { EUserRole } from "@/constants/EUser.ts";
 import {
-    ADMINISTRATION_ROUTE,
+    ADMINISTRATION_ROUTE, BASELINE,
     DIAGRAM_ROUTE, DOCUMENTS_DESCRIPTIONS, DOCUMENTS_TITLES,
     EVENTS_ROUTE,
     PEOPLE_DYNAMIC_ROUTE,
@@ -13,7 +14,6 @@ import {
     ROOT_ID,
     ROOT_ROUTE,
 } from '@/constants/routes';
-import { InitialRequester } from "@/modules/root";
 import { RootRoleNavigate } from "@/routes/RootRoleNavigate.tsx";
 
 import { ProtectedRoute } from "./ProtectedRoute.tsx";
@@ -118,4 +118,4 @@ export const routes: RouteObject[] = [
     }
 ];
 
-export const router = createBrowserRouter(routes, { window, basename: '/' });
+export const router = createBrowserRouter(routes, { window, basename: BASELINE });
