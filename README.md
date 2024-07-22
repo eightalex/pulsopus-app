@@ -1,30 +1,74 @@
-# React + TypeScript + Vite
+# Pulsopus APP
+React + TypeScript + Vite + SWC
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Environment vars
+This project uses the following environment variables:
 
-Currently, two official plugins are available:
+| Name        | Description                 | Default Value |
+|-------------|-----------------------------|---------------|
+| CLIENT_URL  | link to pulsopus client     | *             |
+| APP_URL     | link to pulsopus app        | *             |
+| API_URL     | link to pulsopus api        | *             |
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+#### Technologies
+`react + typescript`, `material`, `mobx`, `d3`
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+```sh
+pulsopus-app
+├── dist/   # Output folder from build
+├── node_modules/   # Library root
+├── public/
+├── src/
+│   ├── api/        # API-related files
+│   ├── assets/     # Static assets (images, fonts, etc.)
+│   ├── components/ # React components
+│   ├── config/     # Configuration file
+│   ├── constants/  # Application constants
+│   ├── contexts/   # React contexts for state management
+│   ├── entities/   # Data entities and models
+│   ├── helpers/    # Utility functions and helpers
+│   ├── hooks/      # Custom React hooks
+│   ├── icons/      # Icon components
+│   ├── interfaces/ # TypeScript interfaces
+│   ├── models/     # Data models
+│   ├── modules/    # Application modules
+│   ├── root/       # Root components and application entry point
+│   ├── routes/     # Route definitions
+│   ├── stores/     # State management stores
+│   ├── theme/      # Theme and styling
+│   ├── utils/      # Utility functions
+│   ├── .eslintrc.cjs # ESLint configuration
+│   ├── main.tsx    # Main application entry file
+│   ├── vite-env.d.ts # TypeScript environment definitions for Vite
+├── .env        # Environment variables
+├── .eslintc.cjs    # ESLint configuration
+├── .gitignore      # Git ignore file
+├── docker-compose.yaml # Docker Compose configuration
+├── Dockerfile      # Docker configuration file
+├── index.html      # HTML entry point
+├── nginx.conf      # Nginx configuration file
+├── package.json    # NPM package configuration
+├── README.md       # Project documentation
+├── tsconfig.json   # TypeScript configuration
+├── tsconfig.node.json # TypeScript node configuration
+├── vite.config.ts  # Vite configuration
+├── yarn.lock       # Yarn lock file
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+### Installation
+```sh
+$ yarn install
+```
+
+### Running the app
+#### dev
+```sh
+$ yarn dev
+```
+
+#### prod
+```sh
+$ docker-compose up -d --build
+```
+
+### see more script [here](./package.json)
