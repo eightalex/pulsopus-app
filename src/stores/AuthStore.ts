@@ -79,8 +79,8 @@ export class AuthStore extends BaseStore implements IAuthStore {
 		const key = this.asyncStatuses.logout;
 		this.setLoading(key);
 		try {
-			sessionManager.removeTokens();
 			await api.authService.onLogout();
+			sessionManager.removeTokens();
 			runInAction(() => {
 				this.user = undefined;
 				this.setSuccess(key);
