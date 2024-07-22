@@ -22,7 +22,7 @@ pulsopus-app
 │   ├── api/        # API-related files
 │   ├── assets/     # Static assets (images, fonts, etc.)
 │   ├── components/ # React components
-│   ├── config/     # Configuration file
+│   ├── config/     # Configuration files
 │   ├── constants/  # Application constants
 │   ├── contexts/   # React contexts for state management
 │   ├── entities/   # Data entities and models
@@ -37,9 +37,7 @@ pulsopus-app
 │   ├── stores/     # State management stores
 │   ├── theme/      # Theme and styling
 │   ├── utils/      # Utility functions
-│   ├── .eslintrc.cjs # ESLint configuration
 │   ├── main.tsx    # Main application entry file
-│   ├── vite-env.d.ts # TypeScript environment definitions for Vite
 ├── .env        # Environment variables
 ├── .eslintc.cjs    # ESLint configuration
 ├── .gitignore      # Git ignore file
@@ -70,5 +68,3 @@ $ yarn dev
 ```sh
 $ docker-compose up -d --build
 ```
-
-### see more script [here](./package.json)
