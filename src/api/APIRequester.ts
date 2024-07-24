@@ -21,7 +21,7 @@ export class APIRequester {
 
 	private createAxiosInstance() {
 		const axiosDefaults = {
-			withCredentials: false,
+			withCredentials: true,
 			baseURL: API_URL,
 		} as CreateAxiosDefaults;
 		const axiosInstance = axios.create(axiosDefaults);
