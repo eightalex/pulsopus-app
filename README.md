@@ -63,6 +63,7 @@ $ yarn install
 ```sh
 $ yarn dev
 ```
+#### Default dev port: 5173. Open [localhost](http://localhost:5173)
 
 #### prod
 ```sh
