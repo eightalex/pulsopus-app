@@ -43,41 +43,25 @@ export class APIRequester {
 				return response;
 			},
 			async (error) => {
-				if (error.response && error.response.status === 401) {
-					// dev p2p interceptors
-					if (IS_DEV) {
-						// alert('401 error ' + JSON.stringify(error.response, null, 4));
+				const originalRequest = error.config;
+				if (IS_DEV) {
+					console.log('Request error', error);
+				}
+
+				if (error.response.status === 401 && !originalRequest._retry) {
+					originalRequest._retry = true;
+					try {
+						const refreshUrl = `${originalRequest.baseURL}/auth/refresh`;
+						const instance = axios.create({ withCredentials: true });
+						await instance.post(refreshUrl);
+						return axiosInstance(originalRequest);
+					} catch (refreshError) {
+						console.error('Token refresh failed:', refreshError);
+						sessionManager.removeTokens();
+						return Promise.reject(refreshError);
 					}
 				}
-				// const originalConfig = error.config;
-				// const requestError = new RequestError(error);
-				//
-				// const authPath = (originalConfig.url as string)
-				// 	.split('/')
-				// 	.find((u) => ['login', 'register'].includes(u));
-				//
-				// if (!authPath && error.response.status === 401 && !originalConfig._retry) {
-				// 	originalConfig._retry = true;
-				//
-				// 	try {
-				// 		const { refreshToken } = await this.authService.getTokens();
-				// 		const refreshUrl = `${originalConfig.baseURL}/auth/refresh`;
-				// 		const headers = { Authorization: `Bearer ${refreshToken}` };
-				// 		const data = await axios
-				// 			.get<IAuthAuthorize>(refreshUrl, { headers })
-				// 			.then(r => r.data as IAuthAuthorize);
-				// 		await this.authService.setTokens(data);
-				// 		return axiosInstance(originalConfig);
-				// 	} catch (_error) {
-				// 		await this.authService.clearTokens();
-				// 		//TODO: how to get router instance ?
-				// 		// router.push({path: "/login"})
-				//
-				// 		// @ts-expect-error: _error typeof unknown
-				// 		return Promise.reject(_error.response);
-				// 	}
-				// }
-				return Promise.reject(error.response);
+				return Promise.reject(error);
 			}
 		);
 
