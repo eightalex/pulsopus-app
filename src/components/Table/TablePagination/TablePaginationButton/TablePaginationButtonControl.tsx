@@ -50,9 +50,9 @@ export const TablePaginationButtonControl: FC<ITablePaginationButtonProps> = (pr
             title={text}
         >
             <Typography
-                color='inherit'
-                textAlign='center'
-                variant='body1'
+              color='inherit'
+              textAlign='center'
+              variant='body1'
             >
                 {text}
             </Typography>

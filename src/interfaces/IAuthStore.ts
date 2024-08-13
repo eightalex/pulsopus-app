@@ -16,6 +16,7 @@ export interface IAuthStore {
 	isLoadingLogin: boolean;
 	isLoadingLogout: boolean;
 	isLoadingAuth: boolean;
+	isLoadingRedirectLogin: boolean;
 
 	isLoginError: boolean;
 
@@ -23,4 +24,5 @@ export interface IAuthStore {
 
 	onAuthorize: (redirect?: string) => Promise<void>;
 	onLogout: () => Promise<void>;
+	onRedirectLogin: () => void;
 }

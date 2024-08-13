@@ -25,7 +25,14 @@ const BuildVersion = () => {
                 left: 0,
             }}
         >
-            <Typography variant="caption1">v{APP_VERSION}</Typography>
+            <Typography
+              variant="caption1"
+              sx={{
+                userSelect: 'none',
+              }}
+            >
+              v{APP_VERSION}
+            </Typography>
         </Stack>
     );
 };

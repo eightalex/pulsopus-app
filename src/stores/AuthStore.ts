@@ -11,6 +11,7 @@ export class AuthStore extends BaseStore implements IAuthStore {
 	private asyncStatuses = {
 		login: this.createKey('login'),
 		logout: this.createKey('logout'),
+		redirectLogin: this.createKey('redirect_login'),
 	};
 
 	constructor(rootStore: IRootStore) {
@@ -25,11 +26,13 @@ export class AuthStore extends BaseStore implements IAuthStore {
 			isLoadingLogin: computed,
 			isLoadingLogout: computed,
 			isLoadingAuth: computed,
+			isLoadingRedirectLogin: computed,
 			isLoginError: computed,
 			isAuthorized: computed,
 
 			onAuthorize: action.bound,
 			onLogout: action.bound,
+			onRedirectLogin: action.bound,
 		});
 	}
 
@@ -43,6 +46,10 @@ export class AuthStore extends BaseStore implements IAuthStore {
 
 	public get isLoadingAuth() {
 		return this.isLoadingLogin || this.isLoadingLogout;
+	}
+
+	public get isLoadingRedirectLogin() {
+		return this.getAsyncStatus(this.asyncStatuses.redirectLogin).loading;
 	}
 
 	public get isLoginError(): boolean {
@@ -90,6 +97,21 @@ export class AuthStore extends BaseStore implements IAuthStore {
 			this.setError(key);
 		} finally {
 			window.location.replace(CLIENT_URL);
+		}
+	}
+
+	public async onRedirectLogin(): Promise<void> {
+		const key = this.asyncStatuses.redirectLogin;
+		this.setLoading(key);
+		try {
+			sessionManager.removeTokens();
+			await api.authService.onRedirectClient();
+			runInAction(() => {
+				this.user = undefined;
+				this.setSuccess(key);
+			});
+		} finally {
+			this.resetAsyncStatus(key);
 		}
 	}
 
