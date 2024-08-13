@@ -1,23 +1,26 @@
-import { action, computed, makeObservable, observable } from 'mobx';
+import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import { EUserStatus } from "@/constants/EUser.ts";
 import { IAdministrationStore, IRootStore, IUser } from '@/interfaces';
 import { BaseStore } from './BaseStore';
 
 export class AdministrationStore extends BaseStore implements IAdministrationStore {
 	public globalFilter: string = '';
+	public usersToDelete: IUser[] = [];
 	private cronInterval: ReturnType<typeof setInterval> | null = null;
 	private readonly cronTimeout = 10000;
 	constructor(rootStore: IRootStore) {
 		super(rootStore);
 		makeObservable(this, {
 			globalFilter: observable,
+			usersToDelete: observable,
 			//
 			users: computed,
 			// actions
 			setGlobalFilter: action.bound,
+			setUsersToDelete: action.bound,
 			//
-			mountStore: action.bound,
-			unmountStore: action.bound,
+			mount: action.bound,
+			unmount: action.bound,
 		});
 	}
 
@@ -43,10 +46,17 @@ export class AdministrationStore extends BaseStore implements IAdministrationSto
 		this.clearCronData();
 		await this.rootStore.usersStore.requestUsers();
 		await this.rootStore.departmentsStore.requestDepartments();
+		return;
 		this.cronInterval = setInterval(async () => {
 			await this.rootStore.usersStore.requestUsers();
 			await this.rootStore.departmentsStore.requestDepartments();
 		}, this.cronTimeout);
+	}
+
+	public setUsersToDelete(users: IUser[]): void {
+		runInAction(() => {
+			this.usersToDelete = [...new Set([...users])];
+		});
 	}
 
 	private resetStore() {
@@ -54,11 +64,11 @@ export class AdministrationStore extends BaseStore implements IAdministrationSto
 		this.globalFilter = '';
 	}
 
-	public async mountStore() {
+	public async mount() {
 		await this.createCronData();
 	}
 
-	public unmountStore() {
+	public unmount() {
 		this.resetStore();
 	}
 }

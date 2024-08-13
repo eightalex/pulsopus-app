@@ -9,18 +9,18 @@ export const AdministrationModule = observer(() => {
     const {
         rootStore: {
             administrationStore: {
-                mountStore,
-                unmountStore
+                mount,
+                unmount
             }
         }
     } = useStores();
 
     useLayoutEffect(() => {
-        mountStore();
+        mount();
         return () => {
-            unmountStore();
+            unmount();
         };
-    }, [mountStore, unmountStore]);
+    }, [mount, unmount]);
 
     return (
         <ContentContainer
