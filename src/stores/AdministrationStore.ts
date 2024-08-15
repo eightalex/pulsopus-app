@@ -46,7 +46,6 @@ export class AdministrationStore extends BaseStore implements IAdministrationSto
 		this.clearCronData();
 		await this.rootStore.usersStore.requestUsers();
 		await this.rootStore.departmentsStore.requestDepartments();
-		return;
 		this.cronInterval = setInterval(async () => {
 			await this.rootStore.usersStore.requestUsers();
 			await this.rootStore.departmentsStore.requestDepartments();

@@ -4,14 +4,14 @@ import { observer } from "mobx-react";
 import { AdministrationTable } from "./AdministrationTable.tsx";
 
 export const AdministrationContent = observer(() => {
-    return (
-        <Stack
-            sx={{
-                width: '100%',
-                flexGrow: 1,
-            }}
-        >
-            <AdministrationTable/>
-        </Stack>
-    );
+  return (
+    <Stack
+      sx={{
+        width: '100%',
+        flexGrow: 1,
+      }}
+    >
+      <AdministrationTable/>
+    </Stack>
+  );
 });

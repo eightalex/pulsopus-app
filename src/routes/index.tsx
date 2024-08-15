@@ -44,9 +44,9 @@ export const routes: RouteObject[] = [
     element: (
       <ProtectedRoute>
         <LayoutSideBar>
-          {/*    <InitialRequester>*/}
-          {/*    </InitialRequester>*/}
-          <Outlet/>
+          <InitialRequester>
+            <Outlet/>
+          </InitialRequester>
         </LayoutSideBar>
       </ProtectedRoute>
     ),
