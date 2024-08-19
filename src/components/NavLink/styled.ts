@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 
 interface INavLinkStyledProps {
 	isActive: boolean;

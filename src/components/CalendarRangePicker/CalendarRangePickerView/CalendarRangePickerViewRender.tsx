@@ -20,59 +20,21 @@ const isEqualsDate = (d1: TDateValue, d2: TDateValue): boolean => {
   return moment(d1).startOf('day').valueOf() === moment(d2).startOf('day').valueOf();
 };
 
-// TODO: refactor from/to/values types
-export const CalendarRangePickerView: FC<ICalendarRangePickerViewProps> = (props) => {
-  const { from, to, onSetPeriod, onSetRange, period } = props;
-  const containerRef = useRef<HTMLDivElement>();
+export const CalendarRangePickerViewRender: FC<ICalendarRangePickerViewProps> = (props) => {
+  const wrapperRef = useRef<HTMLDivElement>();
+  const contentRef = useRef<HTMLDivElement>();
   const [offset, setOffset] = useState(0);
-  const [hoveredRange, setHoveredRange] = useState<ICalendarRange | null>({ from, to });
-
-  const showCustomInputs = useMemo(() => period === EPeriodTypes.CUSTOM, [period]);
-
-  const calendarValues = useMemo(() => [from, to].filter(t => !!t).map(d => moment(d).toDate()), [from, to]);
-
-  const valueInputFrom = useMemo(() => {
-    const d = hoveredRange?.from;
-    return dateValidate(d) ? moment(d).toDate() : calendarValues[0];
-  }, [hoveredRange?.from, calendarValues]);
-
-  const valueInputTo = useMemo(() => {
-    const d = hoveredRange?.to;
-    return dateValidate(d) ? moment(d).toDate() : calendarValues[1];
-  }, [hoveredRange?.to, calendarValues]);
-
-  const handleHoveredDays = useCallback((days: Array<Date | null>) => {
-    // TODO: implement feat
-    return;
-    const [f, t] = days
-      .filter(d => Boolean(d) && moment(d).isValid())
-      .map(d => moment(d).valueOf())
-      .sort((p, n) => p - n);
-    setHoveredRange({ from: f, to: t });
-  }, []);
-
-  const handleChange = useCallback((value) => {
-    onSetPeriod?.(EPeriodTypes.CUSTOM);
-    const values = Array.isArray(value) ? value : [value];
-    const [f, t] = values
-      .filter(d => moment(d).isValid())
-      .map(d => moment(d).valueOf())
-      .sort((a, b) => a - b);
-    const calendarRange = { from: f, to: t };
-    onSetRange?.(calendarRange);
-    setHoveredRange(null);
-  }, [onSetPeriod, onSetRange]);
 
   const calculatePeriodTopOffset = useCallback(() => {
-    if (!containerRef || !containerRef.current) return;
-    const view = containerRef.current?.querySelector('.react-calendar__navigation');
+    if (!wrapperRef || !wrapperRef.current) return;
+    const view = wrapperRef.current?.querySelector('.react-calendar__navigation');
     if (!view) return;
-    const parentRect = containerRef.current?.getBoundingClientRect();
+    const parentRect = wrapperRef.current?.getBoundingClientRect();
     const childRect = view.getBoundingClientRect();
     const offset = childRect.y - parentRect.y;
     const pd = 10;
     setOffset(offset - pd);
-  }, [containerRef, showCustomInputs]);
+  }, [wrapperRef, showCustomInputs]);
 
   useEffect(() => {
     calculatePeriodTopOffset();
@@ -82,7 +44,7 @@ export const CalendarRangePickerView: FC<ICalendarRangePickerViewProps> = (props
 
   return (
     <Stack
-      ref={containerRef as unknown as RefObject<HTMLDivElement>}
+      ref={wrapperRef as unknown as RefObject<HTMLDivElement>}
       direction="row"
       divider={<Divider orientation="vertical" flexItem />}
     >

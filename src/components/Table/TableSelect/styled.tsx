@@ -1,5 +1,5 @@
 import Select, { SelectProps } from "@mui/material/Select";
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 
 import { ETableSelectType } from "@/components/Table/TableSelect";
 

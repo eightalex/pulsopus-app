@@ -93,45 +93,45 @@ const DateInput: FC<IDateInputProps> = (props) => {
 
   const [startDate, setStartDate] = useState(new Date());
 
-  return (
-    <DatePicker
-      // selected={startDate}
-      // onChange={(date) => setStartDate(date)}
-      dateFormat="dd.MM.yyyy"
-      dateFormatCalendar="dd.MM.yyyy"
-      showDateSelect={false}
-      showPreviousMonths={false}
-      showMonthYearPicker={false}
-      showFullMonthYearPicker={false}
-      showTwoColumnMonthYearPicker={false}
-      showFourColumnMonthYearPicker={false}
-      customInput={
-        <DateInputMastStyled
-          mask={mask}
-          value={currentState}
-          maskChar={' '}
-          // onChange={handleChange}
-          alwaysShowMask={false}
-          formatChars={formatChars}
-          beforeMaskedValueChange={beforeMaskedValueChange}
-        >
-          {(params) => (
-            <Stack direction="row" spacing={0} >
-              <DateInputStyled
-                // type="date"
-                type="tel"
-                inputRef={inputRef}
-                {...params}
-                active={active}
-                onFocus={handleFocus}
-                onBlur={handleBlur}
-              />
-            </Stack>
-          )}
-        </DateInputMastStyled>
-      }
-    />
-  );
+  // return (
+  //   <DatePicker
+  //     // selected={startDate}
+  //     // onChange={(date) => setStartDate(date)}
+  //     dateFormat="dd.MM.yyyy"
+  //     dateFormatCalendar="dd.MM.yyyy"
+  //     showDateSelect={false}
+  //     showPreviousMonths={false}
+  //     showMonthYearPicker={false}
+  //     showFullMonthYearPicker={false}
+  //     showTwoColumnMonthYearPicker={false}
+  //     showFourColumnMonthYearPicker={false}
+  //     customInput={
+  //       <DateInputMastStyled
+  //         mask={mask}
+  //         value={currentState}
+  //         maskChar={' '}
+  //         // onChange={handleChange}
+  //         alwaysShowMask={false}
+  //         formatChars={formatChars}
+  //         beforeMaskedValueChange={beforeMaskedValueChange}
+  //       >
+  //         {(params) => (
+  //           <Stack direction="row" spacing={0} >
+  //             <DateInputStyled
+  //               // type="date"
+  //               type="tel"
+  //               inputRef={inputRef}
+  //               {...params}
+  //               active={active}
+  //               onFocus={handleFocus}
+  //               onBlur={handleBlur}
+  //             />
+  //           </Stack>
+  //         )}
+  //       </DateInputMastStyled>
+  //     }
+  //   />
+  // );
 
 
   // return (
@@ -165,35 +165,30 @@ const DateInput: FC<IDateInputProps> = (props) => {
   //   </DateInputMastStyled>
   // );
 
-  // return (
-  //   <DateInputMastStyled
-  //     mask={mask}
-  //     value={currentState}
-  //     maskChar={' '}
-  //     onChange={handleChange}
-  //     alwaysShowMask={false}
-  //     formatChars={formatChars}
-  //     beforeMaskedValueChange={beforeMaskedValueChange}
-  //   >
-  //     {(params) => (
-  //       <Stack
-  //         direction="row"
-  //         spacing={0}
-  //       >
-  //         <DateInputStyled
-  //           type="tel"
-  //           inputRef={inputRef}
-  //           {...params}
-  //           active={active}
-  //           onFocus={handleFocus}
-  //           onBlur={handleBlur}
-  //         >
-  //           <Typography>params</Typography>
-  //         </DateInputStyled>
-  //       </Stack>
-  //     )}
-  //   </DateInputMastStyled>
-  // );
+  return (
+    <DateInputMastStyled
+      mask={mask}
+      value={currentState}
+      maskChar={' '}
+      onChange={handleChange}
+      alwaysShowMask={false}
+      formatChars={formatChars}
+      beforeMaskedValueChange={beforeMaskedValueChange}
+    >
+      {(params) => (
+        <Stack direction="row" spacing={0} >
+          <DateInputStyled
+            type="tel"
+            inputRef={inputRef}
+            {...params}
+            active={active}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+          />
+        </Stack>
+      )}
+    </DateInputMastStyled>
+  );
 };
 
 export default memo(DateInput);

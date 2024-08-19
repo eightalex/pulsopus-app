@@ -1,6 +1,6 @@
 import Stack, { StackProps } from "@mui/material/Stack";
+import { styled } from '@mui/material/styles';
 import TableCell, { TableCellProps } from '@mui/material/TableCell';
-import { styled } from '@mui/system';
 
 import { DEFAULT_ROW_HEAD_HEIGHT } from "@/components/Table";
 

@@ -1,5 +1,5 @@
-import { EPeriodTypes } from './constants';
 import { ReactNode, RefObject } from 'react';
+import { EPeriodTypes } from './constants';
 
 export interface ICalendarRange {
 	from?: number;
@@ -23,7 +23,23 @@ export interface ICalendarRangePickerViewProps extends ICalendarRange {
 }
 
 export interface ICalendarRangePickerDropdownProps {
-	onClose?: () => void;
+	onClose?: (e: MouseEvent) => void;
 	children: ReactNode;
 	targetRef?: RefObject<HTMLDivElement | undefined>;
+}
+
+export interface ICalendarRangePeriodItemProps {
+	label: string;
+	value: EPeriodTypes;
+	isActive?: boolean;
+	onClick?: (value: EPeriodTypes) => void;
+}
+
+export interface ICalendarRangePeriodListProps extends Pick<ICalendarRangePeriodItemProps, 'onClick'>{
+	onChangePeriod?: (value: EPeriodTypes) => void;
+	options?: Pick<ICalendarRangePeriodItemProps, 'label' | 'value'>[];
+	checkIsActive?: (value: EPeriodTypes) => boolean;
+}
+
+export interface ICalendarRangePeriodsProps extends ICalendarRangePickerProps, Pick<ICalendarRangePeriodListProps, 'options'> {
 }

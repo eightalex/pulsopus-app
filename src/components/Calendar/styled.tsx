@@ -1,5 +1,5 @@
 import Stack, { StackProps } from '@mui/material/Stack';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 
 interface IContainerStyledProps {
 	fullLine: boolean;

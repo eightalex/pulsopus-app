@@ -1,7 +1,7 @@
+import { styled } from '@mui/material/styles';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import { styled } from '@mui/system';
 
 import { DEFAULT_ROW_BODY_HEIGHT } from "@/components/Table";
 

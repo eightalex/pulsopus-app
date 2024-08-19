@@ -15,13 +15,13 @@ export const enum EPeriodTypes {
 }
 
 export const periodList = [
-	{ label: 'last week', value: EPeriodTypes.WEEK_1},
-	{ label: '10 days', value: EPeriodTypes.DAY_10},
-	{ label: '1 month', value: EPeriodTypes.MONTH_1},
-	{ label: '3 month', value: EPeriodTypes.MONTH_3},
-	{ label: '6 month', value: EPeriodTypes.MONTH_6},
-	{ label: '1 year', value: EPeriodTypes.YEAR_1},
-	{ label: 'custom', value: EPeriodTypes.CUSTOM},
-]
+	{ label: 'last week', value: EPeriodTypes.WEEK_1 },
+	{ label: '10 days', value: EPeriodTypes.DAY_10 },
+	{ label: '1 month', value: EPeriodTypes.MONTH_1 },
+	{ label: '3 month', value: EPeriodTypes.MONTH_3 },
+	{ label: '6 month', value: EPeriodTypes.MONTH_6 },
+	{ label: '1 year', value: EPeriodTypes.YEAR_1 },
+	{ label: 'custom', value: EPeriodTypes.CUSTOM },
+];
 
 export const CALENDAR_DROPDOWN_TOP_OFFSET = 6;

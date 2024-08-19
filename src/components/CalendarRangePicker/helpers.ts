@@ -1,16 +1,16 @@
+import moment, { unitOfTime } from 'moment';
 import {
 	EPeriodTypes,
 	PERIOD_RANGE_SEPARATOR,
 	PERIOD_VALUES_SEPARATOR
 } from '@/components/CalendarRangePicker/constants';
 import { ICalendarRange } from '@/components/CalendarRangePicker/types';
-import moment, { unitOfTime } from 'moment';
 
 export const dateFormat = (date: number | undefined, format: string) => date && moment(date).format(format);
 
-export const dateFormatFull = (date: number | undefined) => dateFormat(date, 'DD MMM YYYY');
+export const dateFormatFull = (date: number | undefined) => dateFormat(date, 'll');
 
-export const getRangePeriod = (period: EPeriodTypes): ICalendarRange => {
+export const getRangeFromPeriod = (period: EPeriodTypes): ICalendarRange => {
 	if(!period) return;
 	const p = `${period}` as string;
 	const [periodFrom, periodTo] = p.split(PERIOD_RANGE_SEPARATOR);
@@ -33,5 +33,10 @@ export const getRangePeriod = (period: EPeriodTypes): ICalendarRange => {
 		.subtract(diffTo, unitTo)
 		.valueOf();
 	return { from, to };
+};
+
+export const getPeriodFromRange = (range: ICalendarRange): EPeriodTypes => {
+	// console.log('Object.entries(EPeriodTypes)', Object.entries(EPeriodTypes));
+	return EPeriodTypes.CUSTOM;
 };
 
