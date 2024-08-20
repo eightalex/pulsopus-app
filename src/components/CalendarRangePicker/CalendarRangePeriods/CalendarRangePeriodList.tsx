@@ -8,8 +8,9 @@ export const CalendarRangePeriodList: FC<ICalendarRangePeriodListProps> = (props
   const {
     options = [],
     checkIsActive = () => false,
-    onClick
+    onClickPeriod
   } = props;
+
   return (
     <Stack
       sx={{
@@ -20,7 +21,7 @@ export const CalendarRangePeriodList: FC<ICalendarRangePeriodListProps> = (props
       {options.map(({ label, value }) => (
         <CalendarRangePeriodItem
           key={`${label}-${value}`}
-          onClick={onClick}
+          onClick={onClickPeriod}
           label={label}
           value={value}
           isActive={Boolean(checkIsActive?.(value))}

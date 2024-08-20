@@ -35,11 +35,14 @@ export interface ICalendarRangePeriodItemProps {
 	onClick?: (value: EPeriodTypes) => void;
 }
 
-export interface ICalendarRangePeriodListProps extends Pick<ICalendarRangePeriodItemProps, 'onClick'>{
-	onChangePeriod?: (value: EPeriodTypes) => void;
+export interface ICalendarRangePeriodListProps {
+	onClickPeriod?: (value: EPeriodTypes) => void;
 	options?: Pick<ICalendarRangePeriodItemProps, 'label' | 'value'>[];
 	checkIsActive?: (value: EPeriodTypes) => boolean;
 }
 
-export interface ICalendarRangePeriodsProps extends ICalendarRangePickerProps, Pick<ICalendarRangePeriodListProps, 'options'> {
+export interface ICalendarRangePeriodsProps extends Pick<ICalendarRangePeriodListProps, 'options'> {
+	onChangePeriod?: (period: EPeriodTypes) => void;
+	onChangeRange?: (range: ICalendarRange) => void;
+	range: ICalendarRange;
 }

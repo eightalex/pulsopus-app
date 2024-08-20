@@ -1,7 +1,7 @@
 {
   "name": "pulsopus-app",
   "private": true,
-  "version": "0.0.72",
+  "version": "0.0.73",
   "author": "Bohdan Radchenko <radchenkobs@gmail.com>",
   "type": "module",
   "scripts": {

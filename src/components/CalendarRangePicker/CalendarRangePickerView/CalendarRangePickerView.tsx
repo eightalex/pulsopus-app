@@ -1,16 +1,17 @@
-import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import moment from 'moment';
 import { FC, RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import Calendar from '@/components/Calendar';
+import {
+  CalendarRangePickerViewWrapper
+} from "@/components/CalendarRangePicker/CalendarRangePickerView/CalendarRangePickerViewWrapper.tsx";
 import DateInput from '@/components/DateInput';
 import { MinusIcon } from '@/icons';
 
 import { CalendarRangePeriods } from "../CalendarRangePeriods";
 import { EPeriodTypes } from '../constants';
 import { ICalendarRange, ICalendarRangePickerViewProps } from '../types';
-import { CalendarRangePickerViewPeriods } from './CalendarRangePickerViewPeriods';
 
 type TDateValue = Date | moment | string | number | null | undefined;
 
@@ -24,7 +25,6 @@ const isEqualsDate = (d1: TDateValue, d2: TDateValue): boolean => {
 export const CalendarRangePickerView: FC<ICalendarRangePickerViewProps> = (props) => {
   const { from, to, onSetPeriod, onSetRange, period } = props;
   const containerRef = useRef<HTMLDivElement>();
-  const [offset, setOffset] = useState(0);
   const [hoveredRange, setHoveredRange] = useState<ICalendarRange | null>({ from, to });
 
   const showCustomInputs = useMemo(() => period === EPeriodTypes.CUSTOM, [period]);
@@ -63,79 +63,109 @@ export const CalendarRangePickerView: FC<ICalendarRangePickerViewProps> = (props
     setHoveredRange(null);
   }, [onSetPeriod, onSetRange]);
 
-  const calculatePeriodTopOffset = useCallback(() => {
-    if (!containerRef || !containerRef.current) return;
-    const view = containerRef.current?.querySelector('.react-calendar__navigation');
-    if (!view) return;
-    const parentRect = containerRef.current?.getBoundingClientRect();
-    const childRect = view.getBoundingClientRect();
-    const offset = childRect.y - parentRect.y;
-    const pd = 10;
-    setOffset(offset - pd);
-  }, [containerRef, showCustomInputs]);
-
-  useEffect(() => {
-    calculatePeriodTopOffset();
-  }, [calculatePeriodTopOffset]);
-
-  console.log('offset', offset);
-
   return (
-    <Stack
-      ref={containerRef as unknown as RefObject<HTMLDivElement>}
-      direction="row"
-      divider={<Divider orientation="vertical" flexItem />}
-    >
-      <CalendarRangePickerViewPeriods {...props} offset={offset}/>
-      <Stack
-        sx={{
-          opacity: offset ? 1 : 0,
-          paddingTop: `${offset}px`,
-        }}
-      >
-        <CalendarRangePeriods range={{ from, to }}/>
-      </Stack>
-      <Stack
-        spacing={0}
-        sx={({ spacing }) => ({
-          padding: spacing(6),
-        })}
-      >
-        {showCustomInputs && (
-          <Stack
-            direction="row"
-            spacing={1}
-            justifyContent="center"
-            alignItems="center"
-            mb={5}
-            maxWidth={234}
-          >
-            <DateInput
-              value={valueInputFrom}
-              onChange={date => handleChange([date, to])}
-              active={!isEqualsDate(valueInputFrom, calendarValues[0])}
-            />
-            <MinusIcon
-              sx={({ extendPalette }) => ({
-                width: 8, color: extendPalette.inputBorderSecondary
-              })}
-            />
-            <DateInput
-              value={valueInputTo}
-              onChange={date => handleChange([from, date])}
-              active={
-                (!isEqualsDate(valueInputTo, calendarValues[1]) &&
-                  isEqualsDate(valueInputFrom, calendarValues[0]))}
-            />
-          </Stack>
-        )}
-        <Calendar
-          value={calendarValues}
-          onChange={handleChange}
-          onHoveredDays={handleHoveredDays}
-          onActiveStartDateChange={() => onSetPeriod?.(EPeriodTypes.CUSTOM)}
+    <CalendarRangePickerViewWrapper
+      showCustomInput={showCustomInputs}
+      sideComponent={(
+        <CalendarRangePeriods
+          range={{ from, to }}
+          onChangeRange={onSetRange}
         />
-      </Stack>
-    </Stack>
+      )}
+      customInput={(
+        <Stack
+          direction="row"
+          spacing={1}
+          justifyContent="center"
+          alignItems="center"
+          mb={5}
+          maxWidth={234}
+        >
+          <DateInput
+            value={valueInputFrom}
+            onChange={date => handleChange([date, to])}
+            active={!isEqualsDate(valueInputFrom, calendarValues[0])}
+          />
+          <MinusIcon
+            sx={({ extendPalette }) => ({
+              width: 8, color: extendPalette.inputBorderSecondary
+            })}
+          />
+          <DateInput
+            value={valueInputTo}
+            onChange={date => handleChange([from, date])}
+            active={
+              (!isEqualsDate(valueInputTo, calendarValues[1]) &&
+                isEqualsDate(valueInputFrom, calendarValues[0]))}
+          />
+        </Stack>
+      )}
+    >
+      <Calendar
+        value={calendarValues}
+        onChange={handleChange}
+        onHoveredDays={handleHoveredDays}
+        onActiveStartDateChange={() => onSetPeriod?.(EPeriodTypes.CUSTOM)}
+      />
+    </CalendarRangePickerViewWrapper>
   );
+
+  // return (
+  //   <Stack
+  //     ref={containerRef as unknown as RefObject<HTMLDivElement>}
+  //     direction="row"
+  //     divider={<Divider orientation="vertical" flexItem />}
+  //   >
+  //     <CalendarRangePickerViewPeriods {...props} offset={offset}/>
+  //     <Stack
+  //       sx={{
+  //         opacity: offset ? 1 : 0,
+  //         paddingTop: `${offset}px`,
+  //       }}
+  //     >
+  //       <CalendarRangePeriods range={{ from, to }}/>
+  //     </Stack>
+  //     <Stack
+  //       spacing={0}
+  //       sx={({ spacing }) => ({
+  //         padding: spacing(6),
+  //       })}
+  //     >
+  //       {showCustomInputs && (
+  //         <Stack
+  //           direction="row"
+  //           spacing={1}
+  //           justifyContent="center"
+  //           alignItems="center"
+  //           mb={5}
+  //           maxWidth={234}
+  //         >
+  //           <DateInput
+  //             value={valueInputFrom}
+  //             onChange={date => handleChange([date, to])}
+  //             active={!isEqualsDate(valueInputFrom, calendarValues[0])}
+  //           />
+  //           <MinusIcon
+  //             sx={({ extendPalette }) => ({
+  //               width: 8, color: extendPalette.inputBorderSecondary
+  //             })}
+  //           />
+  //           <DateInput
+  //             value={valueInputTo}
+  //             onChange={date => handleChange([from, date])}
+  //             active={
+  //               (!isEqualsDate(valueInputTo, calendarValues[1]) &&
+  //                 isEqualsDate(valueInputFrom, calendarValues[0]))}
+  //           />
+  //         </Stack>
+  //       )}
+  //       <Calendar
+  //         value={calendarValues}
+  //         onChange={handleChange}
+  //         onHoveredDays={handleHoveredDays}
+  //         onActiveStartDateChange={() => onSetPeriod?.(EPeriodTypes.CUSTOM)}
+  //       />
+  //     </Stack>
+  //   </Stack>
+  // );
 };
