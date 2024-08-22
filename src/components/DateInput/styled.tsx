@@ -1,12 +1,9 @@
 import { styled } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
-import InputMask from 'react-input-mask';
 
 interface IDateInputStyledProps {
 	active: boolean;
 }
-
-export const DateInputMastStyled = styled(InputMask)({});
 
 export const DateInputStyled = styled(TextField, {
 	shouldForwardProp: (prop) => prop !== 'active',

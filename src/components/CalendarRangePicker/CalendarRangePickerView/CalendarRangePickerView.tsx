@@ -1,13 +1,13 @@
-import Stack from '@mui/material/Stack';
 import moment from 'moment';
-import { FC, RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FC, useCallback, useMemo, useRef, useState } from 'react';
 
 import Calendar from '@/components/Calendar';
 import {
+  CalendarRangePickerViewInputs
+} from "@/components/CalendarRangePicker/CalendarRangePickerView/CalendarRangePickerViewInputs.tsx";
+import {
   CalendarRangePickerViewWrapper
 } from "@/components/CalendarRangePicker/CalendarRangePickerView/CalendarRangePickerViewWrapper.tsx";
-import DateInput from '@/components/DateInput';
-import { MinusIcon } from '@/icons';
 
 import { CalendarRangePeriods } from "../CalendarRangePeriods";
 import { EPeriodTypes } from '../constants';
@@ -23,9 +23,10 @@ const isEqualsDate = (d1: TDateValue, d2: TDateValue): boolean => {
 
 // TODO: refactor from/to/values types
 export const CalendarRangePickerView: FC<ICalendarRangePickerViewProps> = (props) => {
-  const { from, to, onSetPeriod, onSetRange, period } = props;
+  const { from, to, onSetRange } = props;
   const containerRef = useRef<HTMLDivElement>();
   const [hoveredRange, setHoveredRange] = useState<ICalendarRange | null>({ from, to });
+  const [period, setPeriod] = useState<EPeriodTypes | null>(null);
 
   const showCustomInputs = useMemo(() => period === EPeriodTypes.CUSTOM, [period]);
 
@@ -52,7 +53,7 @@ export const CalendarRangePickerView: FC<ICalendarRangePickerViewProps> = (props
   }, []);
 
   const handleChange = useCallback((value) => {
-    onSetPeriod?.(EPeriodTypes.CUSTOM);
+    setPeriod?.(EPeriodTypes.CUSTOM);
     const values = Array.isArray(value) ? value : [value];
     const [f, t] = values
       .filter(d => moment(d).isValid())
@@ -61,51 +62,34 @@ export const CalendarRangePickerView: FC<ICalendarRangePickerViewProps> = (props
     const calendarRange = { from: f, to: t };
     onSetRange?.(calendarRange);
     setHoveredRange(null);
-  }, [onSetPeriod, onSetRange]);
+  }, [setPeriod, onSetRange]);
 
   return (
     <CalendarRangePickerViewWrapper
       showCustomInput={showCustomInputs}
       sideComponent={(
         <CalendarRangePeriods
-          range={{ from, to }}
+          period={period}
           onChangeRange={onSetRange}
+          onChangePeriod={setPeriod}
         />
       )}
       customInput={(
-        <Stack
-          direction="row"
-          spacing={1}
-          justifyContent="center"
-          alignItems="center"
-          mb={5}
-          maxWidth={234}
-        >
-          <DateInput
-            value={valueInputFrom}
-            onChange={date => handleChange([date, to])}
-            active={!isEqualsDate(valueInputFrom, calendarValues[0])}
-          />
-          <MinusIcon
-            sx={({ extendPalette }) => ({
-              width: 8, color: extendPalette.inputBorderSecondary
-            })}
-          />
-          <DateInput
-            value={valueInputTo}
-            onChange={date => handleChange([from, date])}
-            active={
-              (!isEqualsDate(valueInputTo, calendarValues[1]) &&
-                isEqualsDate(valueInputFrom, calendarValues[0]))}
-          />
-        </Stack>
+        <CalendarRangePickerViewInputs
+          from={valueInputFrom}
+          to={valueInputTo}
+          onChange={({ from, to }) => handleChange([from, to])}
+          isActiveFrom={!isEqualsDate(valueInputFrom, calendarValues[0])}
+          isActiveTo={(!isEqualsDate(valueInputTo, calendarValues[1]) &&
+            isEqualsDate(valueInputFrom, calendarValues[0]))}
+        />
       )}
     >
       <Calendar
         value={calendarValues}
         onChange={handleChange}
         onHoveredDays={handleHoveredDays}
-        onActiveStartDateChange={() => onSetPeriod?.(EPeriodTypes.CUSTOM)}
+        onActiveStartDateChange={() => setPeriod?.(EPeriodTypes.CUSTOM)}
       />
     </CalendarRangePickerViewWrapper>
   );

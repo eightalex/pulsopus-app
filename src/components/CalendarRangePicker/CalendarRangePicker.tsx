@@ -18,13 +18,7 @@ const CalendarRangePicker: FC<ICalendarRangePickerProps> = (props) => {
   const [from, setFrom] = useState(rangeFrom);
   const [to, setTo] = useState(rangeTo);
   const [period, setPeriod] = useState<EPeriodTypes>(periodList[0].value);
-  const [isOpenCalendar, toggleCalendar, setIsOpenCalendar] = useToggle(false);
-
-  const handleClickLabel = useCallback(() => {
-    if(isOpenCalendar) return;
-    setIsOpenCalendar(true);
-    // toggleCalendar();
-  }, [isOpenCalendar, toggleCalendar]);
+  const [isOpenCalendar, toggleCalendar] = useToggle(false);
 
   const handleChange = useCallback((range: ICalendarRange) => {
     range.from && setFrom(range.from);
@@ -97,12 +91,10 @@ const CalendarRangePicker: FC<ICalendarRangePickerProps> = (props) => {
       }
     >
       <CalendarRangePickerView
-        period={period}
-        onClose={handleClose}
-        onSetRange={handleChange}
-        onSetPeriod={onSetPeriod}
         from={from}
         to={to}
+        onClose={handleClose}
+        onSetRange={handleChange}
       />
     </CalendarRangePickerContainer>
   );

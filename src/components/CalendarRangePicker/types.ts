@@ -18,8 +18,6 @@ export interface ICalendarRangePickerLabelProps extends ICalendarRange {
 export interface ICalendarRangePickerViewProps extends ICalendarRange {
 	onClose?: () => void;
 	onSetRange?: (range: ICalendarRange) => void;
-	onSetPeriod?: (period: EPeriodTypes) => void;
-	period: EPeriodTypes;
 }
 
 export interface ICalendarRangePickerDropdownProps {
@@ -42,7 +40,9 @@ export interface ICalendarRangePeriodListProps {
 }
 
 export interface ICalendarRangePeriodsProps extends Pick<ICalendarRangePeriodListProps, 'options'> {
+	period?: EPeriodTypes;
+	range?: ICalendarRange;
 	onChangePeriod?: (period: EPeriodTypes) => void;
 	onChangeRange?: (range: ICalendarRange) => void;
-	range: ICalendarRange;
+	onSetCustom?: () => void;
 }

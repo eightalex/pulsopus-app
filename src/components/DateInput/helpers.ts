@@ -1,4 +1,13 @@
 import moment from 'moment';
+import { TValue } from "@/components/DateInput/types.ts";
+
+export const getFormattedMask = (mask: string | string[], divider: string): string => {
+	return Array.isArray(mask)
+		? mask.join(divider)
+		: mask;
+};
+
+export const isDateValid = (input: TValue): boolean => moment(input).isValid();
 
 const getMinMaxValue = (min: number, max: number, value: number | string): number => {
 	return Math.min(max, Math.max(min, Number(value)));
@@ -11,7 +20,7 @@ const validateIsNumber = (v: number | string | undefined | null) =>  !`${v}` || 
 const validatePadValue = (v: string, length= 2): boolean => !Number.isNaN(Number(v)) && v.toString().length > length - 1;
 
 export const getValidationDay = (d, m, y): string => {
-	if(!validateIsNumber(d)) return d
+	if(!validateIsNumber(d)) return d;
 	if(d.toString().length === 1) {
 		return getMinMaxValue(0, 3, d).toString();
 	}

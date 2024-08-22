@@ -2,86 +2,110 @@ import "react-datepicker/dist/react-datepicker.css";
 
 import Stack from '@mui/material/Stack';
 import moment from 'moment';
-import { FC, FocusEvent, memo, ReactNode, useCallback, useEffect, useRef, useState } from 'react';
-import DatePicker from "react-datepicker";
+import { ChangeEvent, FC, FocusEvent, useCallback, useEffect, useMemo, useRef } from 'react';
+import ReactInputMask, { Props as ReactInputMaskProps } from "react-input-mask";
 
-import { getValidationDay, getValidationMonth, getValidationYear } from '@/components/DateInput/helpers';
-import Typography from '@/components/Typography';
+import { getFormattedMask } from "@/components/DateInput/helpers.ts";
 
-import { DateInputMastStyled, DateInputStyled } from './styled';
-import { IDateInputProps, IValueChangeParams } from './types';
+import { MASK, MASK_CHAR, MASK_CHARS_FORMAT, MASK_DIVIDER } from "./constants.ts";
+import { DateInputStyled } from './styled';
+import { IBeforeChangeStatesParams, IDateInputRenderProps, TInputState, TValue } from './types';
 
-// const formatChars = {
-//   // D: '^(?:[0-9]|[12][0-9]|3[01])$',
-//   D: '[0-9]',
-//   D1: '[0-2]',
-//   D2: '[0-9]',
-//   M: '[0-9]',
-//   Y: '[0-9]',
-// };
-
-const formatChars = {
-  d: '[0-2]',
-  D: '[0-9]',
-  m: '[0-1]',
-  M: '[0-9]',
-  Y: '[0-9]',
-};
-
-
-const divider = '.';
-const mask = ['DD', 'MM', 'YYYY'].join(divider);
-// const mask = ['dD', 'mM', 'YYYY'].join(divider);
-
-const DateInput: FC<IDateInputProps> = (props) => {
-  const { value, onChange, active } = props;
+export const DateInputRender: FC<IDateInputRenderProps> = (props) => {
+  const {
+    maskDivider = MASK_DIVIDER,
+    maskChar = MASK_CHAR,
+    mask: initMask = MASK,
+    formats = {},
+    value: initValue = moment().valueOf(),
+    onChange,
+    onChangeBefore,
+    onFocus,
+    onBlur,
+    active = false,
+    ...restProps
+  } = props;
   const inputRef = useRef<HTMLInputElement>();
-  const [currentState, setCurrentState] = useState(moment(value).format(mask));
-  const handleChange = useCallback(({ target }) => {
-    setCurrentState(target.value);
-  }, []);
 
-  const beforeMaskedValueChange = useCallback((newState: IValueChangeParams, prevState: IValueChangeParams, userInput: string): IValueChangeParams => {
-    const returnedState = {
-      value: newState.value,
-      selection: newState.selection,
-    };
-    if (newState.value === prevState.value || !userInput) return returnedState;
-    const vs = newState.value.split('.').map(n => !Number.isNaN(Number(n)) ? n : null);
-    const [d, m, y] = vs;
-    const day = getValidationDay(d, m, y);
-    const month = getValidationMonth(d, m, y);
-    const year = getValidationYear(d, m, y);
-    const dd = [day, month, year].join(divider);
-    const isValid = moment([day, month, year].join(divider), mask, true).isValid();
+  const formatChars = useMemo(() => ({
+    ...MASK_CHARS_FORMAT,
+    ...formats,
+  }), [formats]);
 
-    const isOver = dd.length === mask.length;
+  const mask = useMemo(
+    () => getFormattedMask(initMask, maskDivider)
+    , [initMask, maskDivider]);
 
-    if (isOver && !isValid) return prevState;
-    const ddd = moment(dd, mask);
-    if (isOver && isValid) onChange?.(ddd.toDate());
-    return {
-      ...returnedState,
-      value: [day, month, year].join(divider),
-    };
+  const value = useMemo((): string => {
+    const defaultValue = moment().format(mask);
+    if(!initValue) return defaultValue;
+    const d = moment(initValue as TValue);
+    if(!d.isValid() || !moment(d.format(mask)).isValid()) return defaultValue;
+    return d.format(mask);
+  }, [initValue, mask]);
+
+  const handleChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    const v = event.target.value;
+    onChange?.(v, event);
   }, [onChange]);
 
-  const handleFocus = useCallback(({ target }: FocusEvent<HTMLInputElement>) => {
-    const caretPosEnd = target.value?.length || 1;
-    target?.setSelectionRange(caretPosEnd, caretPosEnd);
-  }, []);
+  const handleChangeBefore = useCallback(
+    (
+      nextState: TInputState,
+      previousState: TInputState,
+      inputValue: string,
+      params: IBeforeChangeStatesParams
+    ): TInputState => {
+      if (!onChangeBefore) return nextState;
+      return onChangeBefore?.({
+        nextState,
+        previousState,
+        value: inputValue,
+        params,
+      });
+    }, [onChangeBefore]);
 
-  const handleBlur = useCallback(({ target }: FocusEvent<HTMLInputElement>) => {
-    const date = moment(currentState, mask, true);
-    if (!date.isValid()) return;
-    onChange?.(date.toDate());
-    target.blur();
-  }, [currentState, onChange]);
+  // const beforeMaskedValueChange = useCallback((newState: IValueChangeParams, prevState: IValueChangeParams, userInput: string): IValueChangeParams => {
+  //   const returnedState = {
+  //     value: newState.value,
+  //     selection: newState.selection,
+  //   };
+  //   if (newState.value === prevState.value || !userInput) return returnedState;
+  //   const vs = newState.value.split('.').map(n => !Number.isNaN(Number(n)) ? n : null);
+  //   const [d, m, y] = vs;
+  //   const day = getValidationDay(d, m, y);
+  //   const month = getValidationMonth(d, m, y);
+  //   const year = getValidationYear(d, m, y);
+  //   // const dd = [day, month, year].join(divider);
+  //   const dd = handleJoinMask([day, month, year]);
+  //   const isValid = moment(handleJoinMask([day, month, year]), mask, true).isValid();
+  //
+  //   const isOver = dd.length === mask.length;
+  //
+  //   if (isOver && !isValid) return prevState;
+  //   const ddd = moment(dd, mask);
+  //   if (isOver && isValid) onChange?.(ddd.toDate());
+  //   return {
+  //     ...returnedState,
+  //     // value: [day, month, year].join(divider),
+  //     value: handleJoinMask([day, month, year]),
+  //   };
+  // }, [onChange, handleJoinMask]);
 
-  useEffect(() => {
-    const v = moment(value).format(mask);
-    setCurrentState(v);
-  }, [value]);
+  const handleFocus = useCallback((event: FocusEvent<HTMLInputElement>) => {
+    const targetValue = event.target.value || '';
+    const caretPosEnd = targetValue.length || 1;
+    event.target?.setSelectionRange(caretPosEnd, caretPosEnd);
+    onFocus?.(targetValue, event);
+  }, [onFocus]);
+
+  const handleBlur = useCallback((event: FocusEvent<HTMLInputElement>) => {
+    const targetValue = event.target.value || '';
+    const d = moment(targetValue, mask, true);
+    if(d.isValid()) onChange?.(targetValue, event);
+    event.target.blur();
+    onBlur?.(targetValue, event);
+  }, [onChange, onBlur, mask]);
 
   useEffect(() => {
     if (active) {
@@ -91,7 +115,32 @@ const DateInput: FC<IDateInputProps> = (props) => {
     }
   }, [inputRef, active]);
 
-  const [startDate, setStartDate] = useState(new Date());
+  return (
+    <ReactInputMask
+      value={value}
+      mask={mask}
+      maskChar={maskChar}
+      alwaysShowMask={false}
+      formatChars={formatChars}
+      {...restProps}
+      onChange={handleChange}
+      // cast for ignore ts lint error. Correct type in './types.ts' declare module.
+      beforeMaskedValueChange={handleChangeBefore as unknown as ReactInputMaskProps['beforeMaskedValueChange']}
+    >
+      {(inputProps) => (
+        <Stack direction="row" spacing={0}>
+          <DateInputStyled
+            type="tel"
+            inputRef={inputRef}
+            {...inputProps}
+            active={active}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+          />
+        </Stack>
+      )}
+    </ReactInputMask>
+  );
 
   // return (
   //   <DatePicker
@@ -133,9 +182,8 @@ const DateInput: FC<IDateInputProps> = (props) => {
   //   />
   // );
 
-
   // return (
-  //   <DateInputMastStyled
+  //   <DateInputMaskStyled
   //     mask={mask}
   //     value={currentState}
   //     maskChar={' '}
@@ -162,33 +210,6 @@ const DateInput: FC<IDateInputProps> = (props) => {
   //         </DateInputStyled>
   //       </Stack>
   //     )}
-  //   </DateInputMastStyled>
+  //   </DateInputMaskStyled>
   // );
-
-  return (
-    <DateInputMastStyled
-      mask={mask}
-      value={currentState}
-      maskChar={' '}
-      onChange={handleChange}
-      alwaysShowMask={false}
-      formatChars={formatChars}
-      beforeMaskedValueChange={beforeMaskedValueChange}
-    >
-      {(params) => (
-        <Stack direction="row" spacing={0} >
-          <DateInputStyled
-            type="tel"
-            inputRef={inputRef}
-            {...params}
-            active={active}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
-          />
-        </Stack>
-      )}
-    </DateInputMastStyled>
-  );
 };
-
-export default memo(DateInput);
