@@ -10,7 +10,7 @@ import { CalendarRangePeriodsStyled } from "./styled.tsx";
 export const CalendarRangePeriods: FC<ICalendarRangePeriodsProps> = (props) => {
   const {
     range,
-    period = null,
+    period,
     options = periodList,
     onChangeRange,
     onChangePeriod,
@@ -27,7 +27,10 @@ export const CalendarRangePeriods: FC<ICalendarRangePeriodsProps> = (props) => {
 
   const handleClickPeriod = useCallback((value: EPeriodTypes = EPeriodTypes.CUSTOM) => {
     onChangePeriod?.(value);
-    if(value === EPeriodTypes.CUSTOM) onSetCustom?.();
+    if(value === EPeriodTypes.CUSTOM) {
+      onSetCustom?.();
+      return;
+    }
     if(activePeriod === value) return;
     onChangeRange?.(getRangeFromPeriod(value));
   }, [onChangePeriod, onChangeRange, onSetCustom, activePeriod]);

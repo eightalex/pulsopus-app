@@ -35,6 +35,7 @@ const DateInput: FC<IDateInputProps> = (props) => {
   const [currentState, setCurrentState] = useState(moment(initValue).format(mask));
 
   const handleChange = useCallback((nextValue: string) => {
+    console.log('handleChange => nextValue', nextValue);
     const nV = moment(nextValue, mask, true).startOf('d');
     const v = moment(value, mask, true).startOf('d');
     if(nV.isSame(v.valueOf()) || !isDateValid(nV.valueOf())) return;
@@ -72,6 +73,7 @@ const DateInput: FC<IDateInputProps> = (props) => {
   }, [onBlur, handleChange]);
 
   const handleBeforeChangeState = useCallback((states: IBeforeChangeStates): TInputState => {
+    console.log('handleBeforeChangeState => states', states);
     const { previousState, nextState, value: inputValue, params } = states;
     // console.log('previousState', previousState);
     // console.log('nextState', nextState);
@@ -88,7 +90,7 @@ const DateInput: FC<IDateInputProps> = (props) => {
     <DateInputRender
       value={value}
       onChange={handleChange}
-      onChangeBefore={handleBeforeChangeState}
+      // onChangeBefore={handleBeforeChangeState}
       active={active}
       maskDivider={maskDivider}
       maskChar={maskChar}

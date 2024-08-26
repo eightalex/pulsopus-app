@@ -38,23 +38,11 @@ export const CalendarRangePickerViewInputs: FC<ICalendarRangePickerViewInputsPro
   const from = useMemo(() => moment(initFrom).startOf('d').valueOf(), [initFrom]);
   const to = useMemo(() => moment(initTo).endOf('d').valueOf(), [initTo]);
 
-  const handleChangeFrom = useCallback((date: number) => {
-    const v = moment(date).startOf('d').valueOf();
-    onChangeFrom?.(v);
-    onChange?.({
-      from: v,
-      to
-    });
-  }, [onChange, onChangeFrom, to]);
-
-  const handleChangeTo = useCallback((date: number) => {
-    const v = moment(date).endOf('d').valueOf();
-    onChangeTo?.(v);
-    onChange?.({
-      from,
-      to: v
-    });
-  }, [onChange, onChangeTo, from]);
+  const handleChange = useCallback((range: ICalendarRange) => {
+    if(range.from && range.from !== from) onChangeFrom?.(range.from);
+    if(range.to && range.to !== to) onChangeTo?.(range.to);
+    onChange?.(range);
+  }, [from, to, onChangeFrom, onChangeTo, onChange]);
 
   return (
     <Stack
@@ -67,7 +55,7 @@ export const CalendarRangePickerViewInputs: FC<ICalendarRangePickerViewInputsPro
     >
       <DateInput
         value={from}
-        onChange={handleChangeFrom}
+        onChange={(f) => handleChange({ from: f, to })}
         active={isActiveFrom}
       />
       <MinusIcon
@@ -77,7 +65,7 @@ export const CalendarRangePickerViewInputs: FC<ICalendarRangePickerViewInputsPro
       />
       <DateInput
         value={to}
-        onChange={handleChangeTo}
+        onChange={(t) => handleChange({ from, to: t })}
         active={isActiveTo}
       />
     </Stack>

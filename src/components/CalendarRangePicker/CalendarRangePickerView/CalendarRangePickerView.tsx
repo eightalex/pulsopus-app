@@ -1,17 +1,14 @@
 import moment from 'moment';
-import { FC, useCallback, useMemo, useRef, useState } from 'react';
+import { FC, useCallback, useMemo, useState } from 'react';
 
 import Calendar from '@/components/Calendar';
-import {
-  CalendarRangePickerViewInputs
-} from "@/components/CalendarRangePicker/CalendarRangePickerView/CalendarRangePickerViewInputs.tsx";
-import {
-  CalendarRangePickerViewWrapper
-} from "@/components/CalendarRangePicker/CalendarRangePickerView/CalendarRangePickerViewWrapper.tsx";
 
 import { CalendarRangePeriods } from "../CalendarRangePeriods";
 import { EPeriodTypes } from '../constants';
 import { ICalendarRange, ICalendarRangePickerViewProps } from '../types';
+import { useCalendarRangePeriod } from "../useCalendarRangePeriod.tsx";
+import { CalendarRangePickerViewInputs } from './CalendarRangePickerViewInputs.tsx';
+import { CalendarRangePickerViewWrapper } from './CalendarRangePickerViewWrapper.tsx';
 
 type TDateValue = Date | moment | string | number | null | undefined;
 
@@ -24,11 +21,12 @@ const isEqualsDate = (d1: TDateValue, d2: TDateValue): boolean => {
 // TODO: refactor from/to/values types
 export const CalendarRangePickerView: FC<ICalendarRangePickerViewProps> = (props) => {
   const { from, to, onSetRange } = props;
-  const containerRef = useRef<HTMLDivElement>();
   const [hoveredRange, setHoveredRange] = useState<ICalendarRange | null>({ from, to });
-  const [period, setPeriod] = useState<EPeriodTypes | null>(null);
-
-  const showCustomInputs = useMemo(() => period === EPeriodTypes.CUSTOM, [period]);
+  const {
+    calendarRangePeriod,
+    setCalendarRangePeriod,
+    isCustomRangePeriod,
+  } = useCalendarRangePeriod({ from, to });
 
   const calendarValues = useMemo(() => [from, to].filter(t => !!t).map(d => moment(d).toDate()), [from, to]);
 
@@ -53,7 +51,7 @@ export const CalendarRangePickerView: FC<ICalendarRangePickerViewProps> = (props
   }, []);
 
   const handleChange = useCallback((value) => {
-    setPeriod?.(EPeriodTypes.CUSTOM);
+    setCalendarRangePeriod?.(EPeriodTypes.CUSTOM);
     const values = Array.isArray(value) ? value : [value];
     const [f, t] = values
       .filter(d => moment(d).isValid())
@@ -62,23 +60,26 @@ export const CalendarRangePickerView: FC<ICalendarRangePickerViewProps> = (props
     const calendarRange = { from: f, to: t };
     onSetRange?.(calendarRange);
     setHoveredRange(null);
-  }, [setPeriod, onSetRange]);
+  }, [setCalendarRangePeriod, onSetRange]);
 
   return (
     <CalendarRangePickerViewWrapper
-      showCustomInput={showCustomInputs}
+      showCustomInput={isCustomRangePeriod}
       sideComponent={(
         <CalendarRangePeriods
-          period={period}
+          period={calendarRangePeriod}
           onChangeRange={onSetRange}
-          onChangePeriod={setPeriod}
+          onChangePeriod={setCalendarRangePeriod}
         />
       )}
       customInput={(
         <CalendarRangePickerViewInputs
           from={valueInputFrom}
           to={valueInputTo}
-          onChange={({ from, to }) => handleChange([from, to])}
+          // onChange={({ from, to }) => handleChange([from, to])}
+          onChange={(range) => {
+            console.log('onChange => range', range);
+          }}
           isActiveFrom={!isEqualsDate(valueInputFrom, calendarValues[0])}
           isActiveTo={(!isEqualsDate(valueInputTo, calendarValues[1]) &&
             isEqualsDate(valueInputFrom, calendarValues[0]))}
@@ -89,7 +90,7 @@ export const CalendarRangePickerView: FC<ICalendarRangePickerViewProps> = (props
         value={calendarValues}
         onChange={handleChange}
         onHoveredDays={handleHoveredDays}
-        onActiveStartDateChange={() => setPeriod?.(EPeriodTypes.CUSTOM)}
+        onActiveStartDateChange={() => setCalendarRangePeriod?.(EPeriodTypes.CUSTOM)}
       />
     </CalendarRangePickerViewWrapper>
   );
@@ -115,7 +116,7 @@ export const CalendarRangePickerView: FC<ICalendarRangePickerViewProps> = (props
   //         padding: spacing(6),
   //       })}
   //     >
-  //       {showCustomInputs && (
+  //       {isCustomRangePeriod && (
   //         <Stack
   //           direction="row"
   //           spacing={1}
