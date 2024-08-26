@@ -12,7 +12,7 @@ export const dateFormatFull = (date: number | undefined) => dateFormat(date, 'll
 
 export const getRangeFromPeriod = (period: EPeriodTypes): ICalendarRange => {
 	const defaultRange = { from: 0, to: 0 };
-	if(!period) return defaultRange;
+	if(!period || period === EPeriodTypes.CUSTOM) return defaultRange;
 	const p = `${period}` as string;
 	const [periodFrom, periodTo] = p.split(PERIOD_RANGE_SEPARATOR);
 	if(!periodFrom || !periodTo) return defaultRange;

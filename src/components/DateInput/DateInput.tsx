@@ -31,6 +31,8 @@ const DateInput: FC<IDateInputProps> = (props) => {
   const mask = useMemo(() => getFormattedMask(initMask, maskDivider).toUpperCase(), [initMask, maskDivider]);
 
   const value = useMemo(() => moment(initValue).format(mask), [initValue, mask]);
+  console.log('initValue', initValue);
+  console.log('value', value);
 
   const [currentState, setCurrentState] = useState(moment(initValue).format(mask));
 
@@ -79,7 +81,6 @@ const DateInput: FC<IDateInputProps> = (props) => {
     // console.log('nextState', nextState);
     // console.log('inputValue', inputValue);
     // console.log('params', params);
-    //
     const v = states.nextState.value;
     handleChange(v);
     return states.nextState;
@@ -90,7 +91,7 @@ const DateInput: FC<IDateInputProps> = (props) => {
     <DateInputRender
       value={value}
       onChange={handleChange}
-      // onChangeBefore={handleBeforeChangeState}
+      onChangeBefore={handleBeforeChangeState}
       active={active}
       maskDivider={maskDivider}
       maskChar={maskChar}

@@ -5,7 +5,7 @@ const RS = PERIOD_RANGE_SEPARATOR;
 const VS = PERIOD_VALUES_SEPARATOR;
 
 export enum EPeriodTypes {
-	CUSTOM = '',
+	CUSTOM = 'CUSTOM',
 	WEEK_1 = `week${VS}1${RS}week${VS}1`,
 	DAY_10 = `day${VS}9${RS}day${VS}0`,
 	MONTH_1 = `month${VS}1${RS}day${VS}0`,
