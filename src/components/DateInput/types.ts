@@ -29,11 +29,13 @@ export interface IBeforeChangeStates {
 }
 
 export interface IDateInputRenderProps extends Omit<IReactInputProps,
-  'mask' | 'inputRef' | 'formatChars' | 'onChange' | 'beforeMaskedStateChange' | 'children' | 'onFocus' | 'onBlur'> {
+  'mask' | 'inputRef' | 'formatChars' | 'onChange' | 'beforeMaskedStateChange' | 'children' | 'onFocus' | 'onBlur' | 'value'> {
+  value: TValue;
   active?: boolean;
+  inputMask?: string | string[];
+  valueMask?: string | string[];
   maskDivider?: string;
-  mask: string | string[];
-  formats?: Record<string, (string | RegExp)>;
+  charsFormat?: Record<string, (string | RegExp)>;
   onChange?(value: string, event: FocusEvent<HTMLInputElement>): void;
   onChange?(value: string, event: ChangeEvent<HTMLInputElement>): void;
   onChangeBefore?(states: IBeforeChangeStates): TInputState;
@@ -41,8 +43,7 @@ export interface IDateInputRenderProps extends Omit<IReactInputProps,
   onBlur?(value: string, event: FocusEvent<HTMLInputElement>): void;
 }
 
-export interface IDateInputProps extends Partial<Omit<IDateInputRenderProps, 'value' | 'onChange' | 'onChangeBefore' | 'onFocus' | 'onBlur'>> {
-  value: TValue;
+export interface IDateInputProps extends Partial<Omit<IDateInputRenderProps, 'onChange' | 'onChangeBefore' | 'onFocus' | 'onBlur'>> {
   onChange?(date: number): void;
   onFocus?(event: FocusEvent<HTMLInputElement>): void;
   onBlur?(event: FocusEvent<HTMLInputElement>): void;

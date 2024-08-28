@@ -1,6 +1,6 @@
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
-import { FC, ReactNode, RefObject, useCallback, useLayoutEffect, useRef, useState } from 'react';
+import { FC, ReactNode, RefObject, useCallback, useEffect, useRef, useState } from 'react';
 
 interface ICalendarRangePickerViewWrapperProps {
   sideComponent?: ReactNode;
@@ -8,6 +8,8 @@ interface ICalendarRangePickerViewWrapperProps {
   customInput: ReactNode;
   children: ReactNode;
 }
+
+const PADDING_OFFSET = 12;
 
 export const CalendarRangePickerViewWrapper: FC<ICalendarRangePickerViewWrapperProps> = (props) => {
   const {
@@ -23,12 +25,11 @@ export const CalendarRangePickerViewWrapper: FC<ICalendarRangePickerViewWrapperP
     if (!wrapperRef || !wrapperRef.current || !contentRef || !contentRef.current) return;
     const parentRect = wrapperRef.current?.getBoundingClientRect();
     const childRect = contentRef.current?.getBoundingClientRect();
-    const offset = childRect.y - parentRect.y;
-    const pd = 12;
-    setOffset(offset - pd);
+    const offsetValue = Math.abs(parentRect.top - childRect.top) - PADDING_OFFSET;
+    setOffset(offsetValue);
   }, [wrapperRef, contentRef]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     calculatePeriodTopOffset();
   }, [calculatePeriodTopOffset, showCustomInput]);
 
@@ -54,7 +55,7 @@ export const CalendarRangePickerViewWrapper: FC<ICalendarRangePickerViewWrapperP
           padding: spacing(6),
         })}
       >
-        {Boolean(showCustomInput) && Boolean(customInput) && customInput}
+        {Boolean(showCustomInput && customInput) && customInput}
         <Stack ref={contentRef as unknown as RefObject<HTMLDivElement>}>
           {children}
         </Stack>

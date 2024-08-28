@@ -76,10 +76,7 @@ export const CalendarRangePickerView: FC<ICalendarRangePickerViewProps> = (props
         <CalendarRangePickerViewInputs
           from={valueInputFrom}
           to={valueInputTo}
-          // onChange={({ from, to }) => handleChange([from, to])}
-          onChange={(range) => {
-            console.log('onChange => range', range);
-          }}
+          onChange={({ from, to }) => handleChange([from, to])}
           isActiveFrom={!isEqualsDate(valueInputFrom, calendarValues[0])}
           isActiveTo={(!isEqualsDate(valueInputTo, calendarValues[1]) &&
             isEqualsDate(valueInputFrom, calendarValues[0]))}

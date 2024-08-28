@@ -1,7 +1,8 @@
 import moment from 'moment';
+import { MASK_DIVIDER } from "@/components/DateInput/constants.ts";
 import { TValue } from "@/components/DateInput/types.ts";
 
-export const getFormattedMask = (mask: string | string[], divider: string): string => {
+export const getFormattedMask = (mask: string | string[], divider: string = MASK_DIVIDER): string => {
 	return Array.isArray(mask)
 		? mask.join(divider)
 		: mask;

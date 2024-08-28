@@ -7,7 +7,7 @@ import ReactInputMask, { Props as ReactInputMaskProps } from "react-input-mask";
 
 import { getFormattedMask } from "@/components/DateInput/helpers.ts";
 
-import { MASK, MASK_CHAR, MASK_CHARS_FORMAT, MASK_DIVIDER } from "./constants.ts";
+import { MASK, MASK_CHAR, MASK_CHARS_FORMAT, MASK_DIVIDER, MASK_FORMAT } from "./constants.ts";
 import { DateInputStyled } from './styled';
 import { IBeforeChangeStatesParams, IDateInputRenderProps, TInputState, TValue } from './types';
 
@@ -15,8 +15,9 @@ export const DateInputRender: FC<IDateInputRenderProps> = (props) => {
   const {
     maskDivider = MASK_DIVIDER,
     maskChar = MASK_CHAR,
-    mask: initMask = MASK,
-    formats = {},
+    inputMask = MASK,
+    valueMask = MASK_FORMAT,
+    charsFormat = {},
     value: initValue = moment().valueOf(),
     onChange,
     onChangeBefore,
@@ -29,20 +30,18 @@ export const DateInputRender: FC<IDateInputRenderProps> = (props) => {
 
   const formatChars = useMemo(() => ({
     ...MASK_CHARS_FORMAT,
-    ...formats,
-  }), [formats]);
+    ...charsFormat,
+  }), [charsFormat]);
 
-  const mask = useMemo(
-    () => getFormattedMask(initMask, maskDivider)
-    , [initMask, maskDivider]);
+  const format = useMemo(() => getFormattedMask(valueMask, maskDivider), [valueMask, maskDivider]);
 
   const value = useMemo((): string => {
-    const defaultValue = moment().format(mask);
+    const defaultValue = moment().format(format);
     if(!initValue) return defaultValue;
     const d = moment(initValue as TValue);
-    if(!d.isValid() || !moment(d.format(mask)).isValid()) return defaultValue;
-    return d.format(mask);
-  }, [initValue, mask]);
+    if(!d.isValid() || !moment(d.format(format)).isValid()) return defaultValue;
+    return d.format(format);
+  }, [initValue, format]);
 
   const handleChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     const v = event.target.value;
@@ -57,12 +56,20 @@ export const DateInputRender: FC<IDateInputRenderProps> = (props) => {
       params: IBeforeChangeStatesParams
     ): TInputState => {
       if (!onChangeBefore) return nextState;
-      return onChangeBefore?.({
+      const result = onChangeBefore?.({
         nextState,
         previousState,
         value: inputValue,
         params,
       });
+
+      return {
+        value: result?.value || nextState.value,
+        selection: {
+          start: result?.selection?.start || nextState.selection?.start || 0,
+          end: result?.selection?.end || nextState.selection?.end || 0,
+        }
+      };
     }, [onChangeBefore]);
 
   // const beforeMaskedValueChange = useCallback((newState: IValueChangeParams, prevState: IValueChangeParams, userInput: string): IValueChangeParams => {
@@ -78,12 +85,12 @@ export const DateInputRender: FC<IDateInputRenderProps> = (props) => {
   //   const year = getValidationYear(d, m, y);
   //   // const dd = [day, month, year].join(divider);
   //   const dd = handleJoinMask([day, month, year]);
-  //   const isValid = moment(handleJoinMask([day, month, year]), mask, true).isValid();
+  //   const isValid = moment(handleJoinMask([day, month, year]), format, true).isValid();
   //
-  //   const isOver = dd.length === mask.length;
+  //   const isOver = dd.length === format.length;
   //
   //   if (isOver && !isValid) return prevState;
-  //   const ddd = moment(dd, mask);
+  //   const ddd = moment(dd, format);
   //   if (isOver && isValid) onChange?.(ddd.toDate());
   //   return {
   //     ...returnedState,
@@ -101,11 +108,11 @@ export const DateInputRender: FC<IDateInputRenderProps> = (props) => {
 
   const handleBlur = useCallback((event: FocusEvent<HTMLInputElement>) => {
     const targetValue = event.target.value || '';
-    const d = moment(targetValue, mask, true);
+    const d = moment(targetValue, format, true);
     if(d.isValid()) onChange?.(targetValue, event);
     event.target.blur();
     onBlur?.(targetValue, event);
-  }, [onChange, onBlur, mask]);
+  }, [format, onChange, onBlur]);
 
   useEffect(() => {
     if (active) {
@@ -118,7 +125,7 @@ export const DateInputRender: FC<IDateInputRenderProps> = (props) => {
   return (
     <ReactInputMask
       value={value}
-      mask={mask}
+      mask={getFormattedMask(inputMask, maskDivider)}
       maskChar={maskChar}
       alwaysShowMask={false}
       formatChars={formatChars}
@@ -141,75 +148,4 @@ export const DateInputRender: FC<IDateInputRenderProps> = (props) => {
       )}
     </ReactInputMask>
   );
-
-  // return (
-  //   <DatePicker
-  //     // selected={startDate}
-  //     // onChange={(date) => setStartDate(date)}
-  //     dateFormat="dd.MM.yyyy"
-  //     dateFormatCalendar="dd.MM.yyyy"
-  //     showDateSelect={false}
-  //     showPreviousMonths={false}
-  //     showMonthYearPicker={false}
-  //     showFullMonthYearPicker={false}
-  //     showTwoColumnMonthYearPicker={false}
-  //     showFourColumnMonthYearPicker={false}
-  //     customInput={
-  //       <DateInputMastStyled
-  //         mask={mask}
-  //         value={currentState}
-  //         maskChar={' '}
-  //         // onChange={handleChange}
-  //         alwaysShowMask={false}
-  //         formatChars={formatChars}
-  //         beforeMaskedValueChange={beforeMaskedValueChange}
-  //       >
-  //         {(params) => (
-  //           <Stack direction="row" spacing={0} >
-  //             <DateInputStyled
-  //               // type="date"
-  //               type="tel"
-  //               inputRef={inputRef}
-  //               {...params}
-  //               active={active}
-  //               onFocus={handleFocus}
-  //               onBlur={handleBlur}
-  //             />
-  //           </Stack>
-  //         )}
-  //       </DateInputMastStyled>
-  //     }
-  //   />
-  // );
-
-  // return (
-  //   <DateInputMaskStyled
-  //     mask={mask}
-  //     value={currentState}
-  //     maskChar={' '}
-  //     onChange={handleChange}
-  //     alwaysShowMask={false}
-  //     formatChars={formatChars}
-  //     beforeMaskedValueChange={beforeMaskedValueChange}
-  //   >
-  //     {(params) => (
-  //       <Stack
-  //         direction="row"
-  //         spacing={0}
-  //       >
-  //         <DateInputStyled
-  //           type="tel"
-  //           inputRef={inputRef}
-  //           {...params}
-  //           active={active}
-  //           onFocus={handleFocus}
-  //           onBlur={handleBlur}
-  //           // inputProps={{ min: "2019-01-24", max: "2020-05-31" }}
-  //         >
-  //           <Typography>params</Typography>
-  //         </DateInputStyled>
-  //       </Stack>
-  //     )}
-  //   </DateInputMaskStyled>
-  // );
 };
