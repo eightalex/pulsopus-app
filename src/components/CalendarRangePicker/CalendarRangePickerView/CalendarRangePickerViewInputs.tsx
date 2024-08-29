@@ -7,16 +7,9 @@ import { TValue } from "@/components/DateInput";
 import DateInput from "@/components/DateInput/DateInput.tsx";
 import { MinusIcon } from "@/icons";
 
-//
-// const dateValidate = (d: Date | moment | string | number | null | undefined): boolean => !!d && moment(d).isValid();
-//
-// const isEqualsDate = (d1: TDateValue, d2: TDateValue): boolean => {
-//   return moment(d1).startOf('day').valueOf() === moment(d2).startOf('day').valueOf();
-// };
-
 interface ICalendarRangePickerViewInputsProps {
-  from: TValue;
-  to: TValue;
+  from: number;
+  to: number;
   onChangeFrom?: (from: number) => void;
   onChangeTo?: (to: number) => void;
   onChange?: (range: ICalendarRange) => void;

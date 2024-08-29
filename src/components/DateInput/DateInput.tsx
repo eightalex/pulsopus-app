@@ -13,18 +13,18 @@ import {
   isDateValid
 } from '@/components/DateInput/helpers';
 
-import { IBeforeChangeStates, IDateInputProps, IValueChangeParams, TInputState, TValue } from './types';
+import { IBeforeChangeStates, IDateInputProps, TInputState } from './types';
 
 const DateInput: FC<IDateInputProps> = (props) => {
   const {
     value: unformattedValue = moment().valueOf(),
     onChange,
     active = false,
-    inputMask= MASK,
-    valueMask= MASK_FORMAT,
+    inputMask = MASK,
+    valueMask = MASK_FORMAT,
     maskChar = MASK_CHAR,
     maskDivider = MASK_DIVIDER,
-    charsFormat= {},
+    charsFormat = {},
     onFocus,
     onBlur,
     ...restProps
@@ -32,19 +32,19 @@ const DateInput: FC<IDateInputProps> = (props) => {
 
   const format = useMemo(() => getFormattedMask(valueMask, maskDivider).toUpperCase(), [valueMask, maskDivider]);
 
-  const value = useMemo((): string => {
-    if(typeof unformattedValue === 'number') {
+  const value = useMemo(() => {
+    if (typeof unformattedValue === 'number') {
       return moment(unformattedValue).format(format);
     }
     const v = moment(unformattedValue, format, true);
-    if(v.isValid()) return v.format(format);
+    if (v.isValid()) return v.format(format);
     return moment().format(format);
   }, [unformattedValue, format]);
 
   const handleChange = useCallback((nextValue: string) => {
     const nV = moment(nextValue, format, true).startOf('d');
     const cV = moment(value, format, true).startOf('d');
-    if(!isDateValid(nV) || nV.isSame(cV.valueOf())) return;
+    if (!isDateValid(nV) || nV.isSame(cV.valueOf())) return;
     onChange?.(nV.valueOf());
   }, [onChange, value, format]);
 
@@ -55,19 +55,48 @@ const DateInput: FC<IDateInputProps> = (props) => {
 
   // validate for DD.MM.YYYY input format
   const handleBeforeChangeState = useCallback((states: IBeforeChangeStates): TInputState => {
-    console.log('handleBeforeChangeState => states', states);
-    console.log('states', states);
-    return states.nextState;
-    const { previousState, nextState, value: inputValue, params } = states;
-    // console.log('previousState', previousState);
-    // console.log('nextState', nextState);
-    // console.log('inputValue', inputValue);
-    // console.log('params', params);
-    const v = states.nextState.value;
-    handleChange(v);
-    return states.nextState;
-    // return { ...states.nextState, value: states.previousState.value };
-  }, [handleChange]);
+    const {
+      previousState,
+      nextState,
+      value: inputValue,
+    } = states;
+    if (!inputValue) return states.nextState;
+
+    const nextValue = nextState.value;
+    const prevValue = previousState.value;
+    if (prevValue === nextValue) return states.nextState;
+
+    const isFullValue = nextValue
+      .replace(maskDivider, '')
+      .replace(maskChar, '')
+      .trim()
+      .length === format
+      .replace(maskDivider, '')
+      .length;
+    if (isFullValue && !moment(nextValue, format, true).isValid()) return states.previousState;
+
+    const position = previousState.selection?.end || 0;
+    // DD.MM.YYYY D1-2 = 0-1 | M1-2 = 3-4 | Y1-Y4 = 6-9
+
+    const isLastDayInput = position === 1;
+    const isLastMonthInput = position === 4;
+
+    let [d, m, y] = nextValue.split(maskDivider);
+
+    const isInputYear = format.charAt(position) === 'Y';
+    const isInputMonth = format.charAt(position) === 'M';
+    const isInputDay = format.charAt(position) === 'D';
+
+    if (isInputDay && isLastDayInput) d = getValidationDay(d, m, y);
+    if (isInputMonth && isLastMonthInput) m = getValidationMonth(d, m, y);
+    if (isInputYear) y = getValidationYear(y);
+
+
+    return {
+      ...states.nextState,
+      value: [d, m, y].join(maskDivider),
+    };
+  }, [format, maskChar, maskDivider]);
 
   return (
     <DateInputRender

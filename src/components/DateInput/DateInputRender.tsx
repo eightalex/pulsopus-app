@@ -9,7 +9,7 @@ import { getFormattedMask } from "@/components/DateInput/helpers.ts";
 
 import { MASK, MASK_CHAR, MASK_CHARS_FORMAT, MASK_DIVIDER, MASK_FORMAT } from "./constants.ts";
 import { DateInputStyled } from './styled';
-import { IBeforeChangeStatesParams, IDateInputRenderProps, TInputState, TValue } from './types';
+import { IBeforeChangeStatesParams, IDateInputRenderProps, TInputState } from './types';
 
 export const DateInputRender: FC<IDateInputRenderProps> = (props) => {
   const {
@@ -18,7 +18,7 @@ export const DateInputRender: FC<IDateInputRenderProps> = (props) => {
     inputMask = MASK,
     valueMask = MASK_FORMAT,
     charsFormat = {},
-    value: initValue = moment().valueOf(),
+    value,
     onChange,
     onChangeBefore,
     onFocus,
@@ -34,14 +34,6 @@ export const DateInputRender: FC<IDateInputRenderProps> = (props) => {
   }), [charsFormat]);
 
   const format = useMemo(() => getFormattedMask(valueMask, maskDivider), [valueMask, maskDivider]);
-
-  const value = useMemo((): string => {
-    const defaultValue = moment().format(format);
-    if(!initValue) return defaultValue;
-    const d = moment(initValue as TValue);
-    if(!d.isValid() || !moment(d.format(format)).isValid()) return defaultValue;
-    return d.format(format);
-  }, [initValue, format]);
 
   const handleChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     const v = event.target.value;
@@ -107,6 +99,8 @@ export const DateInputRender: FC<IDateInputRenderProps> = (props) => {
   }, [onFocus]);
 
   const handleBlur = useCallback((event: FocusEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
     const targetValue = event.target.value || '';
     const d = moment(targetValue, format, true);
     if(d.isValid()) onChange?.(targetValue, event);
@@ -121,6 +115,7 @@ export const DateInputRender: FC<IDateInputRenderProps> = (props) => {
       inputRef?.current?.blur();
     }
   }, [inputRef, active]);
+
 
   return (
     <ReactInputMask

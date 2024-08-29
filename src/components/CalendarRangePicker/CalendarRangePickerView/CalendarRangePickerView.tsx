@@ -12,11 +12,11 @@ import { CalendarRangePickerViewWrapper } from './CalendarRangePickerViewWrapper
 
 type TDateValue = Date | moment | string | number | null | undefined;
 
-const dateValidate = (d: Date | moment | string | number | null | undefined): boolean => !!d && moment(d).isValid();
-
 const isEqualsDate = (d1: TDateValue, d2: TDateValue): boolean => {
   return moment(d1).startOf('day').valueOf() === moment(d2).startOf('day').valueOf();
 };
+
+const dateValidate = (d?: number) => true;
 
 // TODO: refactor from/to/values types
 export const CalendarRangePickerView: FC<ICalendarRangePickerViewProps> = (props) => {
@@ -50,16 +50,25 @@ export const CalendarRangePickerView: FC<ICalendarRangePickerViewProps> = (props
     setHoveredRange({ from: f, to: t });
   }, []);
 
-  const handleChange = useCallback((value) => {
+  // const handleChange = useCallback((value) => {
+  //   if(calendarRangePeriod !== EPeriodTypes.CUSTOM) {
+  //     setCalendarRangePeriod?.(EPeriodTypes.CUSTOM);
+  //   }
+  //   const values = Array.isArray(value) ? value : [value];
+  //   const [f, t] = values
+  //     .filter(d => moment(d).isValid())
+  //     .map(d => moment(d).valueOf())
+  //     .sort((a, b) => a - b);
+  //   const calendarRange = { from: f, to: t };
+  //   onSetRange?.(calendarRange);
+  //   setHoveredRange(null);
+  // }, [setCalendarRangePeriod, onSetRange, calendarRangePeriod]);
+
+  const handleChangeInputs = useCallback((range: ICalendarRange) => {
     setCalendarRangePeriod?.(EPeriodTypes.CUSTOM);
-    const values = Array.isArray(value) ? value : [value];
-    const [f, t] = values
-      .filter(d => moment(d).isValid())
-      .map(d => moment(d).valueOf())
-      .sort((a, b) => a - b);
-    const calendarRange = { from: f, to: t };
-    onSetRange?.(calendarRange);
     setHoveredRange(null);
+    if(!range.from || !range.to) return;
+    onSetRange?.(range);
   }, [setCalendarRangePeriod, onSetRange]);
 
   return (
@@ -74,9 +83,9 @@ export const CalendarRangePickerView: FC<ICalendarRangePickerViewProps> = (props
       )}
       customInput={(
         <CalendarRangePickerViewInputs
-          from={valueInputFrom}
-          to={valueInputTo}
-          onChange={({ from, to }) => handleChange([from, to])}
+          from={from || 0}
+          to={to || 0}
+          onChange={handleChangeInputs}
           isActiveFrom={!isEqualsDate(valueInputFrom, calendarValues[0])}
           isActiveTo={(!isEqualsDate(valueInputTo, calendarValues[1]) &&
             isEqualsDate(valueInputFrom, calendarValues[0]))}
@@ -85,7 +94,7 @@ export const CalendarRangePickerView: FC<ICalendarRangePickerViewProps> = (props
     >
       <Calendar
         value={calendarValues}
-        onChange={handleChange}
+        // onChange={([f, t]) => handleChange({ from: f, to: t })}
         onHoveredDays={handleHoveredDays}
         onActiveStartDateChange={() => setCalendarRangePeriod?.(EPeriodTypes.CUSTOM)}
       />

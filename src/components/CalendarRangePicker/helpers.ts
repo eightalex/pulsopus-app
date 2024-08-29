@@ -8,7 +8,7 @@ import { ICalendarRange } from '@/components/CalendarRangePicker/types';
 
 export const dateFormat = (date: number | undefined, format: string) => date && moment(date).format(format);
 
-export const dateFormatFull = (date: number | undefined) => dateFormat(date, 'll');
+export const dateFormatFull = (date: number | undefined) => dateFormat(date, 'DD MMM YYYY');
 
 export const getRangeFromPeriod = (period: EPeriodTypes): ICalendarRange => {
 	const defaultRange = { from: 0, to: 0 };

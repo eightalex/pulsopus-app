@@ -6,7 +6,7 @@ interface ICalendarRangePickerViewWrapperProps {
   sideComponent?: ReactNode;
   showCustomInput?: boolean;
   customInput: ReactNode;
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 const PADDING_OFFSET = 12;
@@ -57,7 +57,7 @@ export const CalendarRangePickerViewWrapper: FC<ICalendarRangePickerViewWrapperP
       >
         {Boolean(showCustomInput && customInput) && customInput}
         <Stack ref={contentRef as unknown as RefObject<HTMLDivElement>}>
-          {children}
+          {Boolean(children) && children}
         </Stack>
       </Stack>
     </Stack>
