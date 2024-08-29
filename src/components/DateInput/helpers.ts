@@ -21,10 +21,6 @@ const isIncludeMinMaxValue = (min: number, max: number, value: number | string):
 
 const paddingValue = (value: number | string): string => Number(value).toString().padStart(2, '0');
 
-const validatePadValue = (v: string, length = 2): boolean => {
-  return !Number.isNaN(Number(v)) && v.toString().length > length - 1;
-};
-
 const getDefaultDateValues = (day: string, month: string, year: string): [number, number, number] => {
   const y = Boolean(year) && Number(year) && isIncludeMinMaxValue(MIN_YEAR, MAX_YEAR, year || 0)
     ? year
@@ -54,11 +50,8 @@ export const getValidationMonth = (day: string, month: string, year: string): st
   return paddingValue(m);
 };
 
-export const getValidationYear = (year: string): string => {
-  console.log(year.padEnd(4,'0'));
-  const y = year;
-  return year;
-  if (!validatePadValue(y, 4)) return y;
-  return paddingValue(getMinMaxValue(2000, moment().get('year'), y));
+export const getValidationYear = (year: string, trimYear: string): string => {
+  if(trimYear.length !== 4) return year;
+  return getMinMaxValue(MIN_YEAR, MAX_YEAR, Number(year || 0)).toString();
 };
 

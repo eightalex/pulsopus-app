@@ -89,8 +89,10 @@ const DateInput: FC<IDateInputProps> = (props) => {
 
     if (isInputDay && isLastDayInput) d = getValidationDay(d, m, y);
     if (isInputMonth && isLastMonthInput) m = getValidationMonth(d, m, y);
-    if (isInputYear) y = getValidationYear(y);
-
+    if (isInputYear) y = getValidationYear(
+      y,
+      y.replace(maskChar, '').trim()
+    );
 
     return {
       ...states.nextState,

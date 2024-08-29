@@ -3,7 +3,6 @@ import moment from "moment";
 import { FC, useCallback, useMemo } from "react";
 
 import { ICalendarRange } from "@/components/CalendarRangePicker";
-import { TValue } from "@/components/DateInput";
 import DateInput from "@/components/DateInput/DateInput.tsx";
 import { MinusIcon } from "@/icons";
 

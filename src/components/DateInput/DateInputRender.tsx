@@ -64,33 +64,6 @@ export const DateInputRender: FC<IDateInputRenderProps> = (props) => {
       };
     }, [onChangeBefore]);
 
-  // const beforeMaskedValueChange = useCallback((newState: IValueChangeParams, prevState: IValueChangeParams, userInput: string): IValueChangeParams => {
-  //   const returnedState = {
-  //     value: newState.value,
-  //     selection: newState.selection,
-  //   };
-  //   if (newState.value === prevState.value || !userInput) return returnedState;
-  //   const vs = newState.value.split('.').map(n => !Number.isNaN(Number(n)) ? n : null);
-  //   const [d, m, y] = vs;
-  //   const day = getValidationDay(d, m, y);
-  //   const month = getValidationMonth(d, m, y);
-  //   const year = getValidationYear(d, m, y);
-  //   // const dd = [day, month, year].join(divider);
-  //   const dd = handleJoinMask([day, month, year]);
-  //   const isValid = moment(handleJoinMask([day, month, year]), format, true).isValid();
-  //
-  //   const isOver = dd.length === format.length;
-  //
-  //   if (isOver && !isValid) return prevState;
-  //   const ddd = moment(dd, format);
-  //   if (isOver && isValid) onChange?.(ddd.toDate());
-  //   return {
-  //     ...returnedState,
-  //     // value: [day, month, year].join(divider),
-  //     value: handleJoinMask([day, month, year]),
-  //   };
-  // }, [onChange, handleJoinMask]);
-
   const handleFocus = useCallback((event: FocusEvent<HTMLInputElement>) => {
     const targetValue = event.target.value || '';
     const caretPosEnd = targetValue.length || 1;
