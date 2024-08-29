@@ -1,3 +1,11 @@
+import 'react-calendar/dist/Calendar.css';
+import './calendar.scss';
+
+import { Stack } from '@mui/material';
+import moment from 'moment';
+import { FC, memo, MouseEvent, RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import ReactCalendar from 'react-calendar';
+
 import {
 	CalendarNext2Icon,
 	CalendarNextIcon,
@@ -8,12 +16,6 @@ import { findAndRoundedActiveElements, getHoveredElementsValue } from '@/compone
 import { ICalendarProps } from '@/components/Calendar/types';
 import Typography from '@/components/Typography';
 import { useEventListener } from '@/hooks';
-import { Stack } from '@mui/material';
-import moment from 'moment';
-import { FC, memo, MouseEvent, RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import ReactCalendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
-import './calendar.scss';
 
 // TODO: remove .scss | create mui styled for calendar
 const Calendar: FC<ICalendarProps> = (props) => {
@@ -46,7 +48,7 @@ const Calendar: FC<ICalendarProps> = (props) => {
 		}
 		const values = [activeStartValue, day]
 		.filter(d => !!d && moment(d).isValid())
-		.sort((p, n) => moment(p).valueOf() - moment(n).valueOf())
+		.sort((p, n) => moment(p).valueOf() - moment(n).valueOf());
 		onHoveredDays?.(values);
 	}, [isStartedRange, onHoveredDays, activeStartValue]);
 
@@ -72,7 +74,7 @@ const Calendar: FC<ICalendarProps> = (props) => {
 	return (
 		<ReactCalendar
 			ref={calendarRef}
-			inputRef={inputRef}
+			inputRef={inputRef as RefObject<HTMLDivElement>}
 			className="calendar"
 			value={currentValue}
 			defaultValue={currentValue}

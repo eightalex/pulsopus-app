@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { FC, useCallback, useMemo, useState } from 'react';
 
-import Calendar from '@/components/Calendar';
+import Calendar, { TCalendarValue } from '@/components/Calendar';
 
 import { CalendarRangePeriods } from "../CalendarRangePeriods";
 import { EPeriodTypes } from '../constants';
@@ -64,12 +64,20 @@ export const CalendarRangePickerView: FC<ICalendarRangePickerViewProps> = (props
   //   setHoveredRange(null);
   // }, [setCalendarRangePeriod, onSetRange, calendarRangePeriod]);
 
-  const handleChangeInputs = useCallback((range: ICalendarRange) => {
-    setCalendarRangePeriod?.(EPeriodTypes.CUSTOM);
-    setHoveredRange(null);
+  const handleSetRange = useCallback((range: ICalendarRange) => {
     if(!range.from || !range.to) return;
     onSetRange?.(range);
-  }, [setCalendarRangePeriod, onSetRange]);
+  }, [onSetRange]);
+
+  const handleChangeInputs = useCallback((range: ICalendarRange) => {
+    setHoveredRange(null);
+    setCalendarRangePeriod?.(EPeriodTypes.CUSTOM);
+    handleSetRange(range);
+  }, [setCalendarRangePeriod, handleSetRange]);
+
+  const handleChangeCalendar = useCallback((values: TCalendarValue) => {
+
+  }, []);
 
   return (
     <CalendarRangePickerViewWrapper
@@ -94,7 +102,7 @@ export const CalendarRangePickerView: FC<ICalendarRangePickerViewProps> = (props
     >
       <Calendar
         value={calendarValues}
-        // onChange={([f, t]) => handleChange({ from: f, to: t })}
+        onChange={handleChangeCalendar}
         onHoveredDays={handleHoveredDays}
         onActiveStartDateChange={() => setCalendarRangePeriod?.(EPeriodTypes.CUSTOM)}
       />

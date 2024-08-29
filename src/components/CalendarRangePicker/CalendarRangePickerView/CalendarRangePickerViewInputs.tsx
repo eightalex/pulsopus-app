@@ -31,9 +31,12 @@ export const CalendarRangePickerViewInputs: FC<ICalendarRangePickerViewInputsPro
   const to = useMemo(() => moment(initTo).endOf('d').valueOf(), [initTo]);
 
   const handleChange = useCallback((range: ICalendarRange) => {
-    if(range.from && range.from !== from) onChangeFrom?.(range.from);
-    if(range.to && range.to !== to) onChangeTo?.(range.to);
-    onChange?.(range);
+    if(!range?.from || !range?.to) return;
+    const [f, t] = Object.values(range)
+      .map(d => moment(d).startOf('d').valueOf());
+    if(f !== from) onChangeFrom?.(f);
+    if(t !== to) onChangeTo?.(t);
+    onChange?.({ from: f, to: t });
   }, [from, to, onChangeFrom, onChangeTo, onChange]);
 
   return (
