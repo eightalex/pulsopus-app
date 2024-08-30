@@ -131,11 +131,6 @@ const Calendar: FC<ICalendarProps> = (props) => {
       locale={DEFAULT_CALENDAR_LOCALE}
       defaultView={DEFAULT_DETAIL_VIEW}
       minDetail={MIN_DETAIL_VIEW}
-      // maxDate={moment().endOf('year').toDate()}
-      // onDrillUp={console.log}
-      // onDrillDow={console.log}
-      // onClickDay={console.log}
-      // onViewChange={console.log}
       onActiveStartDateChange={(args) => {
         updateElements();
         onActiveStartDateChange?.(args);
