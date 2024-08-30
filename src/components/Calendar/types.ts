@@ -1,15 +1,20 @@
-import { CalendarProps } from 'react-calendar';
+import { CalendarProps } from "react-calendar";
 
 export interface ICalendarRange {
 	from?: number;
 	to?: number;
 }
 
-type ValuePiece = Date | null;
+type Range<T> = [T, T] | T[];
 
-export type TCalendarValue = ValuePiece | [ValuePiece, ValuePiece];
+export type TValuePiece = number | string | Date | null;
+
+export type TCalendarValue = TValuePiece | Range<TValuePiece>;
+
+export type TReturnedValue = number | Range<number>;
 
 export interface ICalendarProps extends Omit<CalendarProps, 'value'> {
+	value: TCalendarValue;
 	onChange?: (value: TCalendarValue) => void;
 	onHoveredDays?: (days: Array<Date | null>) => void;
 }

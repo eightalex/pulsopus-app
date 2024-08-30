@@ -1,7 +1,6 @@
-import 'react-calendar/dist/Calendar.css';
 import './calendar.scss';
 
-import { Stack } from '@mui/material';
+import Stack from '@mui/material/Stack';
 import moment from 'moment';
 import { FC, memo, MouseEvent, RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ReactCalendar from 'react-calendar';
@@ -17,9 +16,15 @@ import { ICalendarProps } from '@/components/Calendar/types';
 import Typography from '@/components/Typography';
 import { useEventListener } from '@/hooks';
 
-// TODO: remove .scss | create mui styled for calendar
 const Calendar: FC<ICalendarProps> = (props) => {
-	const { onChange, value, onActiveStartDateChange, onClickDay, onHoveredDays: onHoveredDays, ...restProps } = props;
+	const {
+		value,
+		onChange,
+		onActiveStartDateChange,
+		onClickDay,
+		onHoveredDays,
+		...restProps
+	} = props;
 	const calendarRef = useRef<HTMLDivElement>();
 	const inputRef = useRef<HTMLDivElement>();
 	const [activeStartValue, setActiveStartValue] = useState<Date | null>(value?.[0] || value);

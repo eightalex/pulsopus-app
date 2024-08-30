@@ -76,8 +76,9 @@ export const CalendarRangePickerView: FC<ICalendarRangePickerViewProps> = (props
   }, [setCalendarRangePeriod, handleSetRange]);
 
   const handleChangeCalendar = useCallback((values: TCalendarValue) => {
-
-  }, []);
+    setHoveredRange(null);
+    setCalendarRangePeriod?.(EPeriodTypes.CUSTOM);
+  }, [setCalendarRangePeriod]);
 
   return (
     <CalendarRangePickerViewWrapper
@@ -108,63 +109,4 @@ export const CalendarRangePickerView: FC<ICalendarRangePickerViewProps> = (props
       />
     </CalendarRangePickerViewWrapper>
   );
-
-  // return (
-  //   <Stack
-  //     ref={containerRef as unknown as RefObject<HTMLDivElement>}
-  //     direction="row"
-  //     divider={<Divider orientation="vertical" flexItem />}
-  //   >
-  //     <CalendarRangePickerViewPeriods {...props} offset={offset}/>
-  //     <Stack
-  //       sx={{
-  //         opacity: offset ? 1 : 0,
-  //         paddingTop: `${offset}px`,
-  //       }}
-  //     >
-  //       <CalendarRangePeriods range={{ from, to }}/>
-  //     </Stack>
-  //     <Stack
-  //       spacing={0}
-  //       sx={({ spacing }) => ({
-  //         padding: spacing(6),
-  //       })}
-  //     >
-  //       {isCustomRangePeriod && (
-  //         <Stack
-  //           direction="row"
-  //           spacing={1}
-  //           justifyContent="center"
-  //           alignItems="center"
-  //           mb={5}
-  //           maxWidth={234}
-  //         >
-  //           <DateInput
-  //             value={valueInputFrom}
-  //             onChange={date => handleChange([date, to])}
-  //             active={!isEqualsDate(valueInputFrom, calendarValues[0])}
-  //           />
-  //           <MinusIcon
-  //             sx={({ extendPalette }) => ({
-  //               width: 8, color: extendPalette.inputBorderSecondary
-  //             })}
-  //           />
-  //           <DateInput
-  //             value={valueInputTo}
-  //             onChange={date => handleChange([from, date])}
-  //             active={
-  //               (!isEqualsDate(valueInputTo, calendarValues[1]) &&
-  //                 isEqualsDate(valueInputFrom, calendarValues[0]))}
-  //           />
-  //         </Stack>
-  //       )}
-  //       <Calendar
-  //         value={calendarValues}
-  //         onChange={handleChange}
-  //         onHoveredDays={handleHoveredDays}
-  //         onActiveStartDateChange={() => onSetPeriod?.(EPeriodTypes.CUSTOM)}
-  //       />
-  //     </Stack>
-  //   </Stack>
-  // );
 };
