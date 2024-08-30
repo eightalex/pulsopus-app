@@ -11,10 +11,14 @@ export type TValuePiece = number | string | Date | null;
 
 export type TCalendarValue = TValuePiece | Range<TValuePiece>;
 
-export type TReturnedValue = number | Range<number>;
+export type TCalendarReturnedValue = Range<number>;
 
-export interface ICalendarProps extends Omit<CalendarProps, 'value'> {
+export type TCalendarPropsOnChange = Exclude<CalendarProps['onChange'], undefined>;
+export type TCalendarPropsOnChangeParameters = Parameters<TCalendarPropsOnChange>;
+export type TCalendarPropsOnChangeValue = TCalendarPropsOnChangeParameters[0];
+
+export interface ICalendarProps extends Omit<CalendarProps, 'value' | 'onChange'> {
 	value: TCalendarValue;
-	onChange?: (value: TCalendarValue) => void;
-	onHoveredDays?: (days: Array<Date | null>) => void;
+	onChange?: (value: TCalendarReturnedValue) => void;
+	onHoveredDays?: (days: Array<number | null>) => void;
 }

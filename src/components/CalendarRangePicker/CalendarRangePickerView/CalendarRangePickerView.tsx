@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { FC, useCallback, useMemo, useState } from 'react';
 
-import Calendar, { TCalendarValue } from '@/components/Calendar';
+import Calendar, { TCalendarReturnedValue } from '@/components/Calendar';
 
 import { CalendarRangePeriods } from "../CalendarRangePeriods";
 import { EPeriodTypes } from '../constants';
@@ -40,7 +40,7 @@ export const CalendarRangePickerView: FC<ICalendarRangePickerViewProps> = (props
     return dateValidate(d) ? moment(d).toDate() : calendarValues[1];
   }, [hoveredRange?.to, calendarValues]);
 
-  const handleHoveredDays = useCallback((days: Array<Date | null>) => {
+  const handleHoveredDays = useCallback((days: Array<number | null>) => {
     // TODO: implement feat
     return;
     const [f, t] = days
@@ -49,20 +49,6 @@ export const CalendarRangePickerView: FC<ICalendarRangePickerViewProps> = (props
       .sort((p, n) => p - n);
     setHoveredRange({ from: f, to: t });
   }, []);
-
-  // const handleChange = useCallback((value) => {
-  //   if(calendarRangePeriod !== EPeriodTypes.CUSTOM) {
-  //     setCalendarRangePeriod?.(EPeriodTypes.CUSTOM);
-  //   }
-  //   const values = Array.isArray(value) ? value : [value];
-  //   const [f, t] = values
-  //     .filter(d => moment(d).isValid())
-  //     .map(d => moment(d).valueOf())
-  //     .sort((a, b) => a - b);
-  //   const calendarRange = { from: f, to: t };
-  //   onSetRange?.(calendarRange);
-  //   setHoveredRange(null);
-  // }, [setCalendarRangePeriod, onSetRange, calendarRangePeriod]);
 
   const handleSetRange = useCallback((range: ICalendarRange) => {
     if(!range.from || !range.to) return;
@@ -75,9 +61,23 @@ export const CalendarRangePickerView: FC<ICalendarRangePickerViewProps> = (props
     handleSetRange(range);
   }, [setCalendarRangePeriod, handleSetRange]);
 
-  const handleChangeCalendar = useCallback((values: TCalendarValue) => {
+  const handleChangeCalendar = useCallback((values: TCalendarReturnedValue) => {
     setHoveredRange(null);
     setCalendarRangePeriod?.(EPeriodTypes.CUSTOM);
+    console.log('values', values);
+    // const handleChange = useCallback((value) => {
+    //   if(calendarRangePeriod !== EPeriodTypes.CUSTOM) {
+    //     setCalendarRangePeriod?.(EPeriodTypes.CUSTOM);
+    //   }
+    //   const values = Array.isArray(value) ? value : [value];
+    //   const [f, t] = values
+    //     .filter(d => moment(d).isValid())
+    //     .map(d => moment(d).valueOf())
+    //     .sort((a, b) => a - b);
+    //   const calendarRange = { from: f, to: t };
+    //   onSetRange?.(calendarRange);
+    //   setHoveredRange(null);
+    // }, [setCalendarRangePeriod, onSetRange, calendarRangePeriod]);
   }, [setCalendarRangePeriod]);
 
   return (
