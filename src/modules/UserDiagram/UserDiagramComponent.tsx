@@ -23,7 +23,7 @@ export const UserDiagramComponent = observer(() => {
 		>
 			<PeopleDynamicViewContent
 				tooltipTitle={(user || compareValue) && tooltipTitleDefault || ''}
-				content={<UserDiagramChart/>}
+				content={user && <UserDiagramChart/>}
 				side={
 					<Stack spacing={6}>
 						{Boolean(chartData.length) && chartData.map((data, idx) => {
@@ -43,7 +43,7 @@ export const UserDiagramComponent = observer(() => {
 							].map((el) => {
 								return !el
 									? el
-									: ({ ...el, value: el.value.toFixed(4) });
+									: ({ ...el, value: Number(el?.value)?.toFixed(4) });
 							});
 							return (
 								<RateTrendView

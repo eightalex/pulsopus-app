@@ -7,7 +7,7 @@ export class UsersService {
 
 	public async getAll(): Promise<IUser[]> {
 		return this.restInstance
-			.get('/users')
+			.get('/users/activity')
 			.then(({ data }) => data.users);
 	}
 

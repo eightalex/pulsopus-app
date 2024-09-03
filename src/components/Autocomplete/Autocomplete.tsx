@@ -6,7 +6,14 @@ import { IAutocompleteOption, IAutocompleteProps } from '@/components/Autocomple
 
 import { GroupHeaderStyled, GroupItemsStyled } from './styled';
 
-const Autocomplete: FC<IAutocompleteProps> = ({ options, onChange, placeholder = '', renderGroupHeader, ...rest }) => {
+const Autocomplete: FC<IAutocompleteProps> = (props) => {
+	const {
+		options = [],
+		onChange,
+		placeholder = '',
+		renderGroupHeader,
+		...rest
+	} = props;
 	const handleChange = useCallback((option: IAutocompleteOption | null) => {
 		onChange?.(option || undefined);
 	}, [onChange]);
@@ -16,10 +23,6 @@ const Autocomplete: FC<IAutocompleteProps> = ({ options, onChange, placeholder =
 			onChange?.(undefined);
 		};
 	}, [onChange]);
-
-	if (!options || !options.length) {
-		return;
-	}
 
 	return (
 		<MuiAutocomplete

@@ -31,7 +31,7 @@ export const UserDiagramActionsAutocomplete = observer(() => {
 		return compareAutocompleteOptions.find(({ value }) => value === compareValue?.id) || null;
 	}, [compareValue, compareAutocompleteOptions]);
 
-	const handleChangeUser = useCallback((option: IAutocompleteOption) => {
+	const handleChangeUser = useCallback((option?: IAutocompleteOption) => {
 		if (!option) {
 			setUser(null);
 			return;
@@ -39,7 +39,7 @@ export const UserDiagramActionsAutocomplete = observer(() => {
 		setUser(usersMap.get(option?.value as IUser['id']) || null);
 	}, [usersMap, setUser]);
 
-	const handleChangeCompareValue = useCallback((option: IAutocompleteOption) => {
+	const handleChangeCompareValue = useCallback((option?: IAutocompleteOption) => {
 		if (!option) {
 			setCompareValue(null);
 			return;
@@ -63,7 +63,7 @@ export const UserDiagramActionsAutocomplete = observer(() => {
 					options={compareAutocompleteOptions}
 					// onChange={(option) => setCompareValueByOption(option)}
 					onChange={handleChangeCompareValue}
-					groupBy={(option) => option.type}
+					groupBy={(option) => option?.type || ''}
 					renderGroupHeader={({ group }) => group === 'user' ? <>employee</> : <>{group}</>}
 				/>
 			</Collapse>

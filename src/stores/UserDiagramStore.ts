@@ -152,7 +152,7 @@ export class UserDiagramStore extends CalendarRangeBase implements IUserDiagramS
 		});
 	}
 
-	public async mountStore(userId?: IUser['id']) {
+	public async mountStore(userId?: IUser['id']): Promise<void> {
 		if(!userId || this.isLoadingMount) return;
 
 		const key = this.asyncStatuses.mounting;
@@ -161,7 +161,7 @@ export class UserDiagramStore extends CalendarRangeBase implements IUserDiagramS
 			const user = await this.rootStore.usersStore.getUser(userId);
 			runInAction(() => {
 				this.targetId = userId;
-				this.setUser(user);
+				if(user) this.setUser(user);
 				this.setSuccess(key);
 			});
 		} catch (err) {
