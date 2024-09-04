@@ -112,6 +112,7 @@ export class UsersStore extends BaseStore implements IUsersStore {
 	}
 
 	public calcUserTrendRateData(id: IUser['id'], from: number, to: number): IUserTrendRate {
+		console.log('calcUserTrendRateData => id: ', id, 'from: ', from, 'to: ', to);
 		const defaultResult = {
 			trend: 0,
 			rate: 0,
@@ -123,6 +124,7 @@ export class UsersStore extends BaseStore implements IUsersStore {
 		};
 		if(!from || !to) return defaultResult;
 		const user = this.usersMap.get(id);
+		console.log('calcUserTrendRateData => user: ', user);
 		if(!user) return defaultResult;
 		const [prevFrom, prevTo] = DateTime.getPrevPeriod(from, to);
 		const currentCompanyActivity = this.rootStore.departmentsStore.getCompanyActivity(from, to);
@@ -134,6 +136,7 @@ export class UsersStore extends BaseStore implements IUsersStore {
 		const currDateTime = DateTime.of(from, to);
 		const prevDateTime = DateTime.of(prevFrom, prevTo);
 		for (const activity of (user.activity || [])) {
+			console.log('activity', activity);
 			const { date } = activity;
 			if(!Number(date)) continue;
 			if(currDateTime.isBetweenOrEquals(Number(date))) {
