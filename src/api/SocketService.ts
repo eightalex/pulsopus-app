@@ -11,45 +11,68 @@ export class SocketService {
     this.uri = uri;
   }
 
-  public connect(): void {
-    debugger;
-    if(!this.uri) return;
-    const url = new URL(this.uri);
-    const link = this.uri.replace(url.search, '');
-    const params = new URLSearchParams(url.search);
+  public async connect(): Promise<Socket> {
+    return new Promise((resolve, reject) => {
+      if(!this.uri) {
+        reject('No connection uri');
+        return;
+      }
 
-    const query: Record<string, string> = {};
-    for (const [key, value] of params.entries()) {
-      query[key] = value;
-    }
+      const url = new URL(this.uri);
+      const link = this.uri.replace(url.search, '');
+      const params = new URLSearchParams(url.search);
 
-    this.socket = io(link, {
-      query,
-      transports: ['websocket', 'polling'],
-      autoConnect: false,
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 2000,
-      reconnectionDelayMax: 10000,
-      timeout: 20000,
-    });
+      const query: Record<string, string> = {};
+      for (const [key, value] of params.entries()) {
+        query[key] = value;
+      }
 
-    console.info(`Connecting to ${link}`);
+      const connection = io(link, {
+        query,
+        transports: ['websocket'],
+        autoConnect: true,
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 2000,
+        reconnectionDelayMax: 10000,
+        timeout: 20000,
+      });
 
-    this.socket.on('connect_error', (error) => {
-      console.error('Socket connection error', error);
-    });
+      console.info(`Connecting to ${link}`);
 
-    this.socket.on('error', (error) => {
-      console.error('Socket error:', error);
-    });
+      connection.on('connect_error', (error) => {
+        console.error('Socket connection error', error);
+        reject(error);
+      });
 
-    this.socket.on('connect', () => {
-      console.info(`Socket connected to server. Connection ID: ${this.socket?.id}`);
-    });
+      connection.on('error', (error) => {
+        console.error('Socket error:', error);
+        reject(error);
+      });
 
-    this.socket.on('disconnect', () => {
-      console.info('Disconnected from server');
+      connection.on('connect', () => {
+        console.info(`Socket connected to server. Connection ID: ${connection.id}`);
+        this.socket = connection;
+        resolve(connection);
+      });
+
+      connection.on('disconnect', () => {
+        console.info('Disconnected from server');
+      });
+
+      connection.on("ping", () => {
+        console.info('Socket connection "Ping"');
+      });
+
+      connection.on("reconnect", () => {
+        console.info('Socket reconnect');
+      });
+
+      connection.on("reconnect_error", (error) => {
+        console.error('Socket reconnect error', error);
+      });
+
+
     });
   }
 
@@ -61,20 +84,12 @@ export class SocketService {
     }
   }
 
-  // public on<Message extends object>(event: ESocketEvent, callback: (data: Message) => void): void {
-  //   if (!this.socket) {
-  //     console.error('Socket not connected');
-  //     return;
-  //   }
-  //   this.socket.on(event, callback);
-  // }
-
-  public on(event: string, callback: (data: object) => void): void {
-    if (this.socket) {
-      this.socket.on(event, callback);
-    } else {
+  public on<Message extends object>(event: ESocketEvent, callback: (data: Message) => void): void {
+    if (!this.socket) {
       console.error('Socket not connected');
+      return;
     }
+    this.socket.on(event, callback);
   }
 
   public disconnect(): void {
