@@ -103,12 +103,13 @@ export class UsersStore extends BaseStore implements IUsersStore {
 		return [...this.usersMap.values()];
 	}
 
-	public get usersAutocompleteOptions(): IAutocompleteOption[] {
+	public get usersAutocompleteOptions(): IAutocompleteOption<IUser>[] {
 		return generateAutocompleteOption([...this.users], {
 			type: 'user',
 			keys: {
 				value: 'id',
 				label: 'username',
+				department: 'department',
 			}
 		});
 	}

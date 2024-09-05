@@ -55,6 +55,8 @@ export const UserDiagramActionsAutocomplete = observer(() => {
 				value={userAutocompleteValue}
 				options={usersAutocompleteOptions}
 				onChange={handleChangeUser}
+				groupBy={(option) => option?.department || ''}
+				sortCompareOptions={(a, b) => String(a.department || '').localeCompare(String(b.department || ''))}
 			/>
 			<Collapse in={isCompare && !!user}>
 				<Autocomplete

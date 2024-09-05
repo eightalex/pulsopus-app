@@ -20,7 +20,6 @@ export const UserDiagramChart = observer(() => {
                 .map((act) => ({ x: Number(act.date), y: act.rate || 0 } as IChartDataPoint)))
         , [chartData]);
 
-    console.log('chartData', chartData);
 
     const handleSelectRange = useCallback((d: IInteractionData<unknown>[] = []) => {
         const t1 = d[0]?.data.x;

@@ -84,7 +84,7 @@ export class DepartmentsStore extends BaseStore implements IDepartmentsStore {
 			.sort((p, n) => this.sortComparator(p.value,  n.value));
 	}
 
-	public get departmentAutocompleteOptions(): IAutocompleteOption[] {
+	public get departmentAutocompleteOptions(): IAutocompleteOption<IDepartment>[] {
 		const activeDepartments = [...this.departments].filter((d) => d.activity.length);
 		return generateAutocompleteOption(activeDepartments, {
 			type: 'department',

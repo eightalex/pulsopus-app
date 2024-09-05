@@ -5,22 +5,24 @@ import {
 	AutocompleteRenderInputParams
 } from '@mui/material/Autocomplete/Autocomplete';
 
-export interface IAutocompleteOption {
+export interface IAutocompleteOption<T> {
 	idx?: number;
 	id?: string | number;
 	type?: string;
 	value: string;
 	label: string;
+	[k: string]: Omit<keyof T, 'idx' | 'id' | 'type' | 'value' | 'label'> | undefined;
 }
 
-export interface IAutocompleteProps extends Omit<AutocompleteProps<IAutocompleteOption, false, false, false>, 'onChange' | 'renderInput'> {
+export interface IAutocompleteProps<Item extends object> extends Omit<AutocompleteProps<IAutocompleteOption<Item>, false, false, false>, 'onChange' | 'renderInput'> {
 	renderInput?: (params: AutocompleteRenderInputParams) => ReactNode;
-	value: IAutocompleteOption | null;
-	options: IAutocompleteOption[];
-	onChange?: (option?: IAutocompleteOption) => void;
+	value: IAutocompleteOption<Item> | null;
+	options: IAutocompleteOption<Item>[];
+	onChange?: (option?: IAutocompleteOption<Item>) => void;
 	placeholder?: string;
 	renderGroupHeader?: (params: AutocompleteRenderGroupParams) => JSX.Element;
 	disabled?: boolean;
 	onOpen?: () => void;
 	onClose?: () => void;
+	sortCompareOptions?: (a: IAutocompleteOption<Item>, b: IAutocompleteOption<Item>) => number;
 }
