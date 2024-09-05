@@ -1,5 +1,4 @@
 import { AxiosInstance } from 'axios';
-import { EUserStatusPendingResolve } from "@/constants/EUser.ts";
 import { IUser } from "@/interfaces/IUser.ts";
 
 export class UsersService {
@@ -35,17 +34,6 @@ export class UsersService {
 			.then(({ data }) => data.roles);
 	}
 
-	public async setUserAccessRequest(
-		id: IUser["id"],
-		requestId: IUser["accessRequestId"],
-		decision: EUserStatusPendingResolve
-	): Promise<void> {
-		return this.restInstance.post(`/users/${id}/access`, {
-			requestId,
-			decision
-		});
-	}
-
 	public async deleteUsers(ids: IUser["id"][]): Promise<void> {
 		const params = {
 			// ids: encodeURIComponent(JSON.stringify(ids)),
@@ -54,5 +42,19 @@ export class UsersService {
 		const search = new URLSearchParams(params);
 		const url = `/users?${search}`;
 		return this.restInstance.delete(url);
+	}
+
+	public async approveAccessRequest(id: IUser["id"]): Promise<void> {
+		return this.restInstance.post(`/users/${id}/access/approve`);
+	}
+
+	public async rejectAccessRequest(id: IUser["id"]): Promise<void> {
+		return this.restInstance.post(`/users/${id}/access/reject`);
+	}
+
+	public async getAdminConnectedLink(): Promise<string> {
+		return this.restInstance
+			.get(`/users/admin/connect`)
+			.then(({ data }) => data.link);
 	}
 }

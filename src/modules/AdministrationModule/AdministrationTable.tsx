@@ -18,8 +18,9 @@ export const AdministrationTable = observer(() => {
   const {
     rootStore: {
       usersStore: {
-        setUserAccessRequestDecision,
         setUserRoleById,
+        approveAccessRequest,
+        rejectAccessRequest,
       },
       authStore: {
         user: currentUser,
@@ -37,7 +38,7 @@ export const AdministrationTable = observer(() => {
 
   const maxTitleSize = useMemo(() => {
     const maxTitleLength = data.reduce((acc, { username }) => {
-      const unLength = username.length;
+      const unLength = username?.length || 0;
       return unLength > acc ? unLength : acc;
     }, 0);
     return calcMaxColSize(maxTitleLength, 190, 240, 10);
@@ -54,7 +55,7 @@ export const AdministrationTable = observer(() => {
       {
         accessorKey: 'department',
         header: 'Department',
-        accessorFn: (row: IUser) => row.department?.label,
+        accessorFn: (row: IUser) => row.department,
         cell: (info: CellContext<IUser, unknown>) => info.getValue(),
         size: 168,
         meta: {
@@ -127,8 +128,11 @@ export const AdministrationTable = observer(() => {
             if (!value) return;
             try {
               meta.setLoading(row.index, column.id);
-              await setUserAccessRequestDecision(user.id, user.accessRequestId, value);
-              const nextValue = EUserStatusPendingResolve.ACCEPT
+              const decisionAccessRequest = value === EUserStatusPendingResolve.APPROVED
+                ? approveAccessRequest
+                : rejectAccessRequest;
+              await decisionAccessRequest(user.id);
+              const nextValue = EUserStatusPendingResolve.APPROVED
                 ? EUserStatus.ACTIVE
                 : EUserStatus.INACTIVE;
               meta.updateData(row.index, column.id, nextValue);
@@ -229,9 +233,10 @@ export const AdministrationTable = observer(() => {
     currentUser?.id,
     currentUser?.isAdmin,
     setUserRoleById,
-    setUserAccessRequestDecision,
     setUsersToDelete,
-    toggleDeleteConfirm
+    toggleDeleteConfirm,
+    approveAccessRequest,
+    rejectAccessRequest,
   ]);
 
   return (

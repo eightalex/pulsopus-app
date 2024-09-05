@@ -44,9 +44,7 @@ export const routes: RouteObject[] = [
     element: (
       <ProtectedRoute>
         <LayoutSideBar>
-          <InitialRequester>
-            <Outlet/>
-          </InitialRequester>
+          <Outlet/>
         </LayoutSideBar>
       </ProtectedRoute>
     ),
@@ -59,27 +57,31 @@ export const routes: RouteObject[] = [
         id: PEOPLE_DYNAMIC_ROUTE,
         path: PEOPLE_DYNAMIC_ROUTE,
         element:
-          <RequireRoleRoute
-            allowedRoles={[EUserRole.VIEWER]}
-            title={DOCUMENTS_TITLES[PEOPLE_DYNAMIC_ROUTE]}
-            canonical={PEOPLE_DYNAMIC_ROUTE}
-            description={DOCUMENTS_DESCRIPTIONS[PEOPLE_DYNAMIC_ROUTE]}
-          >
-            <PeopleDynamic/>
-          </RequireRoleRoute>
+          <InitialRequester>
+            <RequireRoleRoute
+              allowedRoles={[EUserRole.VIEWER]}
+              title={DOCUMENTS_TITLES[PEOPLE_DYNAMIC_ROUTE]}
+              canonical={PEOPLE_DYNAMIC_ROUTE}
+              description={DOCUMENTS_DESCRIPTIONS[PEOPLE_DYNAMIC_ROUTE]}
+            >
+              <PeopleDynamic/>
+            </RequireRoleRoute>
+          </InitialRequester>
       },
       {
         id: DIAGRAM_ROUTE,
         path: DIAGRAM_ROUTE,
         element:
-          <RequireRoleRoute
-            allowedRoles={[EUserRole.VIEWER]}
-            title={DOCUMENTS_TITLES[DIAGRAM_ROUTE]}
-            canonical={DIAGRAM_ROUTE}
-            description={DOCUMENTS_DESCRIPTIONS[DIAGRAM_ROUTE]}
-          >
-            <UserDiagram/>
-          </RequireRoleRoute>
+          <InitialRequester>
+            <RequireRoleRoute
+              allowedRoles={[EUserRole.VIEWER]}
+              title={DOCUMENTS_TITLES[DIAGRAM_ROUTE]}
+              canonical={DIAGRAM_ROUTE}
+              description={DOCUMENTS_DESCRIPTIONS[DIAGRAM_ROUTE]}
+            >
+              <UserDiagram/>
+            </RequireRoleRoute>
+          </InitialRequester>
       },
       {
         id: MANAGEMENT_ROUTE,

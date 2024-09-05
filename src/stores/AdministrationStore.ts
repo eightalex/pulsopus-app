@@ -1,9 +1,11 @@
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
+import api, { SocketService } from "@/api";
 import { EUserStatus } from "@/constants/EUser.ts";
 import { IAdministrationStore, IRootStore, IUser } from '@/interfaces';
 import { BaseStore } from './BaseStore';
 
 export class AdministrationStore extends BaseStore implements IAdministrationStore {
+	private readonly socket: SocketService = new SocketService();
 	public globalFilter: string = '';
 	public usersToDelete: IUser[] = [];
 	private cronInterval: ReturnType<typeof setInterval> | null = null;
@@ -58,13 +60,33 @@ export class AdministrationStore extends BaseStore implements IAdministrationSto
 		});
 	}
 
+	private async socketConnect() {
+		debugger;
+		const connectedLink = await api.usersService.getAdminConnectedLink();
+		this.socket.setUri(connectedLink);
+		this.socket.connect();
+		console.log('this.socket.connected', this.socket.connected);
+		return;
+
+		console.log('this.socket.connected', this.socket.connected);
+
+		// this.socket.on('DELETE', (data) => {
+		// 	console.log('data', data);
+		// 	alert(JSON.stringify(data, null, 4));
+		// });
+	}
+
 	private resetStore() {
 		this.clearCronData();
 		this.globalFilter = '';
+		this.socket.destroy();
 	}
 
 	public async mount() {
-		await this.createCronData();
+		await this.socketConnect();
+		await this.rootStore.usersStore.requestUsers();
+		await this.rootStore.departmentsStore.requestDepartments();
+		// await this.createCronData();
 	}
 
 	public unmount() {
