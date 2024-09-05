@@ -1,5 +1,5 @@
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
-import api, { SocketService } from "@/api";
+import api, { EUserSocketEvent, SocketService } from "@/api";
 import { EUserStatus } from "@/constants/EUser.ts";
 import { IAdministrationStore, IRootStore, IUser } from '@/interfaces';
 import { BaseStore } from './BaseStore';
@@ -47,16 +47,19 @@ export class AdministrationStore extends BaseStore implements IAdministrationSto
 		try {
 			const connectedLink = await api.usersService.getAdminConnectedLink();
 			this.socket.setUri(connectedLink);
-			await this.socket.connect();
+			const socket = await this.socket.connect();
 
-			// this.socket.on<{ id: IUser["id"] }>(EUserSocketEvent.DELETE, (message) => {
-			// 	console.log('message.id', message.id);
-			// 	this.rootStore.usersStore.usersMap.delete(message.id);
-			// });
-			//
-			// this.socket.on<{ id: IUser["id"] }>(EUserSocketEvent.UPDATE, (message) => {
-			// 	this.rootStore.usersStore.getUser(message.id);
-			// });
+			socket.on(EUserSocketEvent.DELETE, (message: { id: IUser["id"] }) => {
+				this.rootStore.usersStore.usersMap.delete(message.id);
+			});
+
+			this.socket.on<{ id: IUser["id"] }>(EUserSocketEvent.DELETE, (message) => {
+				this.rootStore.usersStore.usersMap.delete(message.id);
+			});
+
+			this.socket.on<{ id: IUser["id"] }>(EUserSocketEvent.UPDATE, (message) => {
+				this.rootStore.usersStore.getUser(message.id);
+			});
 
 		} catch (err) {
 			this.rootStore.notifyStore.error(`Socket connection error`);

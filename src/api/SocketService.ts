@@ -30,7 +30,6 @@ export class SocketService {
       const connection = io(link, {
         query,
         transports: ['websocket'],
-        autoConnect: true,
         reconnection: true,
         reconnectionAttempts: 5,
         reconnectionDelay: 2000,
@@ -72,7 +71,6 @@ export class SocketService {
         console.error('Socket reconnect error', error);
       });
 
-
     });
   }
 
@@ -99,6 +97,7 @@ export class SocketService {
   }
 
   public destroy() {
+    // return;
     this.disconnect();
     this.socket = null;
   }
