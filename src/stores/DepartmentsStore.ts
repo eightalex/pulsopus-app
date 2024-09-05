@@ -20,6 +20,7 @@ export class DepartmentsStore extends BaseStore implements IDepartmentsStore {
 		super(rootStore);
 		makeObservable(this, {
 			departmentsMap: observable,
+			//
 			departments: computed,
 			departmentAutocompleteOptions: computed,
 			// loading
@@ -113,8 +114,9 @@ export class DepartmentsStore extends BaseStore implements IDepartmentsStore {
 
 	public getActivityByDepartmentValue(value: string, from?: number, to?: number): number {
 		return this.getActivitiesByDepartmentValue(value, from, to)
-			.reduce((acc, { value }) => {
-				return acc + Number(value);
+			.reduce((sum, { value }) => {
+				sum+= Number(value);
+				return sum;
 			}, 0) || 0;
 	}
 

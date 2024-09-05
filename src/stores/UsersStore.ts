@@ -1,6 +1,8 @@
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
+import moment from "moment";
 import api from "@/api";
 import { IAutocompleteOption } from '@/components/Autocomplete';
+import { ICalendarRange } from "@/components/Calendar";
 import { EUserStatusPendingResolve } from "@/constants/EUser.ts";
 import { generateAutocompleteOption } from "@/helpers/generateAutocompleteOption.ts";
 import { IRootStore, IUser, IUsersStore, IUserTrendRate } from '@/interfaces';
@@ -111,8 +113,20 @@ export class UsersStore extends BaseStore implements IUsersStore {
 		});
 	}
 
+	private getUserActivitiesByRange(
+		user: IUser,
+		range: ICalendarRange = {
+			from: 0, to: moment().endOf('d').valueOf()
+		}): Exclude<IUser["activity"], null | undefined> {
+		return (user.activity || []).reduce((activities, activity) => {
+			const { date } = activity;
+			const isDateInRange = DateTime.isBetweenOrEquals(Number(date), range.from, range.to);
+			if(!isDateInRange) return activities;
+			return [...activities, activity];
+		}, [] as Exclude<IUser["activity"], null | undefined>);
+	}
+
 	public calcUserTrendRateData(id: IUser['id'], from: number, to: number): IUserTrendRate {
-		console.log('calcUserTrendRateData => id: ', id, 'from: ', from, 'to: ', to);
 		const defaultResult = {
 			trend: 0,
 			rate: 0,
@@ -122,32 +136,37 @@ export class UsersStore extends BaseStore implements IUsersStore {
 			currentUserActivity: 0,
 			prevUserActivity: 0,
 		};
+
 		if(!from || !to) return defaultResult;
 		const user = this.usersMap.get(id);
-		console.log('calcUserTrendRateData => user: ', user);
 		if(!user) return defaultResult;
+
 		const [prevFrom, prevTo] = DateTime.getPrevPeriod(from, to);
+
 		const currentCompanyActivity = this.rootStore.departmentsStore.getCompanyActivity(from, to);
 		const prevCompanyActivity = this.rootStore.departmentsStore.getCompanyActivity(prevFrom, prevTo);
+
 		const currentActivities = [];
 		let currentActivitiesSum = 0;
 		const prevActivities = [];
 		let prevActivitiesSum = 0;
+
 		const currDateTime = DateTime.of(from, to);
 		const prevDateTime = DateTime.of(prevFrom, prevTo);
+
 		for (const activity of (user.activity || [])) {
-			console.log('activity', activity);
 			const { date } = activity;
 			if(!Number(date)) continue;
 			if(currDateTime.isBetweenOrEquals(Number(date))) {
 				currentActivities.push(activity);
-				currentActivitiesSum += activity.value;
+				currentActivitiesSum += Number(activity.value);
 			}
 			if(prevDateTime.isBetweenOrEquals(Number(date))) {
 				prevActivities.push(activity);
-				prevActivitiesSum += activity.value;
+				prevActivitiesSum += Number(activity.value);
 			}
 		}
+
 		const cA = Math.max(Number(currentActivitiesSum), 1);
 		const pA = Math.max(Number(prevActivitiesSum), 1);
 		const diffAbsolute = cA / pA;
@@ -158,6 +177,7 @@ export class UsersStore extends BaseStore implements IUsersStore {
 		const rate =  !(currentCompanyActivity && currentActivitiesSum)
 			? 0
 			: (currentActivitiesSum / currentCompanyActivity) * 100;
+
 		return {
 			...defaultResult,
 			activity: currentActivities,

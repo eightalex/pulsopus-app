@@ -80,14 +80,18 @@ export class UserDiagramStore extends CalendarRangeBase implements IUserDiagramS
 		const generateDataForDepartment = (department: IDepartment): IUserDiagramChartData => {
 			const { value, label } =  department;
 			const {
-				activities,
+				activities: activity,
 				rate,
 				trend,
 				currentDepartmentActivity,
 				prevDepartmentActivity
 			} = this.rootStore.departmentsStore.getDepartmentActivityDataByValue(value, this.rangeFrom, this.rangeTo);
+			console.log('rate', rate);
+			console.log('trend', trend);
+			console.log('currentDepartmentActivity', currentDepartmentActivity);
+			console.log('prevDepartmentActivity', prevDepartmentActivity);
 			return  {
-				activity: activities,
+				activity,
 				rate,
 				trend,
 				currentRateValue: currentDepartmentActivity,
