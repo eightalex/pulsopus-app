@@ -1,14 +1,7 @@
 import { io, Socket } from "socket.io-client";
+import { EUserSocketEvent } from './services';
 
-export const enum ESocketEvent {
-  CONNECT = 'CONNECT',
-  DISCONNECT = 'DISCONNECT',
-  UPDATE = 'UPDATE',
-  DELETE = 'DELETE',
-  INSERT = 'INSERT',
-  MESSAGE = 'MESSAGE',
-  ERROR = 'ERROR',
-}
+export type ESocketEvent = string | EUserSocketEvent;
 
 export class SocketService {
   private socket: Socket | null = null;
@@ -19,36 +12,62 @@ export class SocketService {
   }
 
   public connect(): void {
+    debugger;
     if(!this.uri) return;
-    // const url = new URL('https://example.com/path?name=JohnDoe&age=30');
     const url = new URL(this.uri);
     const link = this.uri.replace(url.search, '');
-    console.log('link', link);
-    this.socket = io(this.uri);
-    return;
-    console.log('this.socket', this.socket);
-    console.info(`Connecting to ${this.uri}`);
+    const params = new URLSearchParams(url.search);
 
-    this.on('message', (data) => {
-      alert(JSON.stringify(data, null, 4));
+    const query: Record<string, string> = {};
+    for (const [key, value] of params.entries()) {
+      query[key] = value;
+    }
+
+    this.socket = io(link, {
+      query,
+      transports: ['websocket', 'polling'],
+      autoConnect: false,
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 2000,
+      reconnectionDelayMax: 10000,
+      timeout: 20000,
     });
 
-    this.on('connect', () => {
-      console.info('Connected to server');
+    console.info(`Connecting to ${link}`);
+
+    this.socket.on('connect_error', (error) => {
+      console.error('Socket connection error', error);
     });
 
-    this.on('disconnect', () => {
+    this.socket.on('error', (error) => {
+      console.error('Socket error:', error);
+    });
+
+    this.socket.on('connect', () => {
+      console.info(`Socket connected to server. Connection ID: ${this.socket?.id}`);
+    });
+
+    this.socket.on('disconnect', () => {
       console.info('Disconnected from server');
     });
   }
 
-  public emit(event: string, data: object): void {
+  public emit<Date extends object>(event: ESocketEvent, data: Date): void {
     if (this.socket) {
       this.socket.emit(event, data);
     } else {
       console.error('Socket not connected');
     }
   }
+
+  // public on<Message extends object>(event: ESocketEvent, callback: (data: Message) => void): void {
+  //   if (!this.socket) {
+  //     console.error('Socket not connected');
+  //     return;
+  //   }
+  //   this.socket.on(event, callback);
+  // }
 
   public on(event: string, callback: (data: object) => void): void {
     if (this.socket) {

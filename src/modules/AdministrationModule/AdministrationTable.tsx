@@ -269,7 +269,6 @@ export const AdministrationTable = observer(() => {
         }}
       />
       <ConfirmDeleteDialog
-        // table={tableRef.current as TTable<IUser>}
         open={isOpenDeleteConfirm}
         onClose={() => toggleDeleteConfirm()}
       />

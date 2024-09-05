@@ -4,6 +4,16 @@ import { CLIENT_URL } from "@/config";
 import { QUERY_PARAM_LOGIN, QUERY_PARAM_TARGET } from "@/constants/routes.ts";
 import { IAuthAuthorize } from "@/interfaces/IAuthStore.ts";
 
+export const enum EUserSocketEvent {
+	CONNECT = 'CONNECT',
+	DISCONNECT = 'DISCONNECT',
+	UPDATE = 'UPDATE',
+	DELETE = 'DELETE',
+	INSERT = 'INSERT',
+	MESSAGE = 'MESSAGE',
+	ERROR = 'ERROR',
+}
+
 export class AuthService {
 	constructor(private readonly restInstance: AxiosInstance) {}
 
