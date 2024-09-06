@@ -32,6 +32,7 @@ export const AdministrationTable = observer(() => {
       }
     }
   } = useStores();
+
   const tableRef = useRef<TTable<IUser>>();
   const tableDataRef = useRef<IUser[]>();
   const [isOpenDeleteConfirm, toggleDeleteConfirm] = useToggle();

@@ -29,7 +29,9 @@ export class AdministrationStore extends BaseStore implements IAdministrationSto
 			const statusOrders = [EUserStatus.PENDING];
 			const prevStatusIndex = statusOrders.indexOf(p.status);
 			const nextStatusIndex = statusOrders.indexOf(n.status);
-			return nextStatusIndex - prevStatusIndex;
+
+			if(prevStatusIndex === nextStatusIndex) return n.updatedAt - p.updatedAt;
+			return (nextStatusIndex - prevStatusIndex);
 		});
 	}
 
@@ -48,9 +50,8 @@ export class AdministrationStore extends BaseStore implements IAdministrationSto
 			const connectedLink = await api.usersService.getAdminConnectedLink();
 			this.socket.setUri(connectedLink);
 			const socket = await this.socket.connect();
-
-			socket.on(EUserSocketEvent.DELETE, (message: { id: IUser["id"] }) => {
-				this.rootStore.usersStore.usersMap.delete(message.id);
+			socket.onAny((...data) => {
+				console.log('socket.onAny => data', data);
 			});
 
 			this.socket.on<{ id: IUser["id"] }>(EUserSocketEvent.DELETE, (message) => {
@@ -58,7 +59,7 @@ export class AdministrationStore extends BaseStore implements IAdministrationSto
 			});
 
 			this.socket.on<{ id: IUser["id"] }>(EUserSocketEvent.UPDATE, (message) => {
-				this.rootStore.usersStore.getUser(message.id);
+				this.rootStore.usersStore.requestUser(message.id);
 			});
 
 		} catch (err) {
