@@ -1,7 +1,7 @@
 {
   "name": "pulsopus-app",
   "private": true,
-  "version": "0.0.71",
+  "version": "0.0.75",
   "author": "Bohdan Radchenko <radchenkobs@gmail.com>",
   "type": "module",
   "scripts": {
@@ -12,7 +12,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@emotion/react": "^11.11.4",
+    "@emotion/babel-plugin": "^11.12.0",
+    "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.11.5",
     "@faker-js/faker": "^8.4.1",
     "@fontsource-variable/orbitron": "^5.0.18",
@@ -40,6 +41,7 @@
     "moment": "^2.30.1",
     "react": "^18.2.0",
     "react-calendar": "^4.8.0",
+    "react-datepicker": "^7.3.0",
     "react-dom": "^18.2.0",
     "react-error-boundary": "^4.0.12",
     "react-helmet": "^6.1.0",
@@ -48,6 +50,7 @@
     "react-redux": "^9.1.2",
     "react-router-dom": "^6.21.0",
     "react-toastify": "^10.0.4",
+    "socket.io-client": "^4.7.5",
     "uuid": "^9.0.1",
     "vite-plugin-pwa": "^0.19.7",
     "vite-plugin-static-copy": "^1.0.0",
@@ -61,6 +64,7 @@
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
     "@types/react-helmet": "^6.1.11",
+    "@types/react-input-mask": "^3.0.5",
     "@types/react-table": "^7.7.20",
     "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^6.14.0",

@@ -1,48 +1,63 @@
 import { sortBy } from 'lodash';
 import { IAutocompleteOption } from "@/components/Autocomplete";
 
+interface IOptionsKeys<Item> {
+    [k: string]: Omit<keyof Item, 'label' | 'value'>;
+    label: string;
+    value: string;
+}
+
 interface IOptions<Item> {
     type?: string,
-    comparator?: (item: Item) => IAutocompleteOption
-    keys?: {
-        label: string;
-        value: string;
-    }
+    comparator?: (item: Item) => IAutocompleteOption<Item>
+    keys?: IOptionsKeys<Item>;
 }
 export function generateAutocompleteOption<Item extends NonNullable<unknown>>(
     list: Item[],
     options: IOptions<Item> = {}
-): IAutocompleteOption[] {
+): IAutocompleteOption<Item>[] {
     const { type = '', comparator, keys } = options;
     if(!list) return [];
-    let result: IAutocompleteOption[] = [];
+    let result: IAutocompleteOption<Item>[] = [];
 
     if(comparator && typeof comparator === 'function') {
         result = list.map(comparator);
     }
 
-    if(keys) {
+    if(keys && Object.keys(keys).length) {
         result =  list.map((item: Item ) => {
-            const result = {
+            const res = {
                 value: '',
                 label: '',
-            } as IAutocompleteOption;
+            } as IAutocompleteOption<Item>;
             if(type) {
-                result.type = type;
+                res.type = type;
             }
 
+            const { value, label, ...restKeys } = keys;
 
-            result.value = Object.prototype.hasOwnProperty.call(item, keys.value)
+
+            res.value = Object.prototype.hasOwnProperty.call(item, value)
                 // @ts-expect-error types error
-                ? item[keys.value].toString()
-                : `No value with key: ${keys.value}`;
+                ? item[value].toString()
+                : `No value with key: ${value}`;
 
-            result.label = Object.prototype.hasOwnProperty.call(item, keys.label)
+            res.label = Object.prototype.hasOwnProperty.call(item, label)
                 // @ts-expect-error types error
-                ? item[keys.label].toString()
-                : `No label with key: ${keys.label}`;
+                ? item[label].toString()
+                : `No label with key: ${label}`;
 
-            return result;
+            const rest = Object.entries(restKeys || {}).reduce((res, [k, v]) => {
+                if(Object.prototype.hasOwnProperty.call(item, v)) {
+                    res[k] = item[v];
+                }
+                return res;
+            }, {} as Record<string, unknown>);
+
+            return {
+                ...res,
+                ...rest
+            };
         });
     }
 

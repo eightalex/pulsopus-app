@@ -51,9 +51,9 @@ export class CalendarRangeBase extends BaseStore implements ICalendarRangeBase {
 		return this.calendarRange.to || moment().endOf('day').valueOf();
 	}
 
-	public setCalendarRange(range: ICalendarRange, minDiffInDays: number = CHART_SELECT_MIN_LENGTH) {
-		const { from, to } = range || {};
-		if(!range || !from || !to) return;
+	public setCalendarRange(range: ICalendarRange = { from: 0, to: 0 }, minDiffInDays: number = CHART_SELECT_MIN_LENGTH) {
+		const { from, to } = range;
+		if(!from || !to) return;
 		const diff = Math.abs(DateTime.getDaysDiff(range.from, range.to));
 		const nextRange = range as Required<ICalendarRange>;
 		if(diff < minDiffInDays) {

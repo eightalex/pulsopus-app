@@ -7,15 +7,23 @@ export class NotifyStore extends BaseStore implements INotifyStore {
 		super(rootStore);
 	}
 
-	public error(msg: string) {
-		this.toast(msg, 'error');
-	}
-
 	private toast(msg: string, type: TNotifyStoreType) {
 		return toast(msg, {
 			progress: undefined,
 			theme: "dark",
 			type,
 		});
+	}
+
+	public error(msg: string) {
+		this.toast(msg, 'error');
+	}
+
+	public info(msg: string) {
+		this.toast(msg, 'info');
+	}
+
+	public success(msg: string) {
+		this.toast(msg, 'success');
 	}
 }

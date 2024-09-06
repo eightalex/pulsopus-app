@@ -1,5 +1,5 @@
+import { styled } from '@mui/material/styles';
 import MuiTable, { TableProps } from '@mui/material/Table';
-import { styled } from '@mui/system';
 
 export const TableStyled = styled(
     (props: TableProps) => <MuiTable size="small" {...props} />

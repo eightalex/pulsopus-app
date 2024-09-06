@@ -1,123 +1,108 @@
-import Calendar from '@/components/Calendar';
-import DateInput from '@/components/DateInput';
-import { MinusIcon } from '@/icons';
-import Stack from '@mui/material/Stack';
-import moment from 'moment';
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import moment, { MomentInput } from 'moment';
+import { FC, useCallback, useMemo, useState } from 'react';
+
+import Calendar, { TCalendarReturnedValue } from '@/components/Calendar';
+
+import { CalendarRangePeriods } from "../CalendarRangePeriods";
 import { EPeriodTypes } from '../constants';
 import { ICalendarRange, ICalendarRangePickerViewProps } from '../types';
-import { CalendarRangePickerViewPeriods } from './CalendarRangePickerViewPeriods';
+import { useCalendarRangePeriod } from "../useCalendarRangePeriod.tsx";
+import { CalendarRangePickerViewInputs } from './CalendarRangePickerViewInputs.tsx';
+import { CalendarRangePickerViewWrapper } from './CalendarRangePickerViewWrapper.tsx';
 
-type TDateValue = Date | moment | string | number | null | undefined;
-
-const dateValidate = (d: Date | moment | string | number | null | undefined): boolean => !!d && moment(d).isValid();
+type TDateValue = Date | MomentInput | string | number | null | undefined;
 
 const isEqualsDate = (d1: TDateValue, d2: TDateValue): boolean => {
-	return moment(d1).startOf('day').valueOf() === moment(d2).startOf('day').valueOf();
+  return moment(d1).startOf('day').valueOf() === moment(d2).startOf('day').valueOf();
+};
+
+const getInputValue = (...dates: TDateValue[]): number => {
+  return dates.reduce((acc: number, date: TDateValue) => {
+    if(acc) return acc;
+    if(!moment(date).isValid()) return acc;
+    acc = moment(date).valueOf();
+    return acc;
+  }, 0) || moment().valueOf();
 };
 
 // TODO: refactor from/to/values types
 export const CalendarRangePickerView: FC<ICalendarRangePickerViewProps> = (props) => {
-	const { from, to, onSetPeriod, onSetRange, period } = props;
-	const containerRef = useRef<HTMLDivElement>();
-	const [offset, setOffset] = useState(0);
-	const [hoveredRange, setHoveredRange] = useState<ICalendarRange | null>({ from, to });
+  const { from, to, onSetRange } = props;
+  const [hoveredRange, setHoveredRange] = useState<ICalendarRange | null>({ from, to });
+  const {
+    calendarRangePeriod,
+    setCalendarRangePeriod,
+    isCustomRangePeriod,
+  } = useCalendarRangePeriod({ from, to });
 
-	const showCustomInputs = useMemo(() => period === EPeriodTypes.CUSTOM, [period]);
+  const calendarValues = useMemo(() => [from, to].filter(d => !!d).map(d => moment(d).toDate()), [from, to]);
 
-	const calendarValues = useMemo(() => [from, to].filter(t => !!t).map(d => moment(d).toDate()), [from, to]);
+  const valueInputFrom = useMemo(() => {
+    return getInputValue(hoveredRange?.from,  calendarValues[0]);
+  }, [hoveredRange?.from, calendarValues]);
 
-	const valueInputFrom = useMemo(() => {
-		const d = hoveredRange?.from;
-		return dateValidate(d) ? moment(d).toDate() : calendarValues[0];
-	}, [hoveredRange?.from, calendarValues]);
+  const valueInputTo = useMemo(() => {
+    return getInputValue(hoveredRange?.to,  calendarValues[1]);
+  }, [hoveredRange?.to, calendarValues]);
 
-	const valueInputTo = useMemo(() => {
-		const d = hoveredRange?.to;
-		return dateValidate(d) ? moment(d).toDate() : calendarValues[1];
-	}, [hoveredRange?.to, calendarValues]);
+  const handleHoveredDays = useCallback((days: Array<number | null>) => {
+    // TODO: implement feat
+    return;
+    const [f, t] = days
+      .filter(d => Boolean(d) && moment(d).isValid())
+      .map(d => moment(d).valueOf())
+      .sort((p, n) => p - n);
+    setHoveredRange({ from: f, to: t });
+  }, []);
 
-	const handleHoveredDays = useCallback((days: Array<Date | null>) => {
-		// TODO: implement feat
-		return;
-		const [f, t] = days
-			.filter(d => Boolean(d) && moment(d).isValid())
-			.map(d => moment(d).valueOf())
-			.sort((p, n) => p - n);
-		setHoveredRange({ from: f, to: t });
-	}, []);
+  const handleSetRange = useCallback((range: ICalendarRange) => {
+    if (!range.from || !range.to) return;
+    onSetRange?.(range);
+  }, [onSetRange]);
 
-	const handleChange = useCallback((value) => {
-		onSetPeriod?.(EPeriodTypes.CUSTOM);
-		const values = Array.isArray(value) ? value : [value];
-		const [f, t] = values
-			.filter(d => moment(d).isValid())
-			.map(d => moment(d).valueOf())
-			.sort((a, b) => a - b);
-		const calendarRange = { from: f, to: t };
-		onSetRange?.(calendarRange);
-		setHoveredRange(null);
-	}, [onSetPeriod, onSetRange]);
+  const handleChangeInputs = useCallback((range: ICalendarRange) => {
+    setHoveredRange(null);
+    setCalendarRangePeriod?.(EPeriodTypes.CUSTOM);
+    handleSetRange(range);
+  }, [setCalendarRangePeriod, handleSetRange]);
 
-	const calculatePeriodTopOffset = useCallback(() => {
-		if (!containerRef || !containerRef.current) return;
-		const view = containerRef.current?.querySelector('.react-calendar__navigation');
-		if (!view) return;
-		const parentRect = containerRef.current?.getBoundingClientRect();
-		const childRect = view.getBoundingClientRect();
-		const offset = childRect.y - parentRect.y;
-		const pd = 10;
-		setOffset(offset - pd);
-	}, [containerRef, showCustomInputs]);
+  const handleChangeCalendar = useCallback((values: TCalendarReturnedValue) => {
+    setHoveredRange(null);
+    setCalendarRangePeriod?.(EPeriodTypes.CUSTOM);
+    const [valueFrom, valueTo] = values
+      .filter(d => !!d && moment(d).isValid())
+      .sort((a, b) => a - b);
+    const calendarRange = { from: valueFrom, to: valueTo };
+    handleSetRange(calendarRange);
+  }, [setCalendarRangePeriod, handleSetRange]);
 
-	useEffect(() => {
-		calculatePeriodTopOffset();
-	}, [calculatePeriodTopOffset]);
-
-	return (
-		<Stack ref={containerRef} direction="row">
-			<CalendarRangePickerViewPeriods {...props} offset={offset}/>
-			<Stack
-				spacing={0}
-				sx={({spacing}) => ({
-					padding: spacing(6),
-				})}
-			>
-				{showCustomInputs && (
-					<Stack
-						direction="row"
-						spacing={1}
-						justifyContent="center"
-						alignItems="center"
-						mb={5}
-						maxWidth={234}
-					>
-						<DateInput
-							value={valueInputFrom}
-							onChange={date => handleChange([date, to])}
-							active={!isEqualsDate(valueInputFrom, calendarValues[0])}
-						/>
-						<MinusIcon
-							sx={({extendPalette}) => ({
-								width: 8, color: extendPalette.inputBorderSecondary
-							})}
-						/>
-						<DateInput
-							value={valueInputTo}
-							onChange={date => handleChange([from, date])}
-							active={
-								(!isEqualsDate(valueInputTo, calendarValues[1]) &&
-									isEqualsDate(valueInputFrom, calendarValues[0]))}
-						/>
-					</Stack>
-				)}
-				<Calendar
-					value={calendarValues}
-					onChange={handleChange}
-					onHoveredDays={handleHoveredDays}
-					onActiveStartDateChange={() => onSetPeriod?.(EPeriodTypes.CUSTOM)}
-				/>
-			</Stack>
-		</Stack>
-	);
+  return (
+    <CalendarRangePickerViewWrapper
+      showCustomInput={isCustomRangePeriod}
+      sideComponent={(
+        <CalendarRangePeriods
+          period={calendarRangePeriod}
+          onChangeRange={onSetRange}
+          onChangePeriod={setCalendarRangePeriod}
+        />
+      )}
+      customInput={(
+        <CalendarRangePickerViewInputs
+          from={from || 0}
+          to={to || 0}
+          onChange={handleChangeInputs}
+          isActiveFrom={!isEqualsDate(valueInputFrom, calendarValues[0])}
+          isActiveTo={(!isEqualsDate(valueInputTo, calendarValues[1]) &&
+            isEqualsDate(valueInputFrom, calendarValues[0]))}
+        />
+      )}
+    >
+      <Calendar
+        value={calendarValues}
+        onChange={handleChangeCalendar}
+        onHoveredDays={handleHoveredDays}
+        onActiveStartDateChange={() => setCalendarRangePeriod?.(EPeriodTypes.CUSTOM)}
+      />
+    </CalendarRangePickerViewWrapper>
+  );
 };

@@ -6,6 +6,14 @@ const DAY_CLASSNAME = 'react-calendar__month-view__days__day';
 const MONTH_CLASSNAME = 'react-calendar__year-view__months__month';
 const YEAR_CLASSNAME = 'react-calendar__decade-view__years__year';
 
+/**
+ * Locale format.
+ * @see {@link https://en.wikipedia.org/wiki/IETF_language_tag}
+ * */
+export const DEFAULT_CALENDAR_LOCALE: string = 'en-EN';
+export const DEFAULT_DETAIL_VIEW: 'century' | 'decade' | 'year' | 'month' = 'month';
+export const MIN_DETAIL_VIEW: 'century' | 'decade' | 'year' | 'month' = 'decade';
+
 const roundedMatrixElements = <T extends HTMLElement>(map: Map<number, T[]>) => {
 	const mx = Array.from(map).map(([_, els]) => els) as T[][];
 	for (let y = 0; y < mx.length; y++) {
@@ -126,7 +134,7 @@ export const getHoveredElementsValue = (wrapper: HTMLDivElement | undefined): Da
 	const monthValue = monthLabel ? moment(monthLabel).get('month') : day?.get('month');
 
 	const yearLabel = getHoveredElement(wrapper, YEAR_CLASSNAME)?.innerText || moment().get('year');
-	const yearValue = Number(yearLabel) || (day || moment())?.get('year') || 0
+	const yearValue = Number(yearLabel) || (day || moment())?.get('year') || 0;
 
 	return day
 		.set({

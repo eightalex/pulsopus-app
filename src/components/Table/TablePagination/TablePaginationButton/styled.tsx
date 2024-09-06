@@ -1,5 +1,5 @@
 import Button from "@mui/material/Button";
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 
 interface ITablePaginationButtonPageStyledProps {
     selected?: boolean;

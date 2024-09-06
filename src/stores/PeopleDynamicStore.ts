@@ -151,12 +151,14 @@ export class PeopleDynamicStore extends CalendarRangeBase implements IPeopleDyna
 	}
 
 	public get tableUsersData(): IPeopleDynamicTableData[] {
-		return this.usersForRenderByDepartment.map(({ rate = 0, trend = 0, user }) => ({
+		const res = this.usersForRenderByDepartment.map(({ rate = 0, trend = 0, user }) => ({
 			rate,
 			trend,
 			fill: getColorByActivity(rate, { zero: 'unset' }),
 			user,
 		}));
+		console.log('res', res);
+		return res;
 	}
 
 	public get departmentActivityData(): IComputedDepartmentActivity {

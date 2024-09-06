@@ -1,4 +1,4 @@
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 
 export const GroupHeaderStyled = styled('div')(({ theme: { extendPalette, palette: { typography } } }) => ({
 	position: 'sticky',

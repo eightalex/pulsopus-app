@@ -1,11 +1,11 @@
-import { breakpoints, keys } from '@/constants/breakpoints';
-import { ITypographyVariantOverrides, ITypographyVariants, typography } from '@/theme/theme.typography';
 import { createTheme, ThemeOptions } from '@mui/material/styles';
 import { PaletteOptions } from '@mui/material/styles/createPalette';
+import { TypographyOptions } from "@mui/material/styles/createTypography";
+import { breakpoints, keys } from '@/constants/breakpoints';
+import { ITypographyVariantOverrides, ITypographyVariants, typography } from '@/theme/theme.typography';
 import { extendPalette, typographyColors } from './extendPalette';
 import { components } from './theme.components';
 import { IExtendPalette, ITypographyColors } from './types';
-import { TypographyOptions } from "@mui/material/styles/createTypography";
 
 declare module '@mui/material/styles/createTheme' {
     interface Theme {
@@ -85,6 +85,18 @@ declare module '@mui/material/Button' {
 }
 
 declare module '@mui/material/styles' {
+    interface Theme {
+        extendPalette: Partial<IExtendPalette>;
+    }
+
+    interface ThemeOptions {
+        extendPalette: Partial<IExtendPalette>;
+    }
+
+    interface DeprecatedThemeOptions {
+        extendPalette: Partial<IExtendPalette>;
+    }
+
     interface TypographyVariants extends ITypographyVariants {
     }
 

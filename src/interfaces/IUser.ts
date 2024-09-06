@@ -10,19 +10,20 @@ export interface IUserPosition {
 
 export interface IUserDepartment extends Pick<IDepartment, 'value' | 'label'> {}
 
-export interface IUserBase extends IEntity {
-	username: string;
+export interface IUserProfile extends IEntity {
 	email: string;
+	username: string;
 	avatar?: string;
 	role: EUserRole;
+	department?: string;
+	position?: string;
+	isActive?: boolean;
+	isPending?: boolean;
+	isAdmin?: boolean;
 }
 
-export interface IUser extends IUserBase {
+export interface IUser extends IUserProfile {
 	activity?: IActivity[];
-	department?: IUserDepartment;
-	position?: IUserPosition;
 	status: EUserStatus;
-	isPending?: boolean;
 	accessRequestId?: string;
-	isAdmin?: boolean;
 }

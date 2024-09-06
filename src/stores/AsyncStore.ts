@@ -45,8 +45,7 @@ export class AsyncStore implements IAsyncStore {
 
 	public getAsyncError(key: string): IError {
 		this.hasKey(key);
-
-		return this._asyncErrorsMap.get(key) || null;
+		return this._asyncErrorsMap.get(key) as IError;
 	}
 
 	public resetAsyncStatus(key: string | IAsyncKey): void {

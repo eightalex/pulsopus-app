@@ -1,107 +1,121 @@
-import { getValidationDay, getValidationMonth, getValidationYear } from '@/components/DateInput/helpers';
-import Typography from '@/components/Typography';
-import Stack from '@mui/material/Stack';
+import "react-datepicker/dist/react-datepicker.css";
+
 import moment from 'moment';
-import { FC, FocusEvent, memo, useCallback, useEffect, useRef, useState } from 'react';
-import { DateInputMastStyled, DateInputStyled } from './styled';
-import { IDateInputProps, IValueChangeParams } from './types';
+import { FC, FocusEvent, memo, useCallback, useMemo } from 'react';
 
-const formatChars = {
-	// D: '^(?:[0-9]|[12][0-9]|3[01])$',
-	D: '[0-9]',
-	M: '[0-9]',
-	Y: '[0-9]',
-};
+import { MASK, MASK_CHAR, MASK_DIVIDER, MASK_FORMAT } from "@/components/DateInput/constants.ts";
+import { DateInputRender } from "@/components/DateInput/DateInputRender.tsx";
+import {
+  getFormattedMask,
+  getValidationDay,
+  getValidationMonth,
+  getValidationYear,
+  isDateValid
+} from '@/components/DateInput/helpers';
 
-const divider = '.';
-const mask = ['DD', 'MM', 'YYYY'].join(divider);
+import { IBeforeChangeStates, IDateInputProps, TInputState } from './types';
 
 const DateInput: FC<IDateInputProps> = (props) => {
-	const { value, onChange, active } = props;
-	const inputRef = useRef<HTMLInputElement>();
-	const [currentState, setCurrentState] = useState(moment(value).format(mask));
-	const handleChange = useCallback(({ target }) => {
-		setCurrentState(target.value);
-	}, []);
+  const {
+    value: unformattedValue = moment().valueOf(),
+    onChange,
+    active = false,
+    inputMask = MASK,
+    valueMask = MASK_FORMAT,
+    maskChar = MASK_CHAR,
+    maskDivider = MASK_DIVIDER,
+    charsFormat = {},
+    onFocus,
+    onBlur,
+    ...restProps
+  } = props;
 
-	const beforeMaskedValueChange = useCallback((newState: IValueChangeParams, prevState: IValueChangeParams, userInput: string): IValueChangeParams => {
-		const returnedState = {
-			value: newState.value,
-			selection: newState.selection,
-		};
-		if (newState.value === prevState.value || !userInput) return returnedState;
-		const vs = newState.value.split('.').map(n => !Number.isNaN(Number(n)) ? n : null);
-		const [d, m, y] = vs;
-		const day = getValidationDay(d, m, y);
-		const month = getValidationMonth(d, m, y);
-		const year = getValidationYear(d, m, y);
-		const dd = [day, month, year].join(divider);
-		const isValid = moment([day, month, year].join(divider), mask, true).isValid();
+  const format = useMemo(() => getFormattedMask(valueMask, maskDivider).toUpperCase(), [valueMask, maskDivider]);
 
-		const isOver = dd.length === mask.length;
+  const value = useMemo(() => {
+    if (typeof unformattedValue === 'number') {
+      return moment(unformattedValue).format(format);
+    }
+    const v = moment(unformattedValue, format, true);
+    if (v.isValid()) return v.format(format);
+    return moment().format(format);
+  }, [unformattedValue, format]);
 
-		if (isOver && !isValid) return prevState;
-		const ddd = moment(dd, mask);
-		if (isOver && isValid) onChange?.(ddd.toDate());
-		return {
-			...returnedState,
-			value: [day, month, year].join(divider),
-		};
-	}, [onChange]);
+  const handleChange = useCallback((nextValue: string) => {
+    const nV = moment(nextValue, format, true).startOf('d');
+    const cV = moment(value, format, true).startOf('d');
+    if (!isDateValid(nV) || nV.isSame(cV.valueOf())) return;
+    onChange?.(nV.valueOf());
+  }, [onChange, value, format]);
 
-	const handleFocus = useCallback(({ target }: FocusEvent<HTMLInputElement>) => {
-		const caretPosEnd = target.value?.length || 1;
-		target?.setSelectionRange(caretPosEnd, caretPosEnd);
-	}, []);
+  const handleBlur = useCallback((inputValue: string, event: FocusEvent<HTMLInputElement>) => {
+    handleChange(inputValue);
+    onBlur?.(event);
+  }, [onBlur, handleChange]);
 
-	const handleBlur = useCallback(({ target }: FocusEvent<HTMLInputElement>) => {
-		const date = moment(currentState, mask, true);
-		if(!date.isValid()) return;
-		onChange?.(date.toDate());
-		target.blur();
-	}, [currentState, onChange]);
+  // validate for DD.MM.YYYY input format
+  const handleBeforeChangeState = useCallback((states: IBeforeChangeStates): TInputState => {
+    const {
+      previousState,
+      nextState,
+      value: inputValue,
+    } = states;
+    if (!inputValue) return states.nextState;
 
-	useEffect(() => {
-		const v = moment(value).format(mask);
-		setCurrentState(v);
-	}, [value]);
+    const nextValue = nextState.value;
+    const prevValue = previousState.value;
+    if (prevValue === nextValue) return states.nextState;
 
-	useEffect(() => {
-		if (active) {
-			inputRef?.current?.focus();
-		} else {
-			inputRef?.current?.blur();
-		}
-	}, [inputRef, active]);
+    const isFullValue = nextValue
+      .replace(maskDivider, '')
+      .replace(maskChar, '')
+      .trim()
+      .length === format
+      .replace(maskDivider, '')
+      .length;
+    if (isFullValue && !moment(nextValue, format, true).isValid()) return states.previousState;
 
-	return (
-		<DateInputMastStyled
-			mask={mask}
-			value={currentState}
-			maskChar={' '}
-			onChange={handleChange}
-			alwaysShowMask={false}
-			formatChars={formatChars}
-			beforeMaskedValueChange={beforeMaskedValueChange}
-		>
-			{(params) => (
-				<Stack
-					direction="row"
-					spacing={0}
-				>
-					<DateInputStyled
-						type="tel"
-						inputRef={inputRef} {...params}
-						active={active}
-						onFocus={handleFocus}
-						onBlur={handleBlur}
-					>
-						<Typography>params</Typography>
-					</DateInputStyled>
-				</Stack>
-			)}
-		</DateInputMastStyled>
-	);
+    const position = previousState.selection?.end || 0;
+    // DD.MM.YYYY D1-2 = 0-1 | M1-2 = 3-4 | Y1-Y4 = 6-9
+
+    const isLastDayInput = position === 1;
+    const isLastMonthInput = position === 4;
+
+    let [d, m, y] = nextValue.split(maskDivider);
+
+    const isInputYear = format.charAt(position) === 'Y';
+    const isInputMonth = format.charAt(position) === 'M';
+    const isInputDay = format.charAt(position) === 'D';
+
+    if (isInputDay && isLastDayInput) d = getValidationDay(d, m, y);
+    if (isInputMonth && isLastMonthInput) m = getValidationMonth(d, m, y);
+    if (isInputYear) y = getValidationYear(
+      y,
+      y.replace(maskChar, '').trim()
+    );
+
+    return {
+      ...states.nextState,
+      value: [d, m, y].join(maskDivider),
+    };
+  }, [format, maskChar, maskDivider]);
+
+  return (
+    <DateInputRender
+      value={value}
+      onChange={handleChange}
+      onChangeBefore={handleBeforeChangeState}
+      active={active}
+      inputMask={inputMask}
+      valueMask={valueMask}
+      maskChar={maskChar}
+      maskDivider={maskDivider}
+      charsFormat={charsFormat}
+      onFocus={(_, event) => onFocus?.(event)}
+      onBlur={handleBlur}
+      {...restProps}
+    />
+  );
 };
 
 export default memo(DateInput);

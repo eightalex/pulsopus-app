@@ -22,7 +22,7 @@ export const PeopleDynamicViewTable = observer(() => {
         },
         {
             header: 'Department',
-            accessorFn: (row) => row.user.department?.label,
+            accessorFn: (row) => row.user.department,
             cell: info => info.getValue(),
             size: 160,
             meta: {

@@ -1,6 +1,5 @@
 
 export enum EUserRole {
-    // MANAGER = 'MANAGER',
     VIEWER = 'VIEWER',
     ADMIN = 'ADMIN',
 }
@@ -12,6 +11,6 @@ export enum EUserStatus {
 }
 
 export enum EUserStatusPendingResolve {
-    ACCEPT = 'ACCEPT',
-    DECLINE = 'DECLINE',
+    APPROVED = 'APPROVED',
+    REJECTED = 'REJECTED',
 }

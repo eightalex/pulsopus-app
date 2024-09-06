@@ -1,23 +1,26 @@
-import { action, computed, makeObservable, observable } from 'mobx';
+import { action, computed, makeObservable, observable, runInAction } from 'mobx';
+import api, { EUserSocketEvent, SocketService } from "@/api";
 import { EUserStatus } from "@/constants/EUser.ts";
 import { IAdministrationStore, IRootStore, IUser } from '@/interfaces';
 import { BaseStore } from './BaseStore';
 
 export class AdministrationStore extends BaseStore implements IAdministrationStore {
+	private readonly socket: SocketService = new SocketService();
 	public globalFilter: string = '';
-	private cronInterval: ReturnType<typeof setInterval> | null = null;
-	private readonly cronTimeout = 10000;
+	public usersToDelete: IUser[] = [];
 	constructor(rootStore: IRootStore) {
 		super(rootStore);
 		makeObservable(this, {
 			globalFilter: observable,
+			usersToDelete: observable,
 			//
 			users: computed,
 			// actions
 			setGlobalFilter: action.bound,
+			setUsersToDelete: action.bound,
 			//
-			mountStore: action.bound,
-			unmountStore: action.bound,
+			mount: action.bound,
+			unmount: action.bound,
 		});
 	}
 
@@ -34,31 +37,43 @@ export class AdministrationStore extends BaseStore implements IAdministrationSto
 		this.globalFilter = value;
 	}
 
-	private clearCronData() {
-		if(!this.cronInterval) return;
-		clearInterval(this.cronInterval);
+	public setUsersToDelete(users: IUser[]): void {
+		runInAction(() => {
+			this.usersToDelete = [...new Set([...users])];
+		});
 	}
 
-	private async createCronData() {
-		this.clearCronData();
+	private async createAndConnectSocketInstance() {
+		try {
+			const connectedLink = await api.usersService.getAdminConnectedLink();
+			this.socket.setUri(connectedLink);
+			const socket = await this.socket.connect();
+
+			socket.on(EUserSocketEvent.DELETE, (message: { id: IUser["id"] }) => {
+				this.rootStore.usersStore.usersMap.delete(message.id);
+			});
+
+			this.socket.on<{ id: IUser["id"] }>(EUserSocketEvent.DELETE, (message) => {
+				this.rootStore.usersStore.usersMap.delete(message.id);
+			});
+
+			this.socket.on<{ id: IUser["id"] }>(EUserSocketEvent.UPDATE, (message) => {
+				this.rootStore.usersStore.getUser(message.id);
+			});
+
+		} catch (err) {
+			this.rootStore.notifyStore.error(`Socket connection error`);
+		}
+	}
+
+	public async mount() {
 		await this.rootStore.usersStore.requestUsers();
 		await this.rootStore.departmentsStore.requestDepartments();
-		this.cronInterval = setInterval(async () => {
-			await this.rootStore.usersStore.requestUsers();
-			await this.rootStore.departmentsStore.requestDepartments();
-		}, this.cronTimeout);
+		await this.createAndConnectSocketInstance();
 	}
 
-	private resetStore() {
-		this.clearCronData();
+	public unmount() {
 		this.globalFilter = '';
-	}
-
-	public async mountStore() {
-		await this.createCronData();
-	}
-
-	public unmountStore() {
-		this.resetStore();
+		this.socket.destroy();
 	}
 }

@@ -1,6 +1,6 @@
+import { styled } from '@mui/material/styles';
 import TableHead from "@mui/material/TableHead";
 import TableRow, { TableRowProps } from "@mui/material/TableRow";
-import { styled } from '@mui/system';
 
 export const TableHeadStyled = styled(TableHead)({
     height: 'auto',

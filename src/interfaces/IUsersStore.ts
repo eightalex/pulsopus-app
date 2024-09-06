@@ -1,5 +1,4 @@
 import { IAutocompleteOption } from '@/components/Autocomplete';
-import { EUserStatusPendingResolve } from "@/constants/EUser.ts";
 import { IActivity } from "@/interfaces/IActivity.ts";
 import { IUser } from '@/interfaces/IUser';
 
@@ -17,7 +16,7 @@ export interface IUsersStore {
 	usersMap: Map<IUser['id'], IUser>;
 
 	users: IUser[];
-	usersAutocompleteOptions: IAutocompleteOption[];
+	usersAutocompleteOptions: IAutocompleteOption<IUser>[];
 
 	isLoadingUsers: boolean;
 	isLoadingUser: boolean;
@@ -31,6 +30,10 @@ export interface IUsersStore {
 
 	setUserRoleById: (id: IUser["id"], role: IUser["role"]) => Promise<void>;
 
-	setUserAccessRequestDecision: (id: IUser["id"], requestId: IUser["accessRequestId"], resolve: EUserStatusPendingResolve) => Promise<void>;
 	deleteUsers: (ids: IUser["id"][]) => Promise<void>;
+
+	approveAccessRequest: (userId: IUser['id']) => Promise<void>;
+	rejectAccessRequest: (userId: IUser['id']) => Promise<void>;
+
+	updateUser: (userId: IUser["id"], partial: Partial<IUser>) => Promise<IUser | null>
 }

@@ -67,7 +67,7 @@ export class UserDiagramStore extends CalendarRangeBase implements IUserDiagramS
 				prevUserActivity
 			} = this.rootStore.usersStore.calcUserTrendRateData(id, this.rangeFrom, this.rangeTo);
 			return  {
-				subtitles: [department?.label, position].filter(v => Boolean(v)) as string[],
+				subtitles: [department, position].filter(v => Boolean(v)) as string[],
 				activity,
 				rate,
 				currentRateValue: currentUserActivity,
@@ -80,14 +80,18 @@ export class UserDiagramStore extends CalendarRangeBase implements IUserDiagramS
 		const generateDataForDepartment = (department: IDepartment): IUserDiagramChartData => {
 			const { value, label } =  department;
 			const {
-				activities,
+				activities: activity,
 				rate,
 				trend,
 				currentDepartmentActivity,
 				prevDepartmentActivity
 			} = this.rootStore.departmentsStore.getDepartmentActivityDataByValue(value, this.rangeFrom, this.rangeTo);
+			console.log('rate', rate);
+			console.log('trend', trend);
+			console.log('currentDepartmentActivity', currentDepartmentActivity);
+			console.log('prevDepartmentActivity', prevDepartmentActivity);
 			return  {
-				activity: activities,
+				activity,
 				rate,
 				trend,
 				currentRateValue: currentDepartmentActivity,
@@ -100,6 +104,7 @@ export class UserDiagramStore extends CalendarRangeBase implements IUserDiagramS
 		if(Boolean(this.compareValue) && this.isCompare) {
 			renderDataList.push(this.compareValue);
 		}
+
 		return renderDataList
 			.reduce((acc, d) => {
 				if(!d) return acc;
@@ -152,7 +157,7 @@ export class UserDiagramStore extends CalendarRangeBase implements IUserDiagramS
 		});
 	}
 
-	public async mountStore(userId?: IUser['id']) {
+	public async mountStore(userId?: IUser['id']): Promise<void> {
 		if(!userId || this.isLoadingMount) return;
 
 		const key = this.asyncStatuses.mounting;
@@ -161,7 +166,7 @@ export class UserDiagramStore extends CalendarRangeBase implements IUserDiagramS
 			const user = await this.rootStore.usersStore.getUser(userId);
 			runInAction(() => {
 				this.targetId = userId;
-				this.setUser(user);
+				if(user) this.setUser(user);
 				this.setSuccess(key);
 			});
 		} catch (err) {

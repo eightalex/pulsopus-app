@@ -1,7 +1,6 @@
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import api from "@/api";
 import { IAutocompleteOption } from '@/components/Autocomplete';
-import { EUserStatusPendingResolve } from "@/constants/EUser.ts";
 import { generateAutocompleteOption } from "@/helpers/generateAutocompleteOption.ts";
 import { IRootStore, IUser, IUsersStore, IUserTrendRate } from '@/interfaces';
 import { DateTime } from "@/utils";
@@ -32,9 +31,11 @@ export class UsersStore extends BaseStore implements IUsersStore {
 			getUsers: action.bound,
 			getUser: action.bound,
 			calcUserTrendRateData: action.bound,
-			setUserRoleById: action.bound,
-			setUserAccessRequestDecision: action.bound,
+			updateUser: action.bound,
 			deleteUsers: action.bound,
+			setUserRoleById: action.bound,
+			approveAccessRequest: action.bound,
+			rejectAccessRequest: action.bound,
 		});
 	}
 
@@ -101,12 +102,13 @@ export class UsersStore extends BaseStore implements IUsersStore {
 		return [...this.usersMap.values()];
 	}
 
-	public get usersAutocompleteOptions(): IAutocompleteOption[] {
+	public get usersAutocompleteOptions(): IAutocompleteOption<IUser>[] {
 		return generateAutocompleteOption([...this.users], {
 			type: 'user',
 			keys: {
 				value: 'id',
 				label: 'username',
+				department: 'department',
 			}
 		});
 	}
@@ -121,30 +123,37 @@ export class UsersStore extends BaseStore implements IUsersStore {
 			currentUserActivity: 0,
 			prevUserActivity: 0,
 		};
+
 		if(!from || !to) return defaultResult;
 		const user = this.usersMap.get(id);
 		if(!user) return defaultResult;
+
 		const [prevFrom, prevTo] = DateTime.getPrevPeriod(from, to);
+
 		const currentCompanyActivity = this.rootStore.departmentsStore.getCompanyActivity(from, to);
 		const prevCompanyActivity = this.rootStore.departmentsStore.getCompanyActivity(prevFrom, prevTo);
+
 		const currentActivities = [];
 		let currentActivitiesSum = 0;
 		const prevActivities = [];
 		let prevActivitiesSum = 0;
+
 		const currDateTime = DateTime.of(from, to);
 		const prevDateTime = DateTime.of(prevFrom, prevTo);
+
 		for (const activity of (user.activity || [])) {
 			const { date } = activity;
 			if(!Number(date)) continue;
 			if(currDateTime.isBetweenOrEquals(Number(date))) {
 				currentActivities.push(activity);
-				currentActivitiesSum += activity.value;
+				currentActivitiesSum += Number(activity.value);
 			}
 			if(prevDateTime.isBetweenOrEquals(Number(date))) {
 				prevActivities.push(activity);
-				prevActivitiesSum += activity.value;
+				prevActivitiesSum += Number(activity.value);
 			}
 		}
+
 		const cA = Math.max(Number(currentActivitiesSum), 1);
 		const pA = Math.max(Number(prevActivitiesSum), 1);
 		const diffAbsolute = cA / pA;
@@ -155,6 +164,7 @@ export class UsersStore extends BaseStore implements IUsersStore {
 		const rate =  !(currentCompanyActivity && currentActivitiesSum)
 			? 0
 			: (currentActivitiesSum / currentCompanyActivity) * 100;
+
 		return {
 			...defaultResult,
 			activity: currentActivities,
@@ -167,27 +177,19 @@ export class UsersStore extends BaseStore implements IUsersStore {
 		};
 	}
 
-	public async setUserRoleById(id: IUser["id"], role: IUser["role"]) {
+	public async updateUser(userId: IUser["id"], partial: Partial<IUser>): Promise<IUser | null> {
 		try {
-			const user = await api.usersService.updateById(id, { role });
+			const user = await api.usersService.updateById(userId, partial);
 			this.setUser(user);
+			return user;
 		} catch (err) {
 			console.error(err);
+			return null;
 		}
 	}
 
-	public async setUserAccessRequestDecision(id: IUser["id"], requestId: IUser["accessRequestId"], resolve: EUserStatusPendingResolve): Promise<void> {
-		try {
-			await api.usersService.setUserAccessRequest(
-				id,
-				requestId,
-				resolve
-			);
-			this.usersMap.delete(id);
-			await this.getUser(id);
-		} catch (err) {
-			console.error(err);
-		}
+	public async setUserRoleById(id: IUser["id"], role: IUser["role"]) {
+		await this.updateUser(id, { role });
 	}
 
 	public async deleteUsers(ids: IUser["id"][] = []) {
@@ -204,6 +206,24 @@ export class UsersStore extends BaseStore implements IUsersStore {
 		} catch (err) {
 			console.error(err);
 			this.setError(key);
+		}
+	}
+
+	public async approveAccessRequest(userId: IUser['id']): Promise<void> {
+		try {
+			await api.usersService.approveAccessRequest(userId);
+			await this.getUser(userId);
+		} catch (error) {
+			console.error(error);
+		}
+	}
+
+	public async rejectAccessRequest(userId: IUser['id']): Promise<void> {
+		try {
+			await api.usersService.rejectAccessRequest(userId);
+			await this.getUser(userId);
+		} catch (error) {
+			console.error(error);
 		}
 	}
 }
