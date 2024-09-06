@@ -12,8 +12,8 @@ export class UsersService {
 
 	public async getById(id: IUser["id"]): Promise<IUser> {
 		return this.restInstance
-			.get(`/users/${id}`)
-			.then(({ data }) => data.users);
+			.get(`/users/${id}/activity`)
+			.then(({ data }) => data.user);
 	}
 
 	public async updateById(id: IUser["id"], body: Partial<IUser>): Promise<IUser> {

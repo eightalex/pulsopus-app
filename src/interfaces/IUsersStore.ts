@@ -24,6 +24,7 @@ export interface IUsersStore {
 
 	requestUsers: () => Promise<IUser[]>;
 	getUsers: () => void;
+	requestUser: (id: IUser['id']) => Promise<IUser | undefined>;
 	getUser: (id: IUser['id']) => Promise<IUser | undefined>;
 
 	calcUserTrendRateData: (id: IUser["id"], from: number, to: number) => IUserTrendRate;
