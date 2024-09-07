@@ -35,6 +35,7 @@ export class UsersStore extends BaseStore implements IUsersStore {
       updateUser: action.bound,
       deleteUsers: action.bound,
       setUserRoleById: action.bound,
+      setUserActiveStatusById: action.bound,
       approveAccessRequest: action.bound,
       rejectAccessRequest: action.bound,
     });
@@ -216,6 +217,10 @@ export class UsersStore extends BaseStore implements IUsersStore {
 
   public async setUserRoleById(id: IUser["id"], role: IUser["role"]) {
     await this.updateUser(id, { role });
+  }
+
+  public async setUserActiveStatusById(id: IUser["id"], isActive: IUser["isActive"]) {
+    await this.updateUser(id, { isActive });
   }
 
   public async deleteUsers(ids: IUser["id"][] = []) {
