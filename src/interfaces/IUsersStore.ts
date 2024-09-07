@@ -30,6 +30,7 @@ export interface IUsersStore {
 	calcUserTrendRateData: (id: IUser["id"], from: number, to: number) => IUserTrendRate;
 
 	setUserRoleById: (id: IUser["id"], role: IUser["role"]) => Promise<void>;
+	setUserActiveStatusById: (id: IUser["id"], isActive: IUser["isActive"]) => Promise<void>;
 
 	deleteUsers: (ids: IUser["id"][]) => Promise<void>;
 

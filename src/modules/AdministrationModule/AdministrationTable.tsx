@@ -19,6 +19,7 @@ export const AdministrationTable = observer(() => {
     rootStore: {
       usersStore: {
         setUserRoleById,
+        setUserActiveStatusById,
         approveAccessRequest,
         rejectAccessRequest,
       },
@@ -118,22 +119,34 @@ export const AdministrationTable = observer(() => {
           const { getValue, table: infoTable, row, column } = info;
           const initialValue = getValue() as string;
           const user = row.original;
-          const isPending = user.status === EUserStatus.PENDING;
-          const opts = Object.values(EUserStatusPendingResolve);
+          const status: EUserStatus = user.status;
+          const isPending = status === EUserStatus.PENDING;
+          const disabled = [EUserStatus.ACTIVE].includes(status);
+          const opts: Array<EUserStatusPendingResolve | EUserStatus> = isPending
+            ? Object.values(EUserStatusPendingResolve)
+            : [EUserStatus.ACTIVE];
 
           const meta = (infoTable.options.meta) as TableMeta<IUser>;
 
           const loading = meta.getLoading(row.index, column.id);
 
-          const onChange = async (value?: EUserStatusPendingResolve) => {
+          const onChange = async (value?: EUserStatusPendingResolve | EUserStatus) => {
             if (!value) return;
             try {
               meta.setLoading(row.index, column.id);
-              const decisionAccessRequest = value === EUserStatusPendingResolve.APPROVED
-                ? approveAccessRequest
-                : rejectAccessRequest;
-              await decisionAccessRequest(user.id);
-              const nextValue = EUserStatusPendingResolve.APPROVED
+
+              if(value in EUserStatusPendingResolve) {
+                const decisionAccessRequest = value === EUserStatusPendingResolve.APPROVED
+                  ? approveAccessRequest
+                  : rejectAccessRequest;
+                await decisionAccessRequest(user.id);
+              }
+
+              if(value in EUserStatus) {
+                await setUserActiveStatusById(user.id, value === EUserStatus.ACTIVE);
+              }
+              const nextValue = [EUserStatusPendingResolve.APPROVED, EUserStatus.ACTIVE]
+                  .includes(value)
                 ? EUserStatus.ACTIVE
                 : EUserStatus.INACTIVE;
               meta.updateData(row.index, column.id, nextValue);
@@ -145,7 +158,7 @@ export const AdministrationTable = observer(() => {
           return (
             <TableSelect
               loading={loading}
-              disabled={!isPending}
+              disabled={disabled}
               value={initialValue}
               onChange={(v) => onChange(v as EUserStatusPendingResolve)}
               options={opts}
