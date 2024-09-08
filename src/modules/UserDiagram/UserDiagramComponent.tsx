@@ -3,6 +3,7 @@ import { observer } from 'mobx-react';
 
 import { ContentContainer } from "@/components/ContentContainer";
 import { RateTrendView } from "@/components/RateTrendView";
+import { CHART_COLORS } from "@/constants/chart.ts";
 import { useStores } from '@/hooks';
 import { PeopleDynamicViewContent } from '@/modules/PeopleDynamic';
 import { UserDiagramActions } from '@/modules/UserDiagram/UserDiagramActions';
@@ -48,6 +49,7 @@ export const UserDiagramComponent = observer(() => {
 							return (
 								<RateTrendView
 									key={`${title}-${idx}`}
+									color={CHART_COLORS[idx]}
 									title={title}
 									rate={rate}
 									trend={trend}

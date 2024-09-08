@@ -140,6 +140,9 @@ export interface IExtendPalette {
 	//
 	checkboxPrimarySurfaceChecked: string;
 	checkboxPrimarySurfaceDisabled: string;
+	//
+	paperBackgroundDefault: string;
+	paperBorderColorDefault: string;
 }
 
 export interface ITypographyColors {

@@ -187,6 +187,10 @@ const tableBodyBorderSelect = `${allGray500}33`;
 const checkboxPrimarySurfaceChecked = allGreen500;
 const checkboxPrimarySurfaceDisabled = allStone600;
 
+// paper
+const paperBackgroundDefault = allGray800;
+const paperBorderColorDefault = allGray700;
+
 export const extendPalette: IExtendPalette = {
 	backgroundColorPrimary,
 	backgroundColorSecondary,
@@ -329,6 +333,9 @@ export const extendPalette: IExtendPalette = {
 	//
 	checkboxPrimarySurfaceChecked,
 	checkboxPrimarySurfaceDisabled,
+	//
+	paperBackgroundDefault,
+	paperBorderColorDefault,
 };
 
 export const typographyColors: ITypographyColors = {

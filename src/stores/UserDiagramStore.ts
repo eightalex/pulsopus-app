@@ -77,7 +77,6 @@ export class UserDiagramStore extends CalendarRangeBase implements IUserDiagramS
 			res = [...res, ...opts];
 			return res;
 		}, [] as IAutocompleteOption<IUser | IDepartment>[]);
-		// return [...departmentOptions, ...usersOptions];
 	}
 
 	public get chartData(): IUserDiagramChartData[] {
