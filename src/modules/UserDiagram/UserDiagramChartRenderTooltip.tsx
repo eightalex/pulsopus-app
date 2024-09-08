@@ -85,6 +85,7 @@ export const UserDiagramChartTooltip: FC<IUserDiagramChartTooltipProps> = observ
                   >
                     {row.map((v) => (
                       <Typography
+                        key={v}
                         variant="text"
                         fontSize={12}
                         lineHeight={1}

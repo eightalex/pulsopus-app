@@ -17,6 +17,7 @@ export const UserDiagramComponent = observer(() => {
 		},
 	} = useStores();
 
+
 	return (
 		<ContentContainer
 			actions={<UserDiagramActions/>}
@@ -39,7 +40,6 @@ export const UserDiagramComponent = observer(() => {
 								{ label: 'curr period', value: currentRateValue },
 								{ label: 'prev period', value: prevRateValue },
 								{ label: 'rate', value: rate },
-								{ label: 'trend', value: trend },
 							].map((el) => {
 								return !el
 									? el
