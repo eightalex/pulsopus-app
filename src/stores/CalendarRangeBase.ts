@@ -23,19 +23,8 @@ export class CalendarRangeBase extends BaseStore implements ICalendarRangeBase {
 		this.calendarRange = this.createDefaultValue();
 	}
 
-	// create default 1 month calendar period
 	protected createDefaultValue(): Required<ICalendarRange> {
-		const from = moment()
-			.subtract(1, 'month')
-			.startOf('day')
-			.valueOf();
-		const to = moment()
-			.endOf('day')
-			.valueOf();
-
-		// return { from, to };
-
-		const [testFrom, testTo] = ['01.09.2023', '01.12.2023']
+		const [testFrom, testTo] = ['15.10.2023', '01.12.2023']
 			.map((d, i) => {
 				const m =  moment(d, 'DD.MM.YYYY');
 				const v = !i ? m.startOf('day') : m.endOf('day');
