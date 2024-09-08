@@ -16,16 +16,16 @@ export interface IUserDiagramStore extends ICalendarRangeBase {
 	user: IUser | null;
 	isCompare: boolean;
 	compareValue: IUser | IDepartment | null;
-	compareOption: IAutocompleteOption | null;
+	compareOption: IAutocompleteOption<IUser | IDepartment> | null;
 	//
-	compareAutocompleteOptions: IAutocompleteOption[];
+	compareAutocompleteOptions: IAutocompleteOption<IUser | IDepartment>[];
 	chartData: IUserDiagramChartData[];
 	//
 	isLoadingMount: boolean;
 	isLoading: boolean;
 	//
 	onToggleCompare: () => void;
-	setCompareValueByOption: (option?: IAutocompleteOption) => void;
+	setCompareValueByOption: (option?: IAutocompleteOption<IUser | IDepartment>) => void;
 	setUser: (user: IUser | null) => void;
 	mountStore: (userId?: IUser['id']) => void;
 	unmountStore: () => void;

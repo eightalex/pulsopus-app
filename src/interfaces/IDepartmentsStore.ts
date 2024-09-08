@@ -16,7 +16,7 @@ export interface IDepartmentsStore {
 	departmentsMap: Map<IDepartment['id'], IDepartment>;
 
 	departments: IDepartment[];
-	departmentAutocompleteOptions: IAutocompleteOption[];
+	departmentAutocompleteOptions: IAutocompleteOption<IDepartment>[];
 
 	isLoadingDepartments: boolean;
 

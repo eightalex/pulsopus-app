@@ -16,6 +16,7 @@ function HexbinWidget<TData>(props: IHexbinWidgetProps<TData>) {
 		scaleMax = 2,
 		renderTooltip,
 	} = props;
+
 	const matrixData = useHexbinWidgetData<TData>(data);
 	const zoomParamsRef = useRef<IInstancesParams>();
 	const [zoom, setZoom] = useState(1);

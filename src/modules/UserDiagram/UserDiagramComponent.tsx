@@ -23,7 +23,7 @@ export const UserDiagramComponent = observer(() => {
 		>
 			<PeopleDynamicViewContent
 				tooltipTitle={(user || compareValue) && tooltipTitleDefault || ''}
-				content={user && <UserDiagramChart/>}
+				content={<UserDiagramChart/>}
 				side={
 					<Stack spacing={6}>
 						{Boolean(chartData.length) && chartData.map((data, idx) => {

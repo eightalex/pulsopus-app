@@ -8,7 +8,7 @@ export class UserDiagramStore extends CalendarRangeBase implements IUserDiagramS
 	public user: IUser | null = null;
 	public isCompare: boolean = false;
 	public compareValue: IUser | IDepartment | null = null;
-	public compareOption: IAutocompleteOption | null = null;
+	public compareOption: IAutocompleteOption<IUser | IDepartment> | null = null;
 
 	private asyncStatuses = {
 		mounting: this.createKey('mounting'),
@@ -48,7 +48,7 @@ export class UserDiagramStore extends CalendarRangeBase implements IUserDiagramS
 		return this.isLoadingMount || isLoadingUsers || isLoadingUser || isLoadingDepartments;
 	}
 
-	public get compareAutocompleteOptions(): IAutocompleteOption[] {
+	public get compareAutocompleteOptions(): IAutocompleteOption<IUser | IDepartment>[] {
 		const { usersStore, departmentsStore } = this.rootStore;
 		const departmentOptions = departmentsStore.departmentAutocompleteOptions;
 		const usersOptions = usersStore.usersAutocompleteOptions
@@ -86,10 +86,6 @@ export class UserDiagramStore extends CalendarRangeBase implements IUserDiagramS
 				currentDepartmentActivity,
 				prevDepartmentActivity
 			} = this.rootStore.departmentsStore.getDepartmentActivityDataByValue(value, this.rangeFrom, this.rangeTo);
-			console.log('rate', rate);
-			console.log('trend', trend);
-			console.log('currentDepartmentActivity', currentDepartmentActivity);
-			console.log('prevDepartmentActivity', prevDepartmentActivity);
 			return  {
 				activity,
 				rate,
@@ -123,7 +119,7 @@ export class UserDiagramStore extends CalendarRangeBase implements IUserDiagramS
 		});
 	}
 
-	public setCompareValueByOption(option?: IAutocompleteOption) {
+	public setCompareValueByOption(option?: IAutocompleteOption<IUser | IDepartment>) {
 		const { usersStore, departmentsStore } = this.rootStore;
 		runInAction(() => {
 			if(!option) {

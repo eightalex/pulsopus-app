@@ -13,12 +13,19 @@ export class DateTime {
         Object.assign(this, { range }, partial);
     }
 
-    static of(start: number, end: number): DateTime {
-        return new DateTime({ range: { start, end } });
-    }
-
     public isBetweenOrEquals(d: TDateInput): boolean {
         return DateTime.isBetweenOrEquals(d, this.range.start, this.range.end);
+    }
+
+    public get humanRange(): [string, string] {
+        const stringValues = Object.values(this.range).map((d) => {
+            return moment(d).format('lll');
+        });
+        return stringValues as [string, string];
+    }
+
+    static of(start: number, end: number): DateTime {
+        return new DateTime({ range: { start, end } });
     }
 
     static getDaysDiff(from: TDateInput, to: TDateInput): number {
@@ -30,18 +37,16 @@ export class DateTime {
     static isBetweenOrEquals(d: TDateInput, from: TDateInput): boolean;
     static isBetweenOrEquals(d: TDateInput, from: TDateInput, to: TDateInput): boolean;
     static isBetweenOrEquals(d: TDateInput, from: TDateInput, to?: TDateInput): boolean {
-        const mFrom = moment(from).startOf('day').valueOf();
-        const mTo = moment(to || moment().valueOf()).endOf('day').valueOf();
-        const mD = moment(Number.isNaN(d) ? d : Number(d)).valueOf();
-        return moment(mD).isBetween(mFrom, mTo, null, '[]');
+        const numFrom = typeof from === "number" ? from : moment(from).valueOf();
+        const numTo = typeof to === "number" ? to : moment(to).valueOf();
+        const momentDay = moment(d);
+        return momentDay.isBetween(numFrom, numTo, null, '[]');
     }
 
     static getPrevPeriod(from: TDateInput, to: TDateInput): [number, number] {
-        const mFrom = moment(from).startOf('day');
-        const mTo = moment(to || moment().valueOf()).endOf('day');
         const daysDiff = Math.abs(DateTime.getDaysDiff(from, to));
-        const prevFrom = mFrom.subtract(daysDiff, 'day').startOf('day').valueOf();
-        const preTo = mTo.startOf('day').valueOf();
+        const prevFrom = moment(from).subtract(daysDiff, 'day').startOf('day').valueOf();
+        const preTo = moment(from).startOf('d').valueOf();
         return [prevFrom, preTo];
     }
 }

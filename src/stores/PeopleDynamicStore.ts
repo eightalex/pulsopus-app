@@ -1,5 +1,4 @@
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
-import moment from 'moment';
 import { EPeopleDynamicView } from '@/constants/EPeopleDynamic';
 import { getColorByActivity } from "@/helpers/getColorByActivity.ts";
 import {
@@ -71,74 +70,68 @@ export class PeopleDynamicStore extends CalendarRangeBase implements IPeopleDyna
 		const users = this.department?.users || [];
 		if(!users) return [];
 		const { from, to } = this.calendarRange;
-		const diff = Math.abs(moment(from).diff(to, 'day'));
-		const trendFrom = moment(from)
-			.startOf('day')
-			.subtract(diff, 'day')
-			.valueOf();
-		const trendTo = from;
+		const [prevFrom, prevTo] = DateTime.getPrevPeriod(from, to);
+
+		const currDateTime = DateTime.of(from, to);
+		const prevDateTime = DateTime.of(prevFrom, prevTo);
+
 		const companyActivity = this.rootStore.departmentsStore.getCompanyActivity(from, to);
-		const prevCompanyActivity = this.rootStore.departmentsStore.getCompanyActivity(trendFrom, trendTo);
+		const prevCompanyActivity = this.rootStore.departmentsStore.getCompanyActivity(prevFrom, prevTo);
+
 		return users.map((user) => {
-			let userCurrentPeriodActivity = 0;
-			let userBeforePeriodActivity = 0;
-
-			for (const activity of (user.activity || [])) {
-				const { date, value } = activity;
-				const isIncludeCurrentPeriod = DateTime.isBetweenOrEquals(date, from, to);
-				const isIncludeBeforePeriod = DateTime.isBetweenOrEquals(date, trendFrom, trendTo);
-
-				if(isIncludeCurrentPeriod) {
-					userCurrentPeriodActivity += Number(value);
-				}
-				if(isIncludeBeforePeriod) {
-					userBeforePeriodActivity += Number(value);
-				}
-			}
-
 			const res = {
 				companyActivity,
 				prevCompanyActivity,
-				activity: undefined,
-				prevActivity: undefined,
-				activityDiff: undefined,
-				rate: undefined,
-				prevRate: undefined,
-				trend: undefined,
-				trendCompany: undefined,
+				activity: 0,
+				prevActivity: 0,
+				activityDiff: 0,
+				rate: 0,
+				prevRate: 0,
+				trend: 0,
+				trendCompany: 0,
 				user,
 			} as {
 				companyActivity: number;
 				prevCompanyActivity: number;
-				activity?: number;
-				prevActivity?: number;
-				activityDiff?: number;
-				rate?: number;
-				prevRate?: number;
-				trend?: number;
-				trendCompany?: number;
+				activity: number;
+				prevActivity: number;
+				activityDiff: number;
+				rate: number;
+				prevRate: number;
+				trend: number;
+				trendCompany: number;
 				user: IUser;
 			};
 
-			if(userCurrentPeriodActivity && companyActivity) {
-				res.activity = userCurrentPeriodActivity;
-				res.rate = Number((userCurrentPeriodActivity / companyActivity) * 100);
+			for (const activity of (user.activity || [])) {
+				const { date, value } = activity;
+				const currActivity = res.activity || 0;
+				const prevActivity = res.prevActivity || 0;
 
-				res.prevActivity = userBeforePeriodActivity;
-				res.prevRate = Number((userBeforePeriodActivity / prevCompanyActivity) * 100);
+				if(currDateTime.isBetweenOrEquals(Number(date))) {
+					res.activity = currActivity + Number(value);
+				}
 
-				res.trendCompany = res.rate - res.prevRate;
-				res.activityDiff = res.activity - res.prevActivity;
+				if(prevDateTime.isBetweenOrEquals(Number(date))) {
+					res.prevActivity = prevActivity + Number(value);
+				}
 			}
 
-			if(userCurrentPeriodActivity && userBeforePeriodActivity) {
-				const cA = Math.max(Number(res.activity), 1);
-				const pA = Math.max(Number(res.prevActivity), 1);
-				const diffAbsolute = cA / pA;
-				res.trend = userCurrentPeriodActivity >= userBeforePeriodActivity
-					? diffAbsolute * 100
-					: (1 - diffAbsolute) * -100;
-			}
+			res.activityDiff = res.activity - res.prevActivity;
+			res.rate = !(res.activity && companyActivity)
+				? 0
+				: (res.activity / companyActivity) * 100;
+			res.prevRate = !(res.prevActivity && prevCompanyActivity)
+				? 0
+				: (res.prevActivity / prevCompanyActivity) * 100;
+
+			const cA = Math.max(Number(res.activity), 1);
+			const pA = Math.max(Number(res.prevActivity), 1);
+			const diffAbsolute = cA / pA;
+			res.trend = cA >= pA
+				? (diffAbsolute - 1) * 100
+				: (1 - diffAbsolute) * -100;
+
 			return res;
 		});
 	}
@@ -157,7 +150,6 @@ export class PeopleDynamicStore extends CalendarRangeBase implements IPeopleDyna
 			fill: getColorByActivity(rate, { zero: 'unset' }),
 			user,
 		}));
-		console.log('res', res);
 		return res;
 	}
 

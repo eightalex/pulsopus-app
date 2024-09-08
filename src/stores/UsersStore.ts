@@ -161,36 +161,41 @@ export class UsersStore extends BaseStore implements IUsersStore {
     const prevCompanyActivity = this.rootStore.departmentsStore.getCompanyActivity(prevFrom, prevTo);
 
     const currentActivities = [];
-    let currentActivitiesSum = 0;
     const prevActivities = [];
-    let prevActivitiesSum = 0;
+
+    let currentActivityValue = 0;
+    let prevActivityValue = 0;
 
     const currDateTime = DateTime.of(from, to);
     const prevDateTime = DateTime.of(prevFrom, prevTo);
 
     for (const activity of (user.activity || [])) {
-      const { date } = activity;
-      if (!Number(date)) continue;
-      if (currDateTime.isBetweenOrEquals(Number(date))) {
+      const { date, value } = activity;
+      const d = Number(date);
+      const v = Number(value);
+      if(!d) continue;
+
+      if (currDateTime.isBetweenOrEquals(d)) {
         currentActivities.push(activity);
-        currentActivitiesSum += Number(activity.value);
+        currentActivityValue += v;
       }
-      if (prevDateTime.isBetweenOrEquals(Number(date))) {
+      if (prevDateTime.isBetweenOrEquals(d)) {
         prevActivities.push(activity);
-        prevActivitiesSum += Number(activity.value);
+        prevActivityValue += v;
       }
     }
 
-    const cA = Math.max(Number(currentActivitiesSum), 1);
-    const pA = Math.max(Number(prevActivitiesSum), 1);
+    const rate = !(currentCompanyActivity && currentActivityValue)
+      ? 0
+      : (currentActivityValue / currentCompanyActivity) * 100;
+
+    const cA = Math.max(Number(currentActivityValue), 1);
+    const pA = Math.max(Number(prevActivityValue), 1);
     const diffAbsolute = cA / pA;
+
     const trend = cA >= pA
       ? (diffAbsolute - 1) * 100
       : (1 - diffAbsolute) * -100;
-
-    const rate = !(currentCompanyActivity && currentActivitiesSum)
-      ? 0
-      : (currentActivitiesSum / currentCompanyActivity) * 100;
 
     return {
       ...defaultResult,
@@ -199,8 +204,8 @@ export class UsersStore extends BaseStore implements IUsersStore {
       rate,
       currentCompanyActivity: currentCompanyActivity,
       prevCompanyActivity: prevCompanyActivity,
-      currentUserActivity: currentActivitiesSum,
-      prevUserActivity: prevActivitiesSum,
+      currentUserActivity: currentActivityValue,
+      prevUserActivity: prevActivityValue,
     };
   }
 
