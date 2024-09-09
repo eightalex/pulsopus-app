@@ -13,14 +13,16 @@ export const ContentContainer: FC<IContentContainerProps> = (props) => {
                     {actions}
                 </ContentActionsContainerStyled>
             )}
-            {children && <Stack
-              direction='row'
-              flexGrow={1}
-              width='100%'
-              overflow='auto'
-            >
-                {children}
-            </Stack>}
+            {children && (
+              <Stack
+                direction='row'
+                flexGrow={1}
+                width='100%'
+                overflow='auto'
+              >
+                  {children}
+              </Stack>
+            )}
         </ContentContainerStyled>
     );
 };

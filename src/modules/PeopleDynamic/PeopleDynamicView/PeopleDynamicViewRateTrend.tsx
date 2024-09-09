@@ -12,13 +12,13 @@ const RenderViewInfo: FC<{ render: Array<(string | number | undefined)[]> }> = (
   return (
     <Stack spacing={1}>
       {render.map((vls, idx) => (
-        <Stack direction='row' spacing={1} key={`view-info-${idx}`}>
+        <Stack direction='row' spacing={1} key={`view-info-${idx}`} flexWrap='wrap'>
           {vls.map((v, i, arr) => (
             <Typography
               variant="text"
               key={`${i}-${v}`}
             >
-              {v}
+              {Number(v) ? Number(v).toFixed(2) : v}
               {!i && arr.length > 1 && <>&#58;</>}
             </Typography>
           ))}

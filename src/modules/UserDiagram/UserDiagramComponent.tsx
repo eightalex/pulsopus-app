@@ -56,13 +56,13 @@ export const UserDiagramComponent = observer(() => {
                 >
                   <Stack spacing={1}>
                     {tooltips.map((vls, index) => (
-                      <Stack direction='row' spacing={1} key={index}>
+                      <Stack direction='row' spacing={1} key={index} flexWrap='wrap'>
                           {vls.map((v, i) => (
                             <Typography
                               variant="text"
                               key={`${i}-${v}`}
                             >
-                              {v}
+                              {Number(v) ? Number(v).toFixed(2) : v}
                               {!i && <>&#58;</>}
                             </Typography>
                           ))}

@@ -1,12 +1,22 @@
 import Collapse from "@mui/material/Collapse";
 import Divider from "@mui/material/Divider";
 import Stack from "@mui/material/Stack";
-import { Children, FC, Fragment, RefObject, useMemo, useRef } from "react";
+import {
+  Children,
+  FC,
+  Fragment,
+  RefObject,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from "react";
 
 import { RateTrendViewInfo } from "@/components/RateTrendView/RateTrendViewInfo.tsx";
 import { IRateTrendViewProps, RateTrendViewInfoProps } from "@/components/RateTrendView/types.ts";
 import Typography from "@/components/Typography";
-import { useDebounceCallback,useOnClickOutside, useToggle } from "@/hooks";
+import { useDebounceCallback, useOnClickOutside, useToggle } from "@/hooks";
 import { ArrowTriangleDownIcon, ArrowTriangleUpIcon, ISvgIcon } from "@/icons";
 import { allStone400 } from "@/theme/palette.ts";
 
@@ -25,25 +35,46 @@ const randomNum = (min: number, max: number): number => {
   return Math.random() * (max - min + 1) + min;
 };
 
+const randomTrendVolatility = randomNum(-12, 9);
+const randomRateVolatility = randomNum(18, 36);
+
 export const RateTrendView: FC<IRateTrendViewProps> = (props) => {
   const {
     title = '',
     subtitles = [],
     trendGrowth = 0,
     rateActivity = 0,
-    trendVolatility = randomNum(-12, 9),
-    rateVolatility = randomNum(18, 36),
+    trendVolatility = randomTrendVolatility,
+    rateVolatility = randomRateVolatility,
     color = allStone400,
     children,
     headers = [],
     showHeader,
   } = props;
   const wrapperRef = useRef<HTMLDivElement>();
+  const infoContainerRef = useRef<HTMLDivElement>();
+
   const [open, toggleOpen, setOpen] = useToggle(false);
+  const [isWrapped, setIsWrapped] = useState(false);
 
   useOnClickOutside<HTMLDivElement>(wrapperRef as RefObject<HTMLDivElement>, () => {
     setOpen(false);
   });
+
+  const handleCheckFlexWrap = useCallback(() => {
+    if (!infoContainerRef?.current) return;
+    const el = infoContainerRef.current;
+    const resizeObserver = new ResizeObserver((entries) => {
+      const container = entries[0].target;
+      const firstItem = container.children[0];
+      const secondItem = container.children[1];
+
+      const isWrappedNow = firstItem.getBoundingClientRect().top !== secondItem.getBoundingClientRect().top;
+      setIsWrapped(isWrappedNow);
+    });
+
+    resizeObserver.observe(el);
+  }, [infoContainerRef]);
 
   const debouncedSetOpen = useDebounceCallback(setOpen, 400);
 
@@ -67,6 +98,24 @@ export const RateTrendView: FC<IRateTrendViewProps> = (props) => {
       return [...res];
     }, [] as RateTrendViewInfoProps[][]);
   }, [trendGrowth, rateActivity, trendVolatility, rateVolatility]);
+
+  useEffect(() => {
+    if (infoContainerRef?.current) {
+      const resizeObserver = new ResizeObserver((entries) => {
+        const container = entries[0].target;
+        const firstItem = container.children[0];
+        const secondItem = container.children[1];
+
+        const isWrappedNow = firstItem.getBoundingClientRect().top !== secondItem.getBoundingClientRect().top;
+        setIsWrapped(isWrappedNow);
+      });
+
+      const container = infoContainerRef.current;
+      resizeObserver.observe(container);
+
+      return () => resizeObserver.disconnect();
+    }
+  }, [handleCheckFlexWrap]);
 
   return (
     <RateTrendViewStyled
@@ -129,20 +178,23 @@ export const RateTrendView: FC<IRateTrendViewProps> = (props) => {
       </Stack>
 
       <Stack
+        ref={infoContainerRef as RefObject<HTMLDivElement>}
         direction='row'
-        spacing={7}
         justifyContent='space-between'
         onClick={() => toggleOpen()}
         onMouseOver={() => setOpen(true)}
         sx={{
-          cursor: children ? 'pointer' : 'default'
+          cursor: children ? 'pointer' : 'default',
+          flexWrap: 'wrap',
+          flexShrink: 1,
+          gap: isWrapped ? 4 : 'unset',
         }}
       >
         {Boolean(renderInfo.length) && renderInfo.map((infos) => (
           <Stack
             key={infos.map(({ label }) => label).join('-')}
             direction='row'
-            spacing={3}
+            spacing={isWrapped ? 8 : 3}
           >
             {infos.map((info) => (
               <RateTrendViewInfo
@@ -157,6 +209,7 @@ export const RateTrendView: FC<IRateTrendViewProps> = (props) => {
       {Boolean(children) && (
         <Collapse in={open}>
           <Stack
+            flexWrap='wrap'
             spacing={3}
             divider={(
               <Divider
@@ -171,10 +224,16 @@ export const RateTrendView: FC<IRateTrendViewProps> = (props) => {
             {Children.map(
               children,
               (child) => Boolean(child) && (
-              <Stack>
-                {child}
-              </Stack>
-            ))}
+                <Stack
+                  sx={{
+                    overflow: 'auto',
+                    cursor: 'default',
+                    flexWrap: 'wrap'
+                  }}
+                >
+                  {child}
+                </Stack>
+              ))}
           </Stack>
         </Collapse>
       )}

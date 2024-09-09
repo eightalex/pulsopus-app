@@ -83,11 +83,7 @@ export const PeopleDynamicViewDiagram = observer(() => {
             <div ref={scrollRef}/>
           </Stack>
         }
-        side={(
-          <Stack spacing={10}>
-            <PeopleDynamicViewRateTrend/>
-          </Stack>
-        )}
+        side={<PeopleDynamicViewRateTrend/>}
       />
     );
   })
