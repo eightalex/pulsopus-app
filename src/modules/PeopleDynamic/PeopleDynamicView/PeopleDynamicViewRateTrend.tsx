@@ -48,19 +48,19 @@ export const PeopleDynamicViewRateTrend = observer(() => {
   const renderCompanyTooltip = useMemo(() => {
     return [
       ['Company'],
-      ['curr', absoluteActivityData.currentDepartmentActivity],
-      ['prev', absoluteActivityData.prevDepartmentActivity],
-      ['trend', absoluteActivityData.trend],
+      ['Current Activity', absoluteActivityData.currentDepartmentActivity],
+      ['Previous Activity', absoluteActivityData.prevDepartmentActivity],
+      ['Trend', absoluteActivityData.trend],
     ];
   }, [absoluteActivityData]);
 
   const renderDepartmentTooltips = useMemo(() => {
     return [
       ['Department', department?.label],
-      ['curr period', departmentActivityData.currentDepartmentActivity],
-      ['prev period', departmentActivityData.prevDepartmentActivity],
-      ['trend', departmentActivityData.trend],
-      ['rate', departmentActivityData.rate],
+      ['Current Activity', departmentActivityData.currentDepartmentActivity],
+      ['Previous Activity', departmentActivityData.prevDepartmentActivity],
+      ['Rate', departmentActivityData.rate],
+      ['Trend', departmentActivityData.trend],
     ];
   }, [departmentActivityData, department]);
 

@@ -9,7 +9,6 @@ import { useStores } from '@/hooks';
 import { PeopleDynamicViewContent } from '@/modules/PeopleDynamic';
 import { UserDiagramActions } from '@/modules/UserDiagram/UserDiagramActions';
 import { UserDiagramChart } from '@/modules/UserDiagram/UserDiagramChart';
-import { allStone400 } from "@/theme/palette.ts";
 
 const tooltipTitleDefault = 'Your contribution graph and Achievements show activity from public repositories. You can choose to show activity from both public and private, with specific details of your activity in private repositories anonymized.  A viewer can only see information in the activity overview about repositories they have read access to. Get more information.';
 
