@@ -1,4 +1,8 @@
-import { activityColorValues, DEFAULT_INACTIVE_COLOR, DEFAULT_ZERO_COLOR } from '@/constants/activity';
+import {
+	activityColorValuesByMinMax,
+	DEFAULT_INACTIVE_COLOR,
+	DEFAULT_ZERO_COLOR
+} from '@/constants/activity';
 
 /**
  * @param activity {number} activity value in percent (min:0 max:100).
@@ -12,13 +16,18 @@ export const getColorByActivity = (
 		zero?: string;
 		inactive?: string;
 		active?: string[];
+		min?: number;
+		max?: number
 	}): string => {
 	const {
 		zero = DEFAULT_ZERO_COLOR,
 		inactive = DEFAULT_INACTIVE_COLOR,
+		min = 0,
+		max = 100,
 	} = options || {};
 	if(!activity) return zero;
-	return Object.entries(activityColorValues).reduce((acc, [value, color]) => {
+	const colorValues = activityColorValuesByMinMax(min, max);
+	return Object.entries(colorValues).reduce((acc, [value, color]) => {
 		const num = Number(value);
 		if(!num) return acc;
 		if(activity >= num) {

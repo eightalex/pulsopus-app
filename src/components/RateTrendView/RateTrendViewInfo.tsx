@@ -9,8 +9,8 @@ export const RateTrendViewInfo: FC<RateTrendViewInfoProps> = (props) => {
   const { label = '', value = 0, icon: Icon } = props;
 
   const renderValue = useMemo(() => {
-    const trunc = Math.trunc(Math.abs(value));
-    return String(trunc).padStart(2, '0');
+    const rounded = Math.round(Math.abs(value));
+    return String(rounded).padStart(2, '0');
   }, [value]);
 
   return (

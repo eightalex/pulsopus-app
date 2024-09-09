@@ -6,7 +6,7 @@ import { Children, FC, Fragment, RefObject, useMemo, useRef } from "react";
 import { RateTrendViewInfo } from "@/components/RateTrendView/RateTrendViewInfo.tsx";
 import { IRateTrendViewProps, RateTrendViewInfoProps } from "@/components/RateTrendView/types.ts";
 import Typography from "@/components/Typography";
-import { useOnClickOutside, useToggle } from "@/hooks";
+import { useDebounceCallback,useOnClickOutside, useToggle } from "@/hooks";
 import { ArrowTriangleDownIcon, ArrowTriangleUpIcon, ISvgIcon } from "@/icons";
 import { allStone400 } from "@/theme/palette.ts";
 
@@ -45,6 +45,8 @@ export const RateTrendView: FC<IRateTrendViewProps> = (props) => {
     setOpen(false);
   });
 
+  const debouncedSetOpen = useDebounceCallback(setOpen, 400);
+
   const renderInfo = useMemo((): RateTrendViewInfoProps[][] => {
     const infoToRender = [
       { label: 'Growth Trend', value: trendGrowth, icon: <RenderIcon value={trendGrowth}/> },
@@ -70,7 +72,7 @@ export const RateTrendView: FC<IRateTrendViewProps> = (props) => {
     <RateTrendViewStyled
       ref={wrapperRef as RefObject<HTMLDivElement>}
       spacing={2.5}
-      onMouseLeave={() => setOpen(false)}
+      onMouseLeave={() => debouncedSetOpen(false)}
     >
       <Stack spacing={0}>
         <Stack
@@ -131,6 +133,7 @@ export const RateTrendView: FC<IRateTrendViewProps> = (props) => {
         spacing={7}
         justifyContent='space-between'
         onClick={() => toggleOpen()}
+        onMouseOver={() => setOpen(true)}
         sx={{
           cursor: children ? 'pointer' : 'default'
         }}
