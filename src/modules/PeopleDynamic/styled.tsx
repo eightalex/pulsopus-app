@@ -16,12 +16,13 @@ export const PeopleDynamicViewWrapperStyled = styled(({ ...props }: StackProps) 
 	},
 }));
 
-export const PeopleDynamicViewContentStyled = styled(Stack)(({ theme: { breakpoints } }) => ({
+export const PeopleDynamicViewContentStyled = styled(Stack)({
 	display: 'flex',
 	flexGrow: 1,
+	flexShrink: 0,
 	width: '100%',
 	maxWidth: '800px', // TODO: create constant in px or %
-}));
+});
 
 export const PeopleDynamicViewSideStyled = styled(({ ...props }: StackProps) => <Stack
 		{...props}
@@ -32,8 +33,10 @@ export const PeopleDynamicViewSideStyled = styled(({ ...props }: StackProps) => 
 	position: 'relative',
 	display: 'flex',
 	flexGrow: 1,
+	flexShrink: 1,
 	width: 'auto',
 	paddingLeft: spacing(9),
+	margin: 0,
 	[breakpoints.down('xxl')]: {
 		width: '100%',
 		alignItems: 'flex-start',

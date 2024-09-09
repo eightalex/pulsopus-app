@@ -96,15 +96,15 @@ export function Table<Data>(props: ITableProps<Data>) {
         autoResetPageIndex,
         onStateChange: onChange,
         getCoreRowModel: getCoreRowModel(),
-        getSortedRowModel: getSortedRowModel(), //client-side sorting
-        onSortingChange: setSorting, //optionally control sorting state in your own scope for easy access
+        getSortedRowModel: getSortedRowModel(),
+        onSortingChange: setSorting,
         enableRowSelection: true,
         onRowSelectionChange: setRowSelection,
-        getFacetedRowModel: getFacetedRowModel(), // client-side faceting
-        getFacetedUniqueValues: getFacetedUniqueValues(), // generate unique values for select filter/autocomplete
+        getFacetedRowModel: getFacetedRowModel(),
+        getFacetedUniqueValues: getFacetedUniqueValues(),
         onColumnFiltersChange: setColumnFilters,
-        getFilteredRowModel: getFilteredRowModel(), //client-side filtering
-        getFacetedMinMaxValues: getFacetedMinMaxValues(), // generate min/max values for range filter
+        getFilteredRowModel: getFilteredRowModel(),
+        getFacetedMinMaxValues: getFacetedMinMaxValues(),
         getPaginationRowModel: getPaginationRowModel(),
         onGlobalFilterChange: setGlobalFilter,
         globalFilterFn: 'fuzzy',

@@ -11,6 +11,7 @@ import { useStores } from "@/hooks";
 export const ConfirmDeleteDialog: FC<Partial<IDialogProps>> = observer((props) => {
   const {
     onClose,
+    onConfirm,
     open,
     ...restProps
   } = props;
@@ -40,8 +41,9 @@ export const ConfirmDeleteDialog: FC<Partial<IDialogProps>> = observer((props) =
   const handleDelete = useCallback(async () => {
     const usersIds = usersToDelete.map((u) => u.id);
     await deleteUsers(usersIds);
+    onConfirm?.();
     onClose?.();
-  }, [onClose, usersToDelete, deleteUsers]);
+  }, [onClose, usersToDelete, deleteUsers, onConfirm]);
 
   return (
     <Dialog

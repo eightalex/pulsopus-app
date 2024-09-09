@@ -22,11 +22,10 @@ export const PeopleDynamicViewContent: FC<IPeopleDynamicViewContentProps> = (pro
       </PeopleDynamicViewContentStyled>
       <PeopleDynamicViewSideStyled>
         <Stack
-          sx={({ spacing }) => ({
+          sx={{
             width: 'fit-content',
             position: 'relative',
-            paddingRight: spacing(3),
-          })}
+          }}
         >
           {tooltipTitle && (
             <Box
@@ -34,7 +33,7 @@ export const PeopleDynamicViewContent: FC<IPeopleDynamicViewContentProps> = (pro
                 position: 'absolute',
                 top: 0,
                 right: 0,
-                transform: 'translate(calc(100% - 6px), -50%)',
+                transform: 'translate(calc(100% - 4px), -50%)',
               }}
             >
               <ButtonIcon
