@@ -3,11 +3,13 @@ import { observer } from 'mobx-react';
 
 import { ContentContainer } from "@/components/ContentContainer";
 import { RateTrendView } from "@/components/RateTrendView";
+import Typography from "@/components/Typography";
 import { CHART_COLORS } from "@/constants/chart.ts";
 import { useStores } from '@/hooks';
 import { PeopleDynamicViewContent } from '@/modules/PeopleDynamic';
 import { UserDiagramActions } from '@/modules/UserDiagram/UserDiagramActions';
 import { UserDiagramChart } from '@/modules/UserDiagram/UserDiagramChart';
+import { allStone400 } from "@/theme/palette.ts";
 
 const tooltipTitleDefault = 'Your contribution graph and Achievements show activity from public repositories. You can choose to show activity from both public and private, with specific details of your activity in private repositories anonymized.  A viewer can only see information in the activity overview about repositories they have read access to. Get more information.';
 
@@ -17,7 +19,6 @@ export const UserDiagramComponent = observer(() => {
 			userDiagramStore: { chartData, user, compareValue },
 		},
 	} = useStores();
-
 
 	return (
 		<ContentContainer
@@ -37,25 +38,36 @@ export const UserDiagramComponent = observer(() => {
 								prevRateValue,
 								subtitles = []
 							} = data;
+
+							const legendColor = idx ? CHART_COLORS[idx] : undefined;
+
 							const tooltips = [
-								{ label: 'curr period', value: currentRateValue },
-								{ label: 'prev period', value: prevRateValue },
-								{ label: 'rate', value: rate },
-							].map((el) => {
-								return !el
-									? el
-									: ({ ...el, value: Number(el?.value)?.toFixed(4) });
-							});
+								['Current Activity', currentRateValue],
+								['Previous Activity', prevRateValue],
+								['Rate', rate],
+							];
 							return (
 								<RateTrendView
 									key={`${title}-${idx}`}
-									color={CHART_COLORS[idx]}
+									color={legendColor}
 									title={title}
-									rate={rate}
-									trend={trend}
 									subtitles={subtitles}
-									tooltips={tooltips}
-								/>
+									rateActivity={Number(rate)}
+									trendGrowth={trend}
+								>
+									<Stack spacing={1}>
+										{tooltips.map((vls) => (
+											<Stack direction='row' spacing={1}>
+												{vls.map((v, i) => (
+													<Typography variant="text">
+														{v}
+														{!i && 	<>&#58;</>}
+													</Typography>
+												))}
+											</Stack>
+										))}
+									</Stack>
+								</RateTrendView>
 							);
 						})}
 					</Stack>

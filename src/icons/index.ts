@@ -5,6 +5,8 @@ export { ArrowRightDoubleIcon } from './ArrowRightDoubleIcon';
 export { ArrowRightIcon } from './ArrowRightIcon';
 export { ArrowSlimDownIcon } from './ArrowSlimDownIcon';
 export { ArrowSlimUpIcon } from './ArrowSlimUpIcon';
+export { ArrowTriangleDownIcon } from './ArrowTriangleDownIcon.ts';
+export { ArrowTriangleUpIcon } from './ArrowTriangleUpIcon';
 export { ArrowUpIcon } from './ArrowUpIcon';
 //
 export { BarChartOutlinedIcon } from './BarChartOutlinedIcon';

@@ -18,7 +18,7 @@ import {
 	allStone400,
 	allStone500,
 	allStone600,
-	AllStone750,
+	AllStone750, allYellow100,
 	black,
 } from './palette';
 
@@ -38,7 +38,7 @@ const iconColorInfo = allGray200;
 const iconColorCritical = allGray200;
 const iconColorAccent = allGray200;
 const iconColorAccentLight = allGray200;
-const iconColorWarning = allGray200;
+const iconColorWarning = allYellow100;
 const iconColorDisabled = allGray200;
 const iconColorHide = allGray300;
 

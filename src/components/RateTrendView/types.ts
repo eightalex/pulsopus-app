@@ -8,6 +8,10 @@ export interface IRateTrendViewProps {
   trendVolatility?: number;
   rateVolatility?: number;
   color?: string;
+  children?: ReactNode;
+  headers?: ReactNode[];
+  showHeader?: boolean;
+  openOn?: 'focus' | 'click';
 }
 
 export interface RateTrendViewInfoProps {
