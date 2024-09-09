@@ -11,9 +11,9 @@ import { useStores } from '@/hooks';
 import { IUser } from "@/interfaces";
 import { PeopleDynamicViewAbsoluteData } from '@/modules/PeopleDynamic/PeopleDynamicView/PeopleDynamicViewAbsoluteDate';
 import { PeopleDynamicViewContent } from '@/modules/PeopleDynamic/PeopleDynamicView/PeopleDynamicViewContent';
-import { PeopleDynamicViewRateTrend } from "@/modules/PeopleDynamic/PeopleDynamicView/PeopleDynamicViewRateTrend.tsx";
 
 import { PeopleDynamicViewDiagramUserTooltip } from "./PeopleDynamicViewDiagramUserTooltip.tsx";
+import { PeopleDynamicViewRateTrend } from "./PeopleDynamicViewRateTrend.tsx";
 
 const tooltipTitleDefault = 'Your contribution graph and Achievements show activity from public repositories. You can choose to show activity from both public and private, with specific details of your activity in private repositories anonymized.  A viewer can only see information in the activity overview about repositories they have read access to. Get more information.';
 

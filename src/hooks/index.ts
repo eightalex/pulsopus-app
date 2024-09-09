@@ -1,3 +1,4 @@
+export { useDebounceCallback } from './useDebounceCallback';
 export { useDimensions } from './useDimensions';
 export { useEventListener } from './useEventListener';
 export { useHexbinWidgetData } from './useHexbinWidgetData';
@@ -6,4 +7,5 @@ export { useOnClickOutside } from './useOnClickOutside';
 export { useSkipper } from './useSkipper.ts';
 export { useStores } from './useStores';
 export { useToggle } from './useToggle.ts';
+export { useUnmount } from './useUnmount.ts';
 export { useWindowSize } from './useWindowSize';

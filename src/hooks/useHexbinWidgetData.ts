@@ -1,3 +1,4 @@
+import * as d3 from "d3";
 import { IHexbinChartProps } from "@/components/Chart/HexbinChart";
 import { IHexbinWidgetProps } from "@/components/HexbinWidget";
 import { generateMatrixData } from '@/helpers/generateMatrixData';
@@ -8,11 +9,15 @@ export const HEIGHT = 550;
 export const RADIUS = 20;
 
 export const useHexbinWidgetData = <TData>(data: IHexbinWidgetProps<TData>["data"]): IHexbinChartProps<TData>["matrix"] => {
+	const [min, max] = d3.extent(data, (d) => d.value);
 	const d = data
 		.sort((p, n) => Number(n.value) - Number(p.value))
 		.map(({ data, value }) => {
 			return {
-				fill: getColorByActivity(Math.floor(value) || 0),
+				fill: getColorByActivity(value || 0, {
+					min,
+					max
+				}),
 				value,
 				data,
 			};
