@@ -6,6 +6,10 @@ export const loaderSizes: Record<TLoaderSize, { width: number, height: number }>
         height: 24,
         width: 24,
     },
+    extraSmall: {
+        height: 38,
+        width: 38,
+    },
     medium: {
         height: 50,
         width: 50,

@@ -2,7 +2,7 @@ import Stack from "@mui/material/Stack";
 import { CellContext, ColumnDef, TableMeta } from '@tanstack/react-table';
 import { observer } from "mobx-react";
 import moment from "moment";
-import { useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 
 import Table, { COLORS, ETableFilterVariant, TTable } from "@/components/Table";
 import { TableSelect } from "@/components/Table/TableSelect/TableSelect.tsx";
@@ -253,6 +253,12 @@ export const AdministrationTable = observer(() => {
     rejectAccessRequest,
   ]);
 
+  const handleConfirmDelete = useCallback(() => {
+    if(!tableRef?.current) return;
+    const t = tableRef.current;
+    t.setRowSelection({});
+  }, [tableRef]);
+
   return (
     <Stack
       direction='row'
@@ -285,6 +291,7 @@ export const AdministrationTable = observer(() => {
       <ConfirmDeleteDialog
         open={isOpenDeleteConfirm}
         onClose={() => toggleDeleteConfirm()}
+        onConfirm={handleConfirmDelete}
       />
     </Stack>
   );
