@@ -21,11 +21,10 @@ export const UserDiagramChart = observer(() => {
       return chartData.reduce((res, data) => {
         if(!data?.activity.length) return res;
         const coords = data. activity
-          .map((act) => ({ x: Number(act.date), y: act.rate || 0 } as IChartDataPoint));
+          .map((act) => ({ x: Number(act.date), y: Number(act.rate) || 0 } as IChartDataPoint));
         return [...res, coords];
       }, [] as IChartDataPoint[][]);
     }, [chartData]);
-
 
   const handleSelectRange = useCallback((d: IInteractionData<IChartDataPoint>[] = []): void => {
     const t1 = d[0]?.data?.x || 0;

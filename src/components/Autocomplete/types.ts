@@ -6,12 +6,12 @@ import {
 } from '@mui/material/Autocomplete/Autocomplete';
 
 export interface IAutocompleteOption<T> {
-	idx?: number;
 	id?: string | number;
 	type?: string;
 	value: string;
 	label: string;
-	[k: string]: Omit<keyof T, 'idx' | 'id' | 'type' | 'value' | 'label'> | undefined;
+	groupBy?: string;
+	[k: string]: Omit<keyof T, 'id' | 'type' | 'value' | 'label' | 'groupBy'> | undefined;
 }
 
 export interface IAutocompleteProps<Item extends object> extends Omit<AutocompleteProps<IAutocompleteOption<Item>, false, false, false>, 'onChange' | 'renderInput'> {

@@ -3,6 +3,8 @@ import { observer } from 'mobx-react';
 
 import { ContentContainer } from "@/components/ContentContainer";
 import { RateTrendView } from "@/components/RateTrendView";
+import Typography from "@/components/Typography";
+import { CHART_COLORS } from "@/constants/chart.ts";
 import { useStores } from '@/hooks';
 import { PeopleDynamicViewContent } from '@/modules/PeopleDynamic';
 import { UserDiagramActions } from '@/modules/UserDiagram/UserDiagramActions';
@@ -35,25 +37,36 @@ export const UserDiagramComponent = observer(() => {
 								prevRateValue,
 								subtitles = []
 							} = data;
+
+							const legendColor = idx ? CHART_COLORS[idx] : undefined;
+
 							const tooltips = [
-								{ label: 'curr period', value: currentRateValue },
-								{ label: 'prev period', value: prevRateValue },
-								{ label: 'rate', value: rate },
-								{ label: 'trend', value: trend },
-							].map((el) => {
-								return !el
-									? el
-									: ({ ...el, value: Number(el?.value)?.toFixed(4) });
-							});
+								['Current Activity', currentRateValue],
+								['Previous Activity', prevRateValue],
+								['Rate', rate],
+							];
 							return (
 								<RateTrendView
 									key={`${title}-${idx}`}
+									color={legendColor}
 									title={title}
-									rate={rate}
-									trend={trend}
 									subtitles={subtitles}
-									tooltips={tooltips}
-								/>
+									rateActivity={Number(rate)}
+									trendGrowth={trend}
+								>
+									<Stack spacing={1}>
+										{tooltips.map((vls) => (
+											<Stack direction='row' spacing={1}>
+												{vls.map((v, i) => (
+													<Typography variant="text">
+														{v}
+														{!i && 	<>&#58;</>}
+													</Typography>
+												))}
+											</Stack>
+										))}
+									</Stack>
+								</RateTrendView>
 							);
 						})}
 					</Stack>

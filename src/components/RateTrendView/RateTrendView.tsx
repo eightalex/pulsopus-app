@@ -1,188 +1,180 @@
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
+import Collapse from "@mui/material/Collapse";
+import Divider from "@mui/material/Divider";
 import Stack from "@mui/material/Stack";
-import { FC, ReactNode, useMemo, useRef, useState } from "react";
+import { Children, FC, Fragment, RefObject, useMemo, useRef } from "react";
 
-import Typography, { TTypographyColorType } from "@/components/Typography";
-import { ArrowDownIcon, ArrowUpIcon, ISvgIcon } from "@/icons";
+import { RateTrendViewInfo } from "@/components/RateTrendView/RateTrendViewInfo.tsx";
+import { IRateTrendViewProps, RateTrendViewInfoProps } from "@/components/RateTrendView/types.ts";
+import Typography from "@/components/Typography";
+import { useOnClickOutside, useToggle } from "@/hooks";
+import { ArrowTriangleDownIcon, ArrowTriangleUpIcon, ISvgIcon } from "@/icons";
+import { allStone400 } from "@/theme/palette.ts";
 
-interface ITooltipParam {
-    value?: string | number;
-    label?: string;
-}
+import { RateTrendViewStyled } from "./styled.tsx";
 
-interface IRateTrandViewProps {
-    title?: string;
-    children?: ReactNode;
-    subtitles?: string[];
-    rate?: number;
-    trend?: number;
-    hideRate?: boolean;
-    hideTrend?: boolean;
-    tooltips?: Array<ITooltipParam | null>;
-}
-
-const getColorByTrend = (trend = 0): TTypographyColorType => {
-    const res = trend === 0
-        ? 'primary'
-        : trend > 0 ? 'success' : 'error';
-    return res as TTypographyColorType;
+const RenderIcon: FC<{ value: number, colors?: ISvgIcon['color'][] }> = ({ value, colors = ['success', 'error'] }) => {
+  const IndexIcon = value > 0 ? ArrowTriangleUpIcon : ArrowTriangleDownIcon;
+  const color = value > 0 ? colors[0] : colors[1];
+  return <IndexIcon
+    color={color as ISvgIcon['color']}
+    sx={{ width: 8, height: 8 }}
+  />;
 };
 
-export const RateTrendView: FC<IRateTrandViewProps> = (props) => {
-    const {
-        title = '',
-        children,
-        subtitles = [],
-        rate = 0,
-        trend = 0,
-        hideRate = false,
-        hideTrend = false,
-        tooltips = [],
-    } = props;
-    const menuAnchorRef = useRef<HTMLDivElement>(null);
-    const [hovered, setHovered] = useState(false);
-    const IndexIcon = trend > 0 ? ArrowUpIcon : ArrowDownIcon;
-    const color = getColorByTrend(trend);
-    const renderValues = useMemo(() => {
-        const res = [];
-        if(!hideTrend) {
-            res.push({ value: trend, label: 'Growth Trend' });
-        }
-        if(!hideRate) {
-            res.push({ value: rate, label: 'Activity Rate' });
-        }
-        return res;
-    }, [trend, rate, hideTrend, hideRate]);
+const randomNum = (min: number, max: number): number => {
+  return Math.random() * (max - min + 1) + min;
+};
 
-    const renderTooltips: ITooltipParam[][] = useMemo(() => {
-        let j = 0;
-        return tooltips.reduce((acc, t = {}) => {
-            const hasData = [t?.value, t?.label].some(v => typeof v !== 'undefined');
-            if(!t || !hasData) {
-                j++;
-                return acc;
-            }
-            const ts = acc[j] || [];
-            ts.push(t);
-            acc[j] = ts;
-            return acc;
-        }, [] as ITooltipParam[][]);
-    }, [tooltips]);
+export const RateTrendView: FC<IRateTrendViewProps> = (props) => {
+  const {
+    title = '',
+    subtitles = [],
+    trendGrowth = 0,
+    rateActivity = 0,
+    trendVolatility = randomNum(-12, 9),
+    rateVolatility = randomNum(18, 36),
+    color = allStone400,
+    children,
+    headers = [],
+    showHeader,
+  } = props;
+  const wrapperRef = useRef<HTMLDivElement>();
+  const [open, toggleOpen, setOpen] = useToggle(false);
 
-    return (
+  useOnClickOutside<HTMLDivElement>(wrapperRef as RefObject<HTMLDivElement>, () => {
+    setOpen(false);
+  });
+
+  const renderInfo = useMemo((): RateTrendViewInfoProps[][] => {
+    const infoToRender = [
+      { label: 'Growth Trend', value: trendGrowth, icon: <RenderIcon value={trendGrowth}/> },
+      { label: 'Activity Rate', value: rateActivity },
+      {
+        label: 'Volatility Trend',
+        value: trendVolatility,
+        icon: <RenderIcon colors={['primary', 'warning']} value={trendVolatility}/>
+      },
+      { label: 'Volatility Rate', value: rateVolatility },
+    ] as RateTrendViewInfoProps[];
+
+    const SPLIT_NUM = 2;
+    return infoToRender.reduce((res, info, i) => {
+      const offset = !i ? 0 : Math.floor(i / SPLIT_NUM);
+      const vls = res[offset] || [];
+      res[offset] = [...vls, info];
+      return [...res];
+    }, [] as RateTrendViewInfoProps[][]);
+  }, [trendGrowth, rateActivity, trendVolatility, rateVolatility]);
+
+  return (
+    <RateTrendViewStyled
+      ref={wrapperRef as RefObject<HTMLDivElement>}
+      spacing={2.5}
+      onMouseLeave={() => setOpen(false)}
+    >
+      <Stack spacing={0}>
         <Stack
-            spacing={4}
-            onMouseOver={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
+          direction='row'
+          alignItems='center'
+          justifyContent='space-between'
+          spacing={3}
         >
-            <Stack spacing={0}>
-                {Boolean(title) && (
-                    <Typography
-                        variant="subtitle"
-                        textTransform="uppercase"
-                        color={color}
-                    >
-                        {title}
-                    </Typography>
-                )}
-                {Boolean(children) && children}
-                <Stack spacing={0.5}>
-                    {subtitles.map((subtitle = '', i) => (
-                        <Typography
-                            key={`${i}-${subtitle}`}
-                            variant="body2"
-                            color={color}
-                        >
-                            {subtitle}
-                        </Typography>
-                    ))}
-                </Stack>
-            </Stack>
-            <Stack
-                spacing={1}
-                alignItems="center"
-                direction="row"
-                position={'relative'}
-                ref={menuAnchorRef}
-            >
-                {Boolean(trend) && (!hideTrend || !hideRate) && <IndexIcon color={color as ISvgIcon['color']}/>}
-                <Stack spacing={0}>
-                    {renderValues.map(({ value = 0, label = '' }, i, arr) => {
-                        const digFormat = Math.abs(Math.round(value)).toLocaleString('en-US', {
-                            minimumIntegerDigits: 2,
-                            useGrouping: false,
-                        });
-                        const wrapAlignItems = arr.length - 1 === i ? 'flex-end' : 'center';
-                        return (
-                            <Stack
-                                key={`${i}-${label}-${value}`}
-                                spacing={2}
-                                direction="row"
-                                alignItems={i ? wrapAlignItems : 'unset'}
-                            >
-                                <Typography
-                                    variant="subtitle"
-                                    color={color}
-                                >
-                                    {digFormat}%
-                                </Typography>
-                                <Typography
-                                    color={color}
-                                    variant="body1"
-                                    lineHeight={1.7}
-                                >
-                                    {label}
-                                </Typography>
-                            </Stack>
-                        );
-                    })}
-                </Stack>
+          <Typography
+            variant="text"
+            textTransform="uppercase"
+            lineHeight={1}
+            sx={{ color }}
+          >
+            {title}
+          </Typography>
 
-                {Boolean(hovered) && Boolean(renderTooltips.length) && (
-                    <Menu
-                        anchorEl={menuAnchorRef.current}
-                        open={hovered}
-                        onClose={() => setHovered(false)}
-                    >
-                        <MenuItem>
-                            <Stack spacing={2} width='100%'>
-                                {renderTooltips.map((list, index) => (
-                                    <Stack key={index} spacing={0}>
-                                        {list.map((el, listIndex) => {
-                                            const { label, value } = el || {};
-                                            const textProps = {
-                                                variant: 'text',
-                                                fontSize: 14,
-                                                lineHeight: 1,
-                                            };
-                                            return (
-                                                <Stack
-                                                    key={`${index}-${listIndex}`}
-                                                    direction='row'
-                                                    justifyContent='space-between'
-                                                    flexGrow={1}
-                                                    spacing={2}
-                                                >
-                                                    {[label, value].map((v, infoIndex) => (
-                                                        <Typography
-                                                            key={`${v}-${infoIndex}`}
-                                                            {...textProps}
-                                                        >
-                                                            {v}
-                                                            {!infoIndex && 	<>&#58;</>}
-                                                        </Typography>
-                                                    ))}
-                                                </Stack>
-                                            );
-                                        })}
-                                    </Stack>
-                                ))}
-                            </Stack>
-                        </MenuItem>
-                    </Menu>
-                )}
+          <Collapse in={showHeader} orientation='horizontal'>
+            <Stack direction='row' spacing={2} alignItems='center'>
+              {Boolean(headers && headers.length) && headers.map((action, i) => (
+                <Fragment key={`info-action-${i}`}>
+                  {action}
+                </Fragment>
+              ))}
             </Stack>
+          </Collapse>
         </Stack>
-    );
+
+        <Stack
+          direction='row'
+          alignItems='center'
+          spacing={1}
+          divider={(
+            <Divider
+              orientation="vertical"
+              variant="middle"
+              flexItem
+              sx={{
+                borderColor: color
+              }}
+            />
+          )}
+        >
+          {subtitles.map((subtitle) => (
+            <Typography
+              key={`subtitle-${subtitle}`}
+              variant="text"
+              sx={{ color, fontSize: 10 }}
+            >
+              {subtitle}
+            </Typography>
+          ))}
+        </Stack>
+      </Stack>
+
+      <Stack
+        direction='row'
+        spacing={7}
+        justifyContent='space-between'
+        onClick={() => toggleOpen()}
+        sx={{
+          cursor: children ? 'pointer' : 'default'
+        }}
+      >
+        {Boolean(renderInfo.length) && renderInfo.map((infos) => (
+          <Stack
+            key={infos.map(({ label }) => label).join('-')}
+            direction='row'
+            spacing={3}
+          >
+            {infos.map((info) => (
+              <RateTrendViewInfo
+                key={info.label}
+                {...info}
+              />
+            ))}
+          </Stack>
+        ))}
+      </Stack>
+
+      {Boolean(children) && (
+        <Collapse in={open}>
+          <Stack
+            spacing={3}
+            divider={(
+              <Divider
+                flexItem
+                sx={{
+                  borderColor: color
+                }}
+              />
+            )}
+          >
+            <></>
+            {Children.map(
+              children,
+              (child) => Boolean(child) && (
+              <Stack>
+                {child}
+              </Stack>
+            ))}
+          </Stack>
+        </Collapse>
+      )}
+    </RateTrendViewStyled>
+  );
 };

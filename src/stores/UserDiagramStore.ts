@@ -53,7 +53,30 @@ export class UserDiagramStore extends CalendarRangeBase implements IUserDiagramS
 		const departmentOptions = departmentsStore.departmentAutocompleteOptions;
 		const usersOptions = usersStore.usersAutocompleteOptions
 			.filter(({ value }) => this.user?.id !== value);
-		return [...departmentOptions, ...usersOptions];
+
+		const map = departmentOptions.reduce((res, dep) => {
+			const opt = {
+				...dep,
+				groupBy: dep.label === 'Company' ? '' : dep.label
+			} as IAutocompleteOption<IDepartment>;
+			res.set(dep.label, [opt]);
+			return res;
+		}, new Map<IDepartment["label"], IAutocompleteOption<IUser | IDepartment>[]>);
+
+		for (const usersOption of usersOptions) {
+			const dep = usersOption.department as string;
+			const vls = map.get(dep) || [];
+			const opt = {
+				...usersOption,
+				groupBy: dep
+			} as IAutocompleteOption<IUser>;
+			map.set(dep, [...vls, opt]);
+		}
+
+		return [...map.values()].reduce((res, opts) => {
+			res = [...res, ...opts];
+			return res;
+		}, [] as IAutocompleteOption<IUser | IDepartment>[]);
 	}
 
 	public get chartData(): IUserDiagramChartData[] {
