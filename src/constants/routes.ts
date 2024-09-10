@@ -1,10 +1,9 @@
+import { EUserRole } from "@/constants/EUser.ts";
+
 export const BASELINE = '/';
 
 export const ROOT_ID: string = 'root';
 export const ROOT_ROUTE: string = BASELINE;
-
-export const VIEWER_ROUTE = 'r';
-export const ADMIN_ROUTE = 'w';
 
 export const PEOPLE_DYNAMIC_ROUTE: string = 'team';
 
@@ -18,6 +17,11 @@ export const PROFILE_ROUTE: string = 'profile';
 
 export const VIEWER_ROUTE_DEFAULT: string = PEOPLE_DYNAMIC_ROUTE;
 export const ADMIN_ROUTE_DEFAULT: string = MANAGEMENT_ROUTE;
+
+export const routesByRole: Record<EUserRole, string> = {
+	[EUserRole.ADMIN]: ADMIN_ROUTE_DEFAULT,
+	[EUserRole.VIEWER]: VIEWER_ROUTE_DEFAULT,
+};
 
 export const DEFAULT_ROUTE_TITLE = 'Pulsopus';
 
