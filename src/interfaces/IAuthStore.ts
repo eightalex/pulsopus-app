@@ -22,7 +22,7 @@ export interface IAuthStore {
 
 	isAuthorized: boolean;
 
-	onAuthorize: (redirect?: string) => Promise<void>;
+	onAuthorize: () => Promise<void>;
 	onLogout: () => Promise<void>;
 	onRedirectLogin: () => void;
 }
